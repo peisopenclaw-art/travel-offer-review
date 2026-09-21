@@ -4,6 +4,7 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+SELF = Path(__file__).resolve()
 HTML = [ROOT / "index.html", ROOT / "about.html", ROOT / "privacy.html"]
 
 class Parser(HTMLParser):
@@ -30,7 +31,7 @@ for required in ["旅行オファー比較", "一次情報", "広告"]:
         errors.append(f"index.html missing required text: {required}")
 
 for path in ROOT.rglob("*"):
-    if not path.is_file() or ".git" in path.parts:
+    if not path.is_file() or ".git" in path.parts or path.resolve() == SELF:
         continue
     try:
         text = path.read_text(encoding="utf-8")
