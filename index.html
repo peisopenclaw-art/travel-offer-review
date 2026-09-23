@@ -32,12 +32,12 @@
   <section id="examples" class="section">
     <div class="section-head">
       <p class="eyebrow">CURRENT EXAMPLES</p>
-      <h2>現在確認できる掲載例</h2>
-      <p class="section-note">2026年9月22日確認。ここでは広告リンクではなく、条件確認用の公式一次情報へ案内しています。内容は変更・終了する場合があるため、予約前に必ず公式ページの最新表示をご確認ください。</p>
+      <h2>出典と条件を確認できる掲載例</h2>
+      <p class="section-note">2026年9月22日確認。ここでは広告リンクではなく、条件確認用の公式一次情報へ案内しています。内容は変更・終了する場合があるため、予約前に必ず公式ページの最新表示をご確認ください。表示された受付期限を過ぎた掲載例は「掲載した受付期間は終了」に切り替わります。再開や延長、残数は公式ページでご確認ください。</p>
     </div>
     <div class="offer-grid">
-      <article class="offer-card">
-        <div class="offer-meta"><span class="status">受付中</span><span>HIS</span><span>航空＋宿</span></div>
+      <article class="offer-card" data-booking-end="2026-09-25T10:00:00+09:00">
+        <div class="offer-meta"><span class="status">要確認（9月22日時点の掲載情報）</span><span>HIS</span><span>航空＋宿</span></div>
         <h3>90日以上前の予約で、1グループ最大10,000円引き</h3>
         <dl>
           <div><dt>予約期間</dt><dd>2026年9月25日 10:00まで</dd></div>
@@ -47,8 +47,8 @@
         <a class="source-link" href="https://www.his-j.com/campaign/shisaku/?param=3" target="_blank" rel="noopener noreferrer" aria-label="HIS公式で90日以上前予約クーポンの条件を確認">HIS公式の条件を確認 →</a>
       </article>
 
-      <article class="offer-card">
-        <div class="offer-meta"><span class="status">受付中</span><span>HIS</span><span>航空＋宿</span></div>
+      <article class="offer-card" data-booking-end="2026-09-25T10:00:00+09:00">
+        <div class="offer-meta"><span class="status">要確認（9月22日時点の掲載情報）</span><span>HIS</span><span>航空＋宿</span></div>
         <h3>年末年始出発で、1グループ最大50,000円引き</h3>
         <dl>
           <div><dt>予約期間</dt><dd>2026年9月25日 10:00まで</dd></div>
@@ -58,8 +58,8 @@
         <a class="source-link" href="https://www.his-j.com/campaign/shisaku/?param=3" target="_blank" rel="noopener noreferrer" aria-label="HIS公式で年末年始クーポンの条件を確認">HIS公式の条件を確認 →</a>
       </article>
 
-      <article class="offer-card">
-        <div class="offer-meta"><span class="status">受付中</span><span>HIS</span><span>国内ツアー・航空＋宿</span></div>
+      <article class="offer-card" data-booking-end="2026-11-12T23:59:00+09:00">
+        <div class="offer-meta"><span class="status">要確認（9月22日時点の掲載情報）</span><span>HIS</span><span>国内ツアー・航空＋宿</span></div>
         <h3>学生3名以上の旅行で、1グループ最大5,000円引き</h3>
         <dl>
           <div><dt>予約期間</dt><dd>2026年11月12日 23:59まで</dd></div>
@@ -92,5 +92,23 @@
   <div class="footer-links"><a href="about.html">このサイトについて</a><a href="privacy.html">プライバシー・広告掲載</a></div>
   <small>© 2026 Travel Offer Review Project</small>
 </footer>
+<script>
+// The printed deadline can expire; neither cached evidence nor this clock proves availability.
+function updateOfferDeadlines(now) {
+  document.querySelectorAll('[data-booking-end]').forEach(function (card) {
+    var end = Date.parse(card.dataset.bookingEnd);
+    var status = card.querySelector('.status');
+    if (status && Number.isFinite(end) && now >= end) {
+      status.textContent = '掲載した受付期間は終了';
+    }
+  });
+}
+updateOfferDeadlines(Date.now());
+setInterval(function () { updateOfferDeadlines(Date.now()); }, 60000);
+document.addEventListener('visibilitychange', function () {
+  if (!document.hidden) updateOfferDeadlines(Date.now());
+});
+</script>
 </body>
 </html>
+
