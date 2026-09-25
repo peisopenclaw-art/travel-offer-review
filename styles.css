@@ -77,9 +77,11 @@ footer p,footer small{color:var(--muted);font-size:12px}
   .lead{font-size:16px}
 }
 @media(max-width:390px){
-  .site-header{padding-left:16px;padding-right:16px}
-  .hero,.section,.page{padding-left:16px;padding-right:16px}
-  footer{padding-left:16px;padding-right:16px}
-  .card,.offer-card{padding-left:20px;padding-right:20px}
-  h1{font-size:22px;letter-spacing:-.045em}
+  .site-header{padding-left:12px;padding-right:12px}
+  .hero,.section,.page{padding-left:12px;padding-right:12px}
+  footer{padding-left:12px;padding-right:12px}
+  .card,.offer-card{padding-left:16px;padding-right:16px}
+  h1{font-size:20px;line-height:1.15;letter-spacing:-.045em}
+  .lead{font-size:15px}
+  .notice{font-size:12px}
 }
