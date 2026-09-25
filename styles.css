@@ -76,3 +76,10 @@ footer p,footer small{color:var(--muted);font-size:12px}
   .lead,.notice,.card p,.offer-card dd{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;word-break:normal}
   .lead{font-size:16px}
 }
+@media(max-width:390px){
+  .site-header{padding-left:16px;padding-right:16px}
+  .hero,.section,.page{padding-left:16px;padding-right:16px}
+  footer{padding-left:16px;padding-right:16px}
+  .card,.offer-card{padding-left:20px;padding-right:20px}
+  h1{font-size:22px;letter-spacing:-.045em}
+}
