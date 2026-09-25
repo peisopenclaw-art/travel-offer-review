@@ -57,21 +57,22 @@ footer p,footer small{color:var(--muted);font-size:12px}
 .footer-links{display:flex;gap:18px;flex-wrap:wrap;min-width:0}
 @media(max-width:900px){.offer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){
-  main{width:auto;min-width:0;max-width:none}
-  .site-header,.hero,.section,.page,footer{width:auto;max-width:none;margin-left:0;margin-right:0}
+  html,body{width:100%;min-width:0}
+  body{overflow-x:hidden}
+  main,.site-header,.hero,.section,.page,footer{width:100%;min-width:0;max-width:100%;margin-left:0;margin-right:0}
   .site-header{align-items:flex-start;gap:18px;flex-direction:column;padding:18px 20px}
-  .site-header nav{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+  .site-header nav{width:100%;min-width:0;max-width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
   .site-header nav a{min-width:0}
   .hero,.section,.page{padding:54px 20px}
   .hero{padding-top:68px}
-  .grid,.split,.offer-grid{width:100%;min-width:0;grid-template-columns:minmax(0,1fr)}
+  .grid,.split,.offer-grid{width:100%;min-width:0;max-width:100%;grid-template-columns:minmax(0,1fr)}
   .split{gap:24px}
   .card,.offer-card{width:100%;min-width:0;max-width:100%}
   .card{min-height:0}
-  .notice{display:block;width:100%}
+  .notice{display:block;width:100%;min-width:0}
   footer{grid-template-columns:minmax(0,1fr);padding-left:20px;padding-right:20px}
-  h1{max-width:100%;font-size:32px;line-height:1.12;letter-spacing:-.035em;white-space:normal;overflow-wrap:anywhere;word-break:normal}
+  h1{width:100%;min-width:0;max-width:100%;font-size:32px;line-height:1.12;letter-spacing:-.035em;white-space:normal;overflow-wrap:anywhere;word-break:normal;line-break:anywhere}
   .page h1{font-size:32px}
-  .lead,.notice,.card p,.offer-card dd{max-width:100%;white-space:normal;overflow-wrap:anywhere;word-break:normal}
+  .lead,.notice,.card p,.offer-card dd{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;word-break:normal}
   .lead{font-size:16px}
 }
