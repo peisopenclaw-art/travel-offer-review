@@ -9,6 +9,7 @@ PUBLIC_FILES = [
     "privacy.html",
     "styles.css",
     "robots.txt",
+    "qa-mobile-390.html",
 ]
 
 if OUT.exists():
