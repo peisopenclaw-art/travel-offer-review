@@ -71,7 +71,7 @@ footer p,footer small{color:var(--muted);font-size:12px}
   .card{min-height:0}
   .notice{display:block;width:100%;min-width:0}
   footer{grid-template-columns:minmax(0,1fr);padding-left:20px;padding-right:20px}
-  h1{width:100%;min-width:0;max-width:100%;font-size:clamp(25px,6.4vw,32px);line-height:1.12;letter-spacing:-.035em;white-space:normal;overflow-wrap:anywhere;word-break:normal;line-break:anywhere}
+  h1{width:100%;min-width:0;max-width:100%;font-size:clamp(23px,6vw,32px);line-height:1.12;letter-spacing:-.035em;white-space:normal;overflow-wrap:anywhere;word-break:normal;line-break:anywhere}
   .page h1{font-size:32px}
   .lead,.notice,.card p,.offer-card dd{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;word-break:normal}
   .lead{font-size:16px}
