@@ -28,6 +28,8 @@ for path in HTML:
     except Exception as exc:
         errors.append(f"{path.name}: html parse failed: {exc}")
     for target in re.findall(r'href="([^"]+\.html)"', text):
+        if "://" in target or target.startswith(("/", "#", "mailto:", "tel:")):
+            continue
         if not (ROOT / target).exists():
             errors.append(f"{path.name}: broken local link: {target}")
 
