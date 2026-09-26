@@ -1,0 +1,75 @@
+name: exact-viewport-visual-qa
+
+on:
+  pull_request:
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 scripts/check_site.py
+      - run: pip install playwright
+      - run: python -m playwright install --with-deps chromium
+      - name: Capture exact viewport screenshots
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from playwright.sync_api import sync_playwright
+
+          out = Path("visual-qa")
+          out.mkdir(exist_ok=True)
+          url = Path("index.html").resolve().as_uri()
+          results = {}
+
+          with sync_playwright() as p:
+              browser = p.chromium.launch()
+              for width, height in [(1440, 1000), (390, 844), (375, 812)]:
+                  page = browser.new_page(
+                      viewport={"width": width, "height": height},
+                      device_scale_factor=1,
+                      color_scheme="light",
+                  )
+                  page.goto(url, wait_until="domcontentloaded")
+                  metrics = page.evaluate("""() => {
+                    const doc = document.documentElement;
+                    const body = document.body;
+                    const bad = [...document.querySelectorAll('*')].filter(el => {
+                      const r = el.getBoundingClientRect();
+                      return r.right > innerWidth + 0.5 || r.left < -0.5;
+                    }).map(el => ({
+                      tag: el.tagName,
+                      cls: el.className || '',
+                      left: el.getBoundingClientRect().left,
+                      right: el.getBoundingClientRect().right
+                    }));
+                    return {
+                      innerWidth,
+                      clientWidth: doc.clientWidth,
+                      scrollWidth: doc.scrollWidth,
+                      bodyScrollWidth: body.scrollWidth,
+                      overflowCount: bad.length,
+                      overflow: bad.slice(0, 20),
+                      h1FontSize: getComputedStyle(document.querySelector('h1')).fontSize
+                    };
+                  }""")
+                  results[str(width)] = metrics
+                  page.screenshot(path=str(out / f"homepage-{width}.png"), full_page=True)
+                  page.close()
+              browser.close()
+
+          (out / "metrics.json").write_text(
+              json.dumps(results, ensure_ascii=False, indent=2),
+              encoding="utf-8"
+          )
+          print(json.dumps(results, ensure_ascii=False, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: exact-viewport-visual-qa
+          path: visual-qa/
+          if-no-files-found: error
