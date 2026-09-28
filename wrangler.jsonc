@@ -11,5 +11,5 @@
       "custom_domain": true
     }
   ],
-  "previews": {}
+  "preview_urls": true,\n  "previews": {}
 }
