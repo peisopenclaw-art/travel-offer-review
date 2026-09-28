@@ -9,6 +9,7 @@ PUBLIC_FILES = [
     "privacy.html",
     "styles.css",
     "robots.txt",
+    "sitemap.xml",
     "qa-mobile-390.html",
 ]
 
