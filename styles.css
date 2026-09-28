@@ -85,3 +85,77 @@ footer p,footer small{color:var(--muted);font-size:12px}
   .lead{font-size:15px}
   .notice{font-size:12px}
 }
+
+/* Revenue V1 editorial-utility refinement — 2026-09-28
+   Visual hierarchy only: copy, URLs, affiliate semantics and data remain unchanged. */
+:root{--accent-dark:#084f42;--soft:#ebe7de}
+.hero{padding-top:96px;padding-bottom:86px}
+.notice{border:0;border-left:3px solid var(--accent);background:var(--soft);padding:13px 16px}
+.grid{gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.card{background:transparent;border:0;border-left:1px solid var(--line);padding:24px 28px 28px;min-height:190px}
+.card:first-child{border-left:0}
+.card h3{margin:8px 0 10px}
+.card p{font-size:14px;line-height:1.7;margin:0}
+.offer-grid{display:block;border-top:1px solid var(--line)}
+.offer-card{background:transparent;border:0;border-bottom:1px solid var(--line);padding:28px 0;display:grid;grid-template-columns:minmax(145px,.72fr) minmax(210px,1.05fr) minmax(280px,1.5fr) minmax(180px,.88fr);gap:26px;align-items:start}
+.offer-card h3{font-size:22px;line-height:1.35;margin:0}
+.offer-meta{align-content:flex-start}
+.offer-card dl{margin:0}
+.offer-card dl div{padding:9px 0}
+.offer-card dl div:first-child{border-top:0;padding-top:0}
+.offer-card dd{font-size:14px;line-height:1.65;font-variant-numeric:tabular-nums}
+.offer-actions{margin-top:0;align-items:stretch;gap:12px}
+.affiliate-block{display:flex;flex-direction:column;align-items:stretch;gap:7px;width:100%}
+.ad-label{align-self:flex-start}
+.affiliate-block a{display:flex;align-items:center;justify-content:center;min-height:44px;width:100%;padding:11px 14px;font-size:14px;line-height:1.35;text-align:center}
+.affiliate-block a:hover{background:var(--accent-dark);border-color:var(--accent-dark);text-decoration:none}
+.source-link{padding-bottom:3px;border-bottom:1px solid #b9d6ca;line-height:1.55}
+.source-link:hover{border-color:var(--accent);text-decoration:none}
+nav a:focus-visible,.footer-links a:focus-visible,.affiliate-block a:focus-visible,.source-link:focus-visible,.brand:focus-visible{outline:3px solid #72b8a7;outline-offset:3px}
+.mobile-break{display:none}
+
+@media(max-width:900px){
+  .offer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;border-top:0}
+  .offer-card{display:flex;background:var(--paper);border:1px solid var(--line);padding:24px}
+  .offer-card h3{font-size:20px;margin:16px 0 18px}
+  .offer-card dl{margin:0 0 22px}
+  .offer-actions{margin-top:auto}
+}
+
+@media(max-width:760px){
+  .mobile-break{display:inline}
+  .site-header{gap:12px;padding-top:15px;padding-bottom:15px}
+  .site-header nav{gap:6px 14px}
+  .site-header nav a{font-size:12.5px;line-height:1.45;padding:3px 0}
+  .hero,.section,.page{padding-top:50px;padding-bottom:50px}
+  .hero{padding-top:56px;padding-bottom:54px}
+  h1{font-size:clamp(30px,8vw,34px);line-height:1.1;letter-spacing:-.045em}
+  h2{font-size:clamp(27px,7vw,32px);line-height:1.18}
+  .section-head{margin-bottom:26px}
+  .section-note{font-size:14px;line-height:1.75}
+  .grid{display:block;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .card{background:transparent;border:0;border-top:1px solid var(--line);padding:20px 0;min-height:0}
+  .card:first-child{border-top:0}
+  .card h3{font-size:20px}
+  .card p{font-size:14px}
+  .offer-grid{display:block;border-top:1px solid var(--line)}
+  .offer-card{background:transparent;border:0;border-bottom:1px solid var(--line);padding:25px 0}
+  .offer-card h3{font-size:20px;line-height:1.4;margin:14px 0 16px}
+  .offer-meta{gap:6px}
+  .offer-meta span{font-size:11px;padding:4px 7px}
+  .offer-card dl{margin-bottom:20px}
+  .offer-card dt{font-size:11px}
+  .offer-card dd{font-size:14px;line-height:1.72}
+  .affiliate-block a{min-height:48px;font-size:15px}
+  .source-link{font-size:13.5px;line-height:1.6}
+  .affiliate-unavailable{font-size:13px;line-height:1.65}
+  .notice{font-size:13px;line-height:1.7;margin-top:24px}
+}
+
+@media(max-width:390px){
+  h1{font-size:29px;line-height:1.12;letter-spacing:-.04em}
+  .lead{font-size:15.5px;line-height:1.75}
+  .notice{font-size:12.5px}
+  .card,.offer-card{padding-left:0;padding-right:0}
+}
+
