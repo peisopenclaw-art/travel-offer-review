@@ -197,8 +197,9 @@ footer small{grid-column:1/-1}
   .offer-meta span{font-size:8px;padding:2px 5px}
   .offer-kicker{margin-top:18px;font-size:9px}
   .featured-content h3{font-size:25px}
-  .benefit{margin:19px 0 17px;padding:14px 0;align-items:center}
+  .benefit{margin:19px 0 17px;padding:14px 0;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-items:start}
   .benefit strong{font-size:24px}
+  .benefit span{max-width:none;text-align:left}
   .benefit span{max-width:115px;font-size:8.5px}
   .offer-facts div{grid-template-columns:64px 1fr;gap:8px;padding:8px 0}
   .offer-facts dt{font-size:8.5px}
