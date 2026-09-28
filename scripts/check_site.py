@@ -1,5 +1,6 @@
 from html.parser import HTMLParser
 from pathlib import Path
+import json
 import re
 import sys
 
@@ -83,6 +84,27 @@ else:
     sitemap_ref = f"Sitemap: {PUBLIC_ORIGIN}/sitemap.xml"
     if sitemap_ref not in robots:
         errors.append(f"robots.txt missing sitemap reference: {sitemap_ref}")
+
+wrangler_path = ROOT / "wrangler.jsonc"
+if not wrangler_path.is_file():
+    errors.append("missing: wrangler.jsonc")
+else:
+    try:
+        wrangler_config = json.loads(wrangler_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        errors.append(f"wrangler.jsonc invalid JSON: {exc}")
+    else:
+        routes = wrangler_config.get("routes", [])
+        has_custom_domain = any(
+            route.get("pattern") == "travel.tokuerabi.com"
+            and route.get("custom_domain") is True
+            for route in routes
+            if isinstance(route, dict)
+        )
+        if not has_custom_domain:
+            errors.append("wrangler.jsonc missing travel.tokuerabi.com custom domain route")
+        if wrangler_config.get("preview_urls") is not True:
+            errors.append("wrangler.jsonc must keep workers.dev Preview URLs enabled")
 
 for path in ROOT.rglob("*"):
     if not path.is_file() or ".git" in path.parts or path.resolve() == SELF:
