@@ -5,5 +5,11 @@
   "assets": {
     "directory": "./dist"
   },
+  "routes": [
+    {
+      "pattern": "travel.tokuerabi.com",
+      "custom_domain": true
+    }
+  ],
   "previews": {}
 }
