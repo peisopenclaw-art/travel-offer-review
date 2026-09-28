@@ -187,8 +187,9 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
 }
 
 @media(max-width:600px){
-  .site-header{height:64px;padding:0 16px;gap:10px}
-  .brand{gap:6px}
+  .site-header{height:64px;padding:0 16px;gap:0;grid-template-columns:1fr}
+  .brand{gap:6px;min-width:0}
+  .header-cta{display:none}
   .brand-mark{width:34px;height:24px}
   .brand-name{font-size:18px}
   .beta{display:none}
@@ -211,7 +212,7 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
   .category-card p{font-size:9px;margin-top:2px}
   .offers-section{padding:48px 14px 38px}
   .offers-heading{margin-bottom:18px}
-  .section-intro h2{font-size:30px}
+  .section-intro h2{font-size:28px;overflow-wrap:anywhere}
   .section-intro>p:last-child{font-size:12px}
   .disclosure{font-size:10px;padding-left:11px}
   .offer-layout{gap:18px}
@@ -221,7 +222,8 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
   .offer-body{padding:19px}
   .offer-meta span{font-size:9px}
   .offer-label{font-size:9px;margin-top:18px}
-  .offer-card h3{font-size:25px;margin:7px 0 9px}
+  .offer-card{min-width:0}
+  .offer-card h3{font-size:25px;margin:7px 0 9px;overflow-wrap:anywhere}
   .offer-summary{font-size:12px}
   .offer-facts{margin:15px 0 17px}
   .offer-facts div{grid-template-columns:66px 1fr;gap:10px;padding:9px 0}
@@ -233,7 +235,7 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
   .offer-card.secondary{border-radius:8px;box-shadow:var(--shadow)}
   .offer-card.secondary .offer-media{height:190px}
   .offer-card.secondary .offer-body{padding:17px}
-  .offer-card.secondary h3{font-size:21px}
+  .offer-card.secondary h3{font-size:20px;overflow-wrap:anywhere}
   .offer-card.secondary .primary-cta,.offer-card.secondary .secondary-cta{min-height:48px;font-size:13px}
   .deadline-note{font-size:9px}
   .trust-section{padding:38px 14px}
