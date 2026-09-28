@@ -1,0 +1,25 @@
+name: live-domain-smoke
+on:
+  push:
+    branches:
+      - qa/live-domain-smoke-20260928
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Verify live custom domain
+        shell: bash
+        run: |
+          set -euo pipefail
+          body="$(mktemp)"
+          headers="$(mktemp)"
+          code="$(curl --silent --show-error --location --max-time 20 --output "$body" --dump-header "$headers" --write-out '%{http_code}' https://travel.tokuerabi.com/)"
+          echo "HTTP=$code"
+          test "$code" = "200"
+          grep -F '<link rel="canonical" href="https://travel.tokuerabi.com/">' "$body"
+          grep -F '旅行オファー比較' "$body"
+          curl --fail --silent --show-error --location --max-time 20 https://travel.tokuerabi.com/robots.txt | grep -F 'Sitemap: https://travel.tokuerabi.com/sitemap.xml'
+          curl --fail --silent --show-error --location --max-time 20 https://travel.tokuerabi.com/sitemap.xml | grep -F '<loc>https://travel.tokuerabi.com/</loc>'
+          echo "LIVE_DOMAIN_SMOKE=PASS"
