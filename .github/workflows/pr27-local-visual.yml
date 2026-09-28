@@ -1,0 +1,82 @@
+name: pr27-local-visual
+on:
+  push:
+    branches:
+      - qa/pr27-local-visual-20260928
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright Chromium
+        shell: bash
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start isolated local preview
+        shell: bash
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/pr27-http.log 2>&1 &
+          echo $! > /tmp/pr27-http.pid
+          for i in {1..20}; do
+            curl --fail --silent http://127.0.0.1:4173/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/pr27-http.log
+          exit 1
+      - name: Capture exact visual gate
+        shell: bash
+        run: |
+          mkdir -p screenshots
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const sizes = [
+              { name: 'homepage-1440-pr27-current', width: 1440, height: 1000 },
+              { name: 'homepage-390-pr27-current', width: 390, height: 844 },
+              { name: 'homepage-375-pr27-current', width: 375, height: 812 },
+            ];
+            const metrics = [];
+            for (const size of sizes) {
+              const page = await browser.newPage({ viewport: { width: size.width, height: size.height }, deviceScaleFactor: 1 });
+              const errors = [];
+              page.on('pageerror', e => errors.push(String(e)));
+              const response = await page.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle', timeout: 30000 });
+              await page.evaluate(() => document.fonts && document.fonts.ready);
+              const m = await page.evaluate(() => {
+                const overflow = [...document.querySelectorAll('body *')].filter(el => {
+                  const r = el.getBoundingClientRect();
+                  return r.right > document.documentElement.clientWidth + 1 || r.left < -1;
+                });
+                return {
+                  innerWidth: window.innerWidth,
+                  clientWidth: document.documentElement.clientWidth,
+                  scrollWidth: document.documentElement.scrollWidth,
+                  bodyScrollWidth: document.body.scrollWidth,
+                  overflowCount: overflow.length,
+                  h1FontSize: getComputedStyle(document.querySelector('h1')).fontSize,
+                  affiliateCtaCount: document.querySelectorAll('.affiliate-block a').length,
+                  offerCardCount: document.querySelectorAll('.offer-card').length,
+                };
+              });
+              metrics.push({ ...size, httpStatus: response ? response.status() : null, pageErrors: errors, ...m });
+              await page.screenshot({ path: `screenshots/${size.name}.png`, fullPage: true });
+              await page.close();
+            }
+            await browser.close();
+            fs.writeFileSync('screenshots/metrics.json', JSON.stringify(metrics, null, 2));
+            console.log(JSON.stringify(metrics, null, 2));
+            if (metrics.some(m => m.httpStatus !== 200 || m.pageErrors.length || m.innerWidth !== m.clientWidth || m.scrollWidth !== m.clientWidth || m.bodyScrollWidth !== m.clientWidth || m.overflowCount !== 0 || m.affiliateCtaCount !== 2 || m.offerCardCount !== 3)) {
+              process.exit(1);
+            }
+          })();
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pr27-current-visual-gate
+          path: screenshots
+          if-no-files-found: error
