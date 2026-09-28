@@ -23,3 +23,67 @@ jobs:
           curl --fail --silent --show-error --location --max-time 20 https://travel.tokuerabi.com/robots.txt | grep -F 'Sitemap: https://travel.tokuerabi.com/sitemap.xml'
           curl --fail --silent --show-error --location --max-time 20 https://travel.tokuerabi.com/sitemap.xml | grep -F '<loc>https://travel.tokuerabi.com/</loc>'
           echo "LIVE_DOMAIN_SMOKE=PASS"
+
+  visual:
+    needs: smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Install Playwright Chromium
+        shell: bash
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Capture exact viewports
+        shell: bash
+        run: |
+          mkdir -p screenshots
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const sizes = [
+              { name: 'pc-1440', width: 1440, height: 1000 },
+              { name: 'mobile-390', width: 390, height: 844 },
+              { name: 'mobile-375', width: 375, height: 812 },
+            ];
+            const metrics = [];
+            for (const size of sizes) {
+              const page = await browser.newPage({ viewport: { width: size.width, height: size.height }, deviceScaleFactor: 1 });
+              const errors = [];
+              page.on('pageerror', e => errors.push(String(e)));
+              const response = await page.goto('https://travel.tokuerabi.com/', { waitUntil: 'networkidle', timeout: 30000 });
+              await page.evaluate(() => document.fonts && document.fonts.ready);
+              const m = await page.evaluate(() => {
+                const overflow = [...document.querySelectorAll('body *')].filter(el => {
+                  const r = el.getBoundingClientRect();
+                  return r.right > document.documentElement.clientWidth + 1 || r.left < -1;
+                });
+                return {
+                  innerWidth: window.innerWidth,
+                  clientWidth: document.documentElement.clientWidth,
+                  scrollWidth: document.documentElement.scrollWidth,
+                  overflowCount: overflow.length,
+                  affiliateCtaCount: document.querySelectorAll('.affiliate-block a').length,
+                  offerCardCount: document.querySelectorAll('.offer-card').length,
+                };
+              });
+              metrics.push({ ...size, httpStatus: response ? response.status() : null, pageErrors: errors, ...m });
+              await page.screenshot({ path: `screenshots/${size.name}.png`, fullPage: true });
+              await page.close();
+            }
+            await browser.close();
+            fs.writeFileSync('screenshots/metrics.json', JSON.stringify(metrics, null, 2));
+            console.log(JSON.stringify(metrics, null, 2));
+            if (metrics.some(m => m.httpStatus !== 200 || m.pageErrors.length || m.innerWidth !== m.clientWidth || m.scrollWidth !== m.clientWidth || m.overflowCount !== 0 || m.affiliateCtaCount !== 2 || m.offerCardCount !== 3)) {
+              process.exit(1);
+            }
+          })();
+          NODE
+      - name: Upload visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-domain-screenshots
+          path: screenshots
+          if-no-files-found: error
