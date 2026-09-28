@@ -84,6 +84,16 @@ else:
     if sitemap_ref not in robots:
         errors.append(f"robots.txt missing sitemap reference: {sitemap_ref}")
 
+wrangler_path = ROOT / "wrangler.jsonc"
+if not wrangler_path.is_file():
+    errors.append("missing: wrangler.jsonc")
+else:
+    wrangler = wrangler_path.read_text(encoding="utf-8")
+    if '"pattern": "travel.tokuerabi.com"' not in wrangler or '"custom_domain": true' not in wrangler:
+        errors.append("wrangler.jsonc missing travel.tokuerabi.com custom domain route")
+    if '"preview_urls": true' not in wrangler:
+        errors.append("wrangler.jsonc must keep workers.dev Preview URLs enabled")
+
 for path in ROOT.rglob("*"):
     if not path.is_file() or ".git" in path.parts or path.resolve() == SELF:
         continue
