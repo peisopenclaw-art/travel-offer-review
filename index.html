@@ -12,41 +12,91 @@
   <meta property="og:title" content="旅行オファー比較 β">
   <meta property="og:description" content="国内旅行の宿泊・航空＋宿・JR＋宿などのお得情報を、条件と出典を確認しながら比較しやすく整理するβ版メディアです。">
   <meta property="og:url" content="https://travel.tokuerabi.com/">
-  <link rel="stylesheet" href="styles.css?v=20260925-375b">
+  <link rel="stylesheet" href="styles.css?v=20260928-v1">
 </head>
 <body>
 <header class="site-header">
-  <a class="brand" href="./">旅行オファー比較 <span>β</span></a>
-  <nav><a href="#categories">対象領域</a><a href="#examples">掲載例</a><a href="#policy">掲載方針</a><a href="about.html">このサイトについて</a><a href="privacy.html">プライバシー</a></nav>
+  <a class="brand" href="./" aria-label="旅行オファー比較 ホーム">
+    <span class="brand-mark" aria-hidden="true">旅</span>
+    <span class="brand-copy"><strong>旅行オファー比較</strong><small>国内旅行のお得情報</small></span>
+    <span class="beta">β</span>
+  </a>
+  <nav aria-label="主要ナビゲーション">
+    <a href="#categories">旅行タイプ</a>
+    <a href="#recommendations">おすすめ</a>
+    <a href="#policy">掲載方針</a>
+    <a href="about.html">このサイトについて</a>
+  </nav>
 </header>
+
 <main>
-  <section class="hero">
-    <p class="eyebrow">DOMESTIC TRAVEL OFFER REVIEW</p>
-    <h1>旅行のお得情報を、<br>「使える条件」まで見やすく。</h1>
-    <p class="lead">宿泊、航空＋宿、JR＋宿などの国内旅行オファーを、提供元・対象地域・期間・利用条件・一次情報への導線とともに整理するβ版メディアです。</p>
-    <div class="notice"><strong>広告</strong> 本サイトはA8.netのアフィリエイト広告を利用しています。広告リンク経由で宿泊予約が成立した場合、運営側に紹介料が入ることがあります。出典・条件の確認方針は広告の有無で変えません。</div>
+  <section class="hero-visual" aria-labelledby="hero-title">
+    <img class="hero-image" src="https://images.unsplash.com/photo-1749352133990-67bf2a652149?auto=format&fit=crop&w=2200&q=82" alt="湖越しに富士山を望む日本の旅景色" fetchpriority="high" referrerpolicy="no-referrer">
+    <div class="hero-shade" aria-hidden="true"></div>
+    <div class="hero-content">
+      <p class="eyebrow hero-eyebrow">DOMESTIC TRAVEL OFFER REVIEW</p>
+      <h1 id="hero-title">旅行のお得情報を、<br><em>「使える条件」</em>まで見やすく。</h1>
+      <p class="hero-lead">宿泊、航空＋宿、JR＋宿などを、一次情報・対象期間・利用条件まで確認して整理します。</p>
+      <a class="hero-cta" href="#recommendations">確認済みオファーを見る <span aria-hidden="true">↓</span></a>
+    </div>
+    <p class="photo-credit hero-credit">イメージ写真 / <a href="https://unsplash.com/photos/mount-fuji-overlooks-a-lake-and-torii-gate-aEvsvyiG3ro" target="_blank" rel="noopener noreferrer">Helmi Tan / Unsplash</a></p>
   </section>
 
-  <section id="categories" class="section">
-    <div class="section-head"><p class="eyebrow">CATEGORIES</p><h2>対象にする旅行商品</h2></div>
-    <div class="grid">
-      <article class="card"><span>01</span><h3>宿泊</h3><p>宿泊クーポン、自治体の宿泊支援、予約サイトの期間限定施策を整理します。</p></article>
-      <article class="card"><span>02</span><h3>航空＋宿</h3><p>ダイナミックパッケージ等を、宿泊単体とは別の旅行商品として扱います。</p></article>
-      <article class="card"><span>03</span><h3>JR＋宿・鉄道</h3><p>新幹線・JRと宿泊を組み合わせた商品や、鉄道関連の割引施策を対象にします。</p></article>
+  <section id="categories" class="category-wrap" aria-labelledby="category-title">
+    <div class="category-intro">
+      <p class="eyebrow">TRAVEL TYPE</p>
+      <h2 id="category-title">旅のかたちから探す</h2>
     </div>
+    <div class="category-grid">
+      <a class="category-card is-live" href="#recommendations">
+        <img src="https://images.unsplash.com/photo-1722229808540-054073c5665b?auto=format&fit=crop&w=1500&q=82" alt="" loading="lazy" referrerpolicy="no-referrer">
+        <span class="category-overlay" aria-hidden="true"></span>
+        <span class="category-copy"><small>掲載中</small><strong>宿泊</strong><span>ホテル・旅館のお得情報</span></span>
+      </a>
+      <a class="category-card is-live" href="#recommendations">
+        <img src="https://images.unsplash.com/photo-1759271313567-6e4ca5a6e9b4?auto=format&fit=crop&w=1500&q=82" alt="" loading="lazy" referrerpolicy="no-referrer">
+        <span class="category-overlay" aria-hidden="true"></span>
+        <span class="category-copy"><small>掲載中</small><strong>航空＋宿</strong><span>パッケージの条件を確認</span></span>
+      </a>
+      <article class="category-card is-coming" aria-label="JR＋宿・鉄道は今後拡充予定">
+        <img src="https://images.unsplash.com/photo-1777026050794-a5e4ef7cd254?auto=format&fit=crop&w=1500&q=82" alt="" loading="lazy" referrerpolicy="no-referrer">
+        <span class="category-overlay" aria-hidden="true"></span>
+        <span class="category-copy"><small>今後拡充</small><strong>JR＋宿</strong><span>新幹線・鉄道のお得情報</span></span>
+      </article>
+      <article class="category-card is-coming" aria-label="特集は今後拡充予定">
+        <img src="https://images.unsplash.com/photo-1769959220402-a2d6a252e2bf?auto=format&fit=crop&w=1500&q=82" alt="" loading="lazy" referrerpolicy="no-referrer">
+        <span class="category-overlay" aria-hidden="true"></span>
+        <span class="category-copy"><small>今後拡充</small><strong>特集</strong><span>季節・地域のお得情報</span></span>
+      </article>
+    </div>
+    <p class="category-note">「今後拡充」は検索や予約機能を示すものではなく、今後掲載を増やす予定の領域です。</p>
   </section>
 
-  <section id="examples" class="section">
-    <div class="section-head">
-      <p class="eyebrow">CURRENT EXAMPLES</p>
-      <h2>出典と条件を確認できる掲載例</h2>
-      <p class="section-note">2026年9月24日確認。公式条件を確認する出典リンクと、予約用の広告リンクを分けて掲載しています。宿泊の掲載例にはA8.net経由のYahoo!トラベル広告リンクがありますが、航空＋宿は現在の宿泊向け広告プログラムの成果対象外のため公式確認リンクのみです。内容は予告なく中止・延期・変更される場合があるため、予約前に必ず公式ページの最新表示をご確認ください。表示された受付期限を過ぎた掲載例は「掲載した受付期間は終了」に切り替わります。</p>
+  <aside class="ad-disclosure" aria-label="広告について">
+    <span class="ad-label">広告を含みます</span>
+    <p>本サイトはA8.netのアフィリエイト広告を利用しています。広告リンク経由で宿泊予約が成立した場合、運営側に紹介料が入ることがあります。出典・条件の確認方針は広告の有無で変えません。</p>
+  </aside>
+
+  <section id="recommendations" class="recommendations" aria-labelledby="recommend-title">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">EDITOR'S PICKS</p>
+        <h2 id="recommend-title">まずは、確認済みの<br>旅行オファーから。</h2>
+      </div>
+      <p>2026年9月24日確認。公式の条件確認リンクと、予約用の広告リンクを分けて掲載しています。受付期限を過ぎた掲載例は自動で「掲載した受付期間は終了」に切り替わります。</p>
     </div>
-    <div class="offer-grid">
-      <article class="offer-card">
+
+    <article class="featured-offer">
+      <div class="featured-media">
+        <img src="https://images.unsplash.com/photo-1722229808540-054073c5665b?auto=format&fit=crop&w=1500&q=82" alt="日本旅館の客室を写したイメージ写真" loading="lazy" referrerpolicy="no-referrer">
+        <p class="photo-credit">イメージ写真 / <a href="https://unsplash.com/photos/a-room-with-a-red-chair-and-a-window-Eq-5GtYJ92Y" target="_blank" rel="noopener noreferrer">Wiryan Tirtarahardja / Unsplash</a></p>
+      </div>
+      <div class="featured-content">
         <div class="offer-meta"><span class="status">公式掲載中（9月24日確認）</span><span>Yahoo!トラベル</span><span>宿泊</span></div>
+        <p class="offer-kicker">毎日の宿探しで確認したい定番施策</p>
         <h3>いつでも誰でも10％お得</h3>
-        <dl>
+        <p class="benefit"><strong>PayPayポイント<br>合計10％</strong><span>オンラインカード決済が条件</span></p>
+        <dl class="offer-facts">
           <div><dt>予約期間</dt><dd>2023年9月25日 12:00〜（終了日記載なし）</dd></div>
           <div><dt>宿泊期間</dt><dd>2023年9月26日チェックアウト〜</dd></div>
           <div><dt>主な条件</dt><dd>オンラインカード決済でPayPayポイント合計10％。一部対象外施設があり、対象外施設には公式ページ上でラベルが表示されます。</dd></div>
@@ -54,68 +104,97 @@
         <div class="offer-actions">
           <div class="affiliate-block" aria-label="広告">
             <span class="ad-label">広告</span>
-            <a href="https://px.a8.net/svt/ejp?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6" rel="nofollow">【ヤフートラベル】</a>
+            <a class="booking-cta" href="https://px.a8.net/svt/ejp?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6" rel="nofollow">Yahoo!トラベルで確認する <span aria-hidden="true">→</span></a>
             <img border="0" width="1" height="1" src="https://www13.a8.net/0.gif?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6" alt="">
           </div>
-          <a class="source-link" href="https://travel.yahoo.co.jp/feature/campaign_pointup/" target="_blank" rel="noopener noreferrer" aria-label="Yahoo!トラベル公式でいつでも誰でも10％お得の条件を確認">Yahoo!トラベル公式の条件を確認 →</a>
+          <a class="source-link" href="https://travel.yahoo.co.jp/feature/campaign_pointup/" target="_blank" rel="noopener noreferrer" aria-label="Yahoo!トラベル公式でいつでも誰でも10％お得の条件を確認">公式の条件・対象外施設を確認 →</a>
+        </div>
+      </div>
+    </article>
+
+    <div class="secondary-offers">
+      <article class="offer-compact" data-booking-end="2026-10-01T11:59:00+09:00">
+        <div class="compact-photo">
+          <img src="https://images.unsplash.com/photo-1769959220402-a2d6a252e2bf?auto=format&fit=crop&w=1500&q=82" alt="紅葉と寺院を写した日本旅行のイメージ写真" loading="lazy" referrerpolicy="no-referrer">
+          <span>宿泊</span>
+        </div>
+        <div class="compact-content">
+          <div class="offer-meta"><span class="status">公式掲載中（9月24日確認）</span><span>Yahoo!トラベル</span></div>
+          <h3>超得セール！ 旅館・リゾートスペシャル</h3>
+          <p class="compact-benefit">オンラインカード決済で<br><strong>PayPayポイント15％以上</strong></p>
+          <dl class="offer-facts compact-facts">
+            <div><dt>予約期間</dt><dd>2026年9月19日 12:00〜10月1日 11:59</dd></div>
+            <div><dt>宿泊期間</dt><dd>対象プランの予約可能期間に準ずる</dd></div>
+            <div><dt>主な条件</dt><dd>対象施設・プラン限定。通常施策や宿泊施設提供ポイントを含み、予約時に最もお得なキャンペーンが適用されます。</dd></div>
+          </dl>
+          <div class="offer-actions">
+            <div class="affiliate-block" aria-label="広告">
+              <span class="ad-label">広告</span>
+              <a class="booking-cta compact-cta" href="https://px.a8.net/svt/ejp?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6" rel="nofollow">Yahoo!トラベルで確認 <span aria-hidden="true">→</span></a>
+              <img border="0" width="1" height="1" src="https://www13.a8.net/0.gif?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6" alt="">
+            </div>
+            <a class="source-link" href="https://travel.yahoo.co.jp/notice/special/post_7/" target="_blank" rel="noopener noreferrer" aria-label="Yahoo!トラベル公式で旅館・リゾートスペシャルの期間と条件を確認">公式条件を確認 →</a>
+          </div>
         </div>
       </article>
 
-      <article class="offer-card" data-booking-end="2026-10-01T11:59:00+09:00">
-        <div class="offer-meta"><span class="status">公式掲載中（9月24日確認）</span><span>Yahoo!トラベル</span><span>宿泊</span></div>
-        <h3>超得セール！ 旅館・リゾートスペシャル</h3>
-        <dl>
-          <div><dt>予約期間</dt><dd>2026年9月19日 12:00〜10月1日 11:59</dd></div>
-          <div><dt>宿泊期間</dt><dd>対象プランの予約可能期間に準ずる</dd></div>
-          <div><dt>主な条件</dt><dd>対象施設・プラン限定。オンラインカード決済でPayPayポイント15％以上。通常施策や宿泊施設提供ポイントを含み、重複適用ではなく予約時に最もお得なキャンペーンが適用されます。</dd></div>
-        </dl>
-        <div class="offer-actions">
-          <div class="affiliate-block" aria-label="広告">
-            <span class="ad-label">広告</span>
-            <a href="https://px.a8.net/svt/ejp?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6" rel="nofollow">【ヤフートラベル】</a>
-            <img border="0" width="1" height="1" src="https://www13.a8.net/0.gif?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6" alt="">
-          </div>
-          <a class="source-link" href="https://travel.yahoo.co.jp/notice/special/post_7/" target="_blank" rel="noopener noreferrer" aria-label="Yahoo!トラベル公式で旅館・リゾートスペシャルの期間と条件を確認">Yahoo!トラベル公式の条件を確認 →</a>
+      <article class="offer-compact compact-alt" data-booking-end="2026-10-01T11:59:00+09:00">
+        <div class="compact-photo">
+          <img src="https://images.unsplash.com/photo-1759271313567-6e4ca5a6e9b4?auto=format&fit=crop&w=1500&q=82" alt="沖縄の海を写した航空旅行のイメージ写真" loading="lazy" referrerpolicy="no-referrer">
+          <span>航空＋宿</span>
         </div>
-      </article>
-
-      <article class="offer-card" data-booking-end="2026-10-01T11:59:00+09:00">
-        <div class="offer-meta"><span class="status">公式掲載中（9月24日確認）</span><span>Yahoo!トラベル</span><span>航空＋宿</span></div>
-        <h3>ヤフーパック版 超得セール！ 旅館・リゾートスペシャル</h3>
-        <dl>
-          <div><dt>予約期間</dt><dd>2026年9月19日 12:00〜10月1日 11:59</dd></div>
-          <div><dt>旅行期間</dt><dd>対象プランの予約可能期間に準ずる</dd></div>
-          <div><dt>主な条件</dt><dd>宿泊＋航空券の対象施設・プラン限定。PayPayポイント増量。増量額は予約内容により異なり、一部または全部を旅行代金からの割引で提供する場合があります。</dd></div>
-        </dl>
-        <div class="offer-actions">
-          <p class="affiliate-unavailable">航空＋宿は現在の広告成果対象外のため、公式確認リンクのみ掲載しています。</p>
-          <a class="source-link" href="https://travel.yahoo.co.jp/notice/special/post_7/" target="_blank" rel="noopener noreferrer" aria-label="Yahoo!トラベル公式でヤフーパックの旅館・リゾートスペシャル期間と条件を確認">Yahoo!トラベル公式の条件を確認 →</a>
+        <div class="compact-content">
+          <div class="offer-meta"><span class="status">公式掲載中（9月24日確認）</span><span>Yahoo!トラベル</span></div>
+          <h3>ヤフーパック版 超得セール！ 旅館・リゾートスペシャル</h3>
+          <p class="compact-benefit"><strong>PayPayポイント増量</strong><br>増量額は予約内容により異なります</p>
+          <dl class="offer-facts compact-facts">
+            <div><dt>予約期間</dt><dd>2026年9月19日 12:00〜10月1日 11:59</dd></div>
+            <div><dt>旅行期間</dt><dd>対象プランの予約可能期間に準ずる</dd></div>
+            <div><dt>主な条件</dt><dd>宿泊＋航空券の対象施設・プラン限定。一部または全部を旅行代金からの割引で提供する場合があります。</dd></div>
+          </dl>
+          <div class="offer-actions">
+            <p class="affiliate-unavailable"><strong>広告リンクなし</strong> — 航空＋宿は現在の広告成果対象外のため、公式確認リンクのみ掲載しています。</p>
+            <a class="source-link" href="https://travel.yahoo.co.jp/notice/special/post_7/" target="_blank" rel="noopener noreferrer" aria-label="Yahoo!トラベル公式でヤフーパックの旅館・リゾートスペシャル期間と条件を確認">公式条件を確認 →</a>
+          </div>
         </div>
       </article>
     </div>
+
+    <p class="recommend-note">内容は予告なく中止・延期・変更される場合があります。予約前に必ず公式ページの最新表示をご確認ください。</p>
   </section>
 
-  <section class="section split" id="policy">
-    <div><p class="eyebrow">EDITORIAL POLICY</p><h2>記事より先に、根拠を残す。</h2></div>
-    <div class="policy-list">
-      <p><strong>一次情報を優先</strong><br>公式サイト・自治体・旅行事業者など、確認可能な出典へ戻れる形を重視します。</p>
-      <p><strong>「終了」と「取得失敗」を分ける</strong><br>情報を取得できなかっただけで、キャンペーン終了と決めつけません。</p>
-      <p><strong>開催状況と在庫状況を分ける</strong><br>企画が開催中でもクーポンが売切の場合があります。別の状態として扱います。</p>
-      <p><strong>広告は広告と分かるようにする</strong><br>アフィリエイトリンクには「広告」と明示し、公式の条件確認リンクとは分けて掲載します。</p>
+  <section class="trust-section" id="policy" aria-labelledby="trust-title">
+    <div class="trust-heading">
+      <p class="eyebrow">WHY TRUST THIS PAGE</p>
+      <h2 id="trust-title">お得さより先に、<br>「根拠があるか」を確認。</h2>
+    </div>
+    <div class="trust-list">
+      <article><span>01</span><h3>一次情報を優先</h3><p>公式サイト・自治体・旅行事業者など、確認可能な出典へ戻れる形を重視します。</p></article>
+      <article><span>02</span><h3>条件を分けて表示</h3><p>予約期間と旅行期間、開催状況と在庫状況を混ぜずに扱います。</p></article>
+      <article><span>03</span><h3>広告は明示</h3><p>アフィリエイトリンクは「広告」と表示し、公式の条件確認リンクと分けます。</p></article>
+      <article><span>04</span><h3>分からないを残す</h3><p>取得失敗を終了扱いせず、不明な情報を推測で埋めません。</p></article>
     </div>
   </section>
 
-  <section class="section sources">
-    <p class="eyebrow">SOURCES</p>
-    <h2>確認対象の例</h2>
-    <p>観光庁・自治体・主要OTA・航空会社・鉄道事業者などの公開情報を対象に、利用条件と技術的な取得可否を確認しながら扱います。ログイン、CAPTCHA、アクセス制限などの回避は行いません。</p>
+  <section class="source-section" id="sources" aria-labelledby="source-title">
+    <div class="source-copy">
+      <p class="eyebrow">SOURCES</p>
+      <h2 id="source-title">確認している情報源 <small>（一部）</small></h2>
+      <p>提携先一覧ではありません。公開されている一次情報を、利用条件と技術的な取得可否を確認しながら参照します。ログイン、CAPTCHA、アクセス制限などの回避は行いません。</p>
+    </div>
+    <div class="source-names" aria-label="確認対象の例">
+      <span>観光庁</span><span>自治体</span><span>Yahoo!トラベル</span><span>航空会社</span><span>鉄道事業者</span>
+    </div>
   </section>
 </main>
+
 <footer>
-  <div><strong>旅行オファー比較 β</strong><p>国内旅行のお得情報を比較しやすく整理する試験公開メディア。</p></div>
+  <div class="footer-brand"><strong>旅行オファー比較 β</strong><p>国内旅行のお得情報を、条件と出典まで確認しやすく整理する試験公開メディア。</p></div>
   <div class="footer-links"><a href="about.html">このサイトについて</a><a href="privacy.html">プライバシー・広告掲載</a></div>
+  <p class="image-sources">掲載写真はオファー対象施設・商品そのものを示すものではないイメージ写真です。写真: Helmi Tan / Wiryan Tirtarahardja / Tyler Zhang / Spenser Sembrat / Hat Trick (Unsplash)。</p>
   <small>© 2026 Travel Offer Review Project</small>
 </footer>
+
 <script>
 // The printed deadline can expire; neither cached evidence nor this clock proves availability.
 function updateOfferDeadlines(now) {
