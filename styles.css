@@ -10,10 +10,12 @@
   --red:#d6372f;
   --max:1240px;
   --shadow:0 10px 26px rgba(15,49,41,.09);
+  --font-body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",sans-serif;
+  --font-heading:"Zen Kaku Gothic New","BIZ UDPGothic","Hiragino Sans",sans-serif;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;max-width:100%;overflow-x:clip}
-body{margin:0;max-width:100%;overflow-x:clip;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;line-height:1.65}
+body{margin:0;max-width:100%;overflow-x:clip;background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.75;letter-spacing:.01em}
 a{color:inherit}
 img{display:block;max-width:100%}
 button,a{touch-action:manipulation}
@@ -265,4 +267,39 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
   .hero-copy{padding-left:16px;padding-right:16px}
   .hero h1{font-size:38px}
   .category-rail,.offers-section,.trust-section,.sources-section,.photo-credits{padding-left:12px;padding-right:12px}
+}
+
+
+/* Typography lock: BIZ UDPGothic × Zen Kaku Gothic New */
+body,
+.offer-summary,
+.offer-facts,
+.disclosure,
+.deadline-note,
+.trust-list,
+.sources-section,
+.source-names span,
+.photo-credits,
+footer p,
+footer small,
+.page .lead,
+.text-block p,
+.updated{
+  font-family:var(--font-body);
+}
+h1,h2,h3,
+.brand-name,
+.footer-brand,
+.header-cta,
+.primary-cta,
+.secondary-cta{
+  font-family:var(--font-heading);
+  font-weight:700;
+  letter-spacing:.01em;
+}
+.eyebrow,
+.hero-kicker{
+  font-family:var(--font-heading);
+  font-weight:500;
+  letter-spacing:.06em;
 }
