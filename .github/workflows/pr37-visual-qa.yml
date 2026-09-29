@@ -1,4 +1,4 @@
-name: pr37-visual-qa
+name: pr37-visual-qa\n# final-head visual proof; remove after human approval
 
 on:
   push:
