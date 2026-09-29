@@ -140,6 +140,7 @@ button,a{touch-action:manipulation}
 .secondary-cta{background:#f3f7f5;color:var(--green-dark);border:1px solid #bfd0ca;padding:12px 16px}
 .secondary-cta:hover,.secondary-cta:focus-visible{background:var(--green-soft)}
 .secondary-cta:active{background:#dceae5;transform:translateY(1px)}
+.campaign-mobile-cta{display:none;margin-top:18px}
 .source-link{display:inline-flex;align-items:center;min-height:24px;font-size:12px;font-weight:800;color:var(--green-dark);text-underline-offset:3px}
 .source-link:hover{text-decoration-thickness:2px}
 .tracking-pixel{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
@@ -279,6 +280,7 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
   .offer-facts dt,.offer-facts dd{font-size:10px}
   .offer-actions{display:grid;grid-template-columns:1fr;gap:10px}
   .primary-cta,.secondary-cta,.a8-ad-material,.a8-ad-material a{width:100%;min-height:51px;font-size:14px}
+  .campaign-mobile-cta{display:flex}
   .source-link{text-align:center;font-size:11px}
   .secondary-offers{grid-template-columns:1fr;gap:18px}
   .offer-card.secondary{border-radius:8px;box-shadow:var(--shadow)}
