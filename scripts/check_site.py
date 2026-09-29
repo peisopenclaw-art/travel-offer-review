@@ -87,6 +87,14 @@ else:
         if sitemap.count(f"<loc>{url}</loc>") != 1:
             errors.append(f"sitemap.xml must contain exactly one URL: {url}")
 
+styles_path = ROOT / "styles.css"
+if not styles_path.is_file():
+    errors.append("missing: styles.css")
+else:
+    styles = styles_path.read_text(encoding="utf-8")
+    if "\\n" in styles:
+        errors.append("styles.css contains literal backslash-n escape; use real newlines")
+
 robots_path = ROOT / "robots.txt"
 if not robots_path.is_file():
     errors.append("missing: robots.txt")
