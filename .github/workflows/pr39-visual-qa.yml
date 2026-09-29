@@ -2,8 +2,10 @@ name: pr39-visual-qa
 # temporary pre-human visual proof; remove after human approval
 
 on:
-  push:
-    branches: [feat/yahoo-october-rollover-20260930]
+  pull_request:
+    paths:
+      - "index.html"
+      - ".github/workflows/pr39-visual-qa.yml"
   workflow_dispatch:
 
 jobs:
