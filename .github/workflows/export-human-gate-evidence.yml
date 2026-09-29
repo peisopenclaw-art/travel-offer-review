@@ -1,0 +1,21 @@
+name: Export Revenue V1 human-gate evidence
+
+on:
+  push:
+    branches:
+      - qa/revenue-v1-human-gate-20260929
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RevenueV1_PR31_human_gate_20260929
+          path: qa/human-gate-20260929/*.png
+          if-no-files-found: error
+          retention-days: 7
