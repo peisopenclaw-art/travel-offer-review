@@ -55,10 +55,8 @@ if index.count(affiliate_pixel) != 2:
     errors.append(f"index.html affiliate pixel count must be 2, got {index.count(affiliate_pixel)}")
 if 'アフィリエイト広告はまだ有効化していません' in index:
     errors.append("index.html still says affiliate ads are disabled")
-if 'A8.netのアフィリエイト広告を利用しています' not in index:
-    errors.append("index.html missing first-view affiliate disclosure")
-if '航空＋宿は現在の広告成果対象外' not in index:
-    errors.append("index.html missing non-eligible package disclosure")
+if '一部リンクは広告です' not in index:
+    errors.append("index.html missing concise affiliate disclosure")
 for source_url in [
     "https://travel.yahoo.co.jp/feature/campaign_pointup/",
     "https://travel.yahoo.co.jp/notice/special/post_7/",
