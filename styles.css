@@ -56,7 +56,7 @@ footer p{
   white-space:nowrap;
   max-width:100%;
 }
-.hero-title-line{display:block}
+.hero-title-line,.campaign-title-line{display:block}
 button,a{touch-action:manipulation}
 .skip-link{position:absolute;left:16px;top:-60px;z-index:100;background:var(--ink);color:#fff;padding:10px 14px;text-decoration:none}
 .skip-link:focus{top:10px}
@@ -299,13 +299,13 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
   .source-names span,.source-names span:first-child{padding:9px 5px;border-left:0;border-bottom:1px solid var(--line);font-size:11px}
   .photo-credits{padding:17px 14px 38px;font-size:9px}
   .page{padding:56px 18px 72px}
-  .page h1{font-size:40px}
+  .page h1{font-size:40px}\n  .campaign-page h1{font-size:36px;line-height:1.22}
   .page .lead{font-size:15px}
   footer{grid-template-columns:1fr;padding:28px 18px}
   footer small{grid-column:1}
 }
 
-@media(max-width:380px){
+@media(max-width:380px){\n  .campaign-page h1{font-size:34px}
   .site-header{padding:0 12px}
   .brand-name{font-size:17px}
   .header-cta{padding:8px 9px}
