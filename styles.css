@@ -18,6 +18,43 @@ html{scroll-behavior:smooth;max-width:100%;overflow-x:clip}
 body{margin:0;max-width:100%;overflow-x:clip;background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.75;letter-spacing:.01em}
 a{color:inherit}
 img{display:block;max-width:100%}
+
+/* Japanese copy: prefer natural phrase boundaries over character-count wrapping. */
+.hero-lead,
+.section-intro h2,
+.offer-card h3,
+.offer-summary,
+.section-intro>p:last-child,
+.disclosure,
+.deadline-note,
+.trust-list p,
+.sources-section p,
+.photo-credits p,
+footer p{
+  word-break:normal;
+  overflow-wrap:normal;
+  text-wrap:pretty;
+}
+@supports (word-break:auto-phrase){
+  .hero-lead,
+  .section-intro h2,
+  .offer-card h3,
+  .offer-summary,
+  .section-intro>p:last-child,
+  .disclosure,
+  .deadline-note,
+  .trust-list p,
+  .sources-section p,
+  .photo-credits p,
+  footer p{
+    word-break:auto-phrase;
+  }
+}
+.semantic-phrase{
+  display:inline-block;
+  white-space:nowrap;
+  max-width:100%;
+}
 button,a{touch-action:manipulation}
 .skip-link{position:absolute;left:16px;top:-60px;z-index:100;background:var(--ink);color:#fff;padding:10px 14px;text-decoration:none}
 .skip-link:focus{top:10px}
@@ -214,7 +251,7 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
   .category-card p{font-size:9px;margin-top:2px}
   .offers-section{padding:48px 14px 38px}
   .offers-heading{margin-bottom:18px}
-  .section-intro h2{font-size:28px;overflow-wrap:anywhere}
+  .section-intro h2{font-size:28px;overflow-wrap:normal}
   .section-intro>p:last-child{font-size:12px}
   .disclosure{font-size:10px;padding-left:11px}
   .offer-layout{gap:18px}
@@ -225,7 +262,7 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
   .offer-meta span{font-size:9px}
   .offer-label{font-size:9px;margin-top:18px}
   .offer-card{min-width:0}
-  .offer-card h3{font-size:25px;margin:7px 0 9px;overflow-wrap:anywhere}
+  .offer-card h3{font-size:25px;margin:7px 0 9px;overflow-wrap:normal}
   .offer-summary{font-size:12px}
   .offer-facts{margin:15px 0 17px}
   .offer-facts div{grid-template-columns:66px 1fr;gap:10px;padding:9px 0}
@@ -237,7 +274,7 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
   .offer-card.secondary{border-radius:8px;box-shadow:var(--shadow)}
   .offer-card.secondary .offer-media{height:190px}
   .offer-card.secondary .offer-body{padding:17px}
-  .offer-card.secondary h3{font-size:20px;overflow-wrap:anywhere}
+  .offer-card.secondary h3{font-size:20px;overflow-wrap:normal}
   .offer-card.secondary .primary-cta,.offer-card.secondary .secondary-cta{min-height:48px;font-size:13px}
   .deadline-note{font-size:9px}
   .trust-section{padding:38px 14px}
