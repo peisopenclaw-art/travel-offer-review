@@ -1,0 +1,44 @@
+name: Capture semantic line-break QA
+
+on:
+  push:
+    branches:
+      - qa/semantic-line-breaks-20260929
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for production deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            if curl -fsSL https://travel.tokuerabi.com/ | grep -q 'styles.css?v=20260929-semantic-wrap-v1'; then
+              echo "Production is updated"
+              exit 0
+            fi
+            echo "Waiting for production... $i/30"
+            sleep 10
+          done
+          echo "Production did not update in time" >&2
+          exit 1
+      - name: Install Playwright Chromium
+        run: npx -y playwright@1.55.0 install --with-deps chromium
+      - name: Capture 3 widths
+        shell: bash
+        run: |
+          mkdir -p qa/semantic-wrap
+          npx -y playwright@1.55.0 screenshot --browser=chromium --viewport-size="1440,1200" --full-page https://travel.tokuerabi.com/ qa/semantic-wrap/semantic-wrap-1440.png
+          npx -y playwright@1.55.0 screenshot --browser=chromium --viewport-size="390,844" --full-page https://travel.tokuerabi.com/ qa/semantic-wrap/semantic-wrap-390.png
+          npx -y playwright@1.55.0 screenshot --browser=chromium --viewport-size="375,812" --full-page https://travel.tokuerabi.com/ qa/semantic-wrap/semantic-wrap-375.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: semantic-wrap-qa-20260929
+          path: qa/semantic-wrap/*.png
+          if-no-files-found: error
+          retention-days: 7
