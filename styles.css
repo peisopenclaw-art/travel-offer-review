@@ -253,6 +253,7 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
   .offers-section{padding:48px 14px 38px}
   .offers-heading{margin-bottom:18px}
   .section-intro h2{font-size:28px;overflow-wrap:normal}
+  .section-intro h2>.semantic-phrase{display:block;white-space:nowrap}
   .section-intro>p:last-child{font-size:12px}
   .disclosure{font-size:10px;padding-left:11px}
   .offer-layout{gap:18px}
