@@ -38,7 +38,7 @@ jobs:
       - name: Capture 1440 / 390 / 375 and inspect layout
         run: |
           mkdir -p qa-artifact
-          cat > /tmp/capture.mjs <<'EOF'
+          cat > capture.mjs <<'EOF'
           import { chromium } from 'playwright';
           import fs from 'fs';
 
@@ -113,7 +113,7 @@ jobs:
           fs.writeFileSync('qa-artifact/qa.json', JSON.stringify(results, null, 2));
           if (results.some(x => x.overflowX)) process.exitCode = 2;
           EOF
-          node /tmp/capture.mjs
+          node capture.mjs
 
       - name: Upload UI QA evidence
         if: always()
