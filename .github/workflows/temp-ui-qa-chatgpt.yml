@@ -175,10 +175,19 @@ jobs:
 
             const targetSizes = await page.evaluate(() => [...document.querySelectorAll('a[href],button')].map(el => {
               const r = el.getBoundingClientRect();
-              return {text:(el.textContent||'').trim().replace(/\s+/g,' '), w:Math.round(r.width), h:Math.round(r.height)};
+              const cs = getComputedStyle(el);
+              const hidden = r.width === 0 || r.height === 0 || cs.display === 'none' || cs.visibility === 'hidden';
+              const inlineException = !!el.closest('.photo-credits p');
+              return {
+                text:(el.textContent||'').trim().replace(/\s+/g,' '),
+                className:String(el.className || ''),
+                w:Math.round(r.width),
+                h:Math.round(r.height),
+                exempt:hidden || inlineException
+              };
             }));
             data.targetSizes = targetSizes;
-            data.targetSizeFailures = targetSizes.filter(x => x.w < 24 || x.h < 24);
+            data.targetSizeFailures = targetSizes.filter(x => !x.exempt && (x.w < 24 || x.h < 24));
 
             await page.evaluate(() => {
               document.documentElement.style.fontSize = '200%';
