@@ -5,12 +5,13 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 SELF = Path(__file__).resolve()
-HTML = [ROOT / "index.html", ROOT / "about.html", ROOT / "privacy.html"]
+HTML = [ROOT / "index.html", ROOT / "about.html", ROOT / "privacy.html", ROOT / "yahoo-travel-campaign.html"]
 PUBLIC_ORIGIN = "https://travel.tokuerabi.com"
 CANONICALS = {
     "index.html": f"{PUBLIC_ORIGIN}/",
     "about.html": f"{PUBLIC_ORIGIN}/about.html",
     "privacy.html": f"{PUBLIC_ORIGIN}/privacy.html",
+    "yahoo-travel-campaign.html": f"{PUBLIC_ORIGIN}/yahoo-travel-campaign.html",
 }
 
 class Parser(HTMLParser):
