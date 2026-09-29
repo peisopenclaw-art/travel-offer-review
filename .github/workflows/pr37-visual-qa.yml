@@ -109,7 +109,7 @@ jobs:
               failures = []
               for r in results:
                   if r["http_status"] != 200: failures.append(f'{r["viewport"]}: http {r["http_status"]}')
-                  if "Yahoo!トラベルの セール予定・キャンペーン" not in " ".join(r["h1"].split()): failures.append(f'{r["viewport"]}: identity h1')
+                  if "Yahoo!トラベルのセール予定・キャンペーン" not in "".join(r["h1"].split()): failures.append(f'{r["viewport"]}: identity h1')
                   if r["overflow"]: failures.append(f'{r["viewport"]}: horizontal overflow')
                   if r["font_status"] != "loaded" or not all(r["font_checks"].values()): failures.append(f'{r["viewport"]}: web font')
                   if r["page_errors"] or r["console_errors"]: failures.append(f'{r["viewport"]}: browser errors')
