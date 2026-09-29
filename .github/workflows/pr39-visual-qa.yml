@@ -83,14 +83,20 @@ jobs:
                       await control.focus()
                       focus_visible = await control.evaluate("el => el.matches(':focus-visible')")
                       await control.hover()
-                      hover_bg = await control.evaluate("el => getComputedStyle(el).backgroundColor")
+                      hover_state = await control.evaluate("""el => {
+                        const s = getComputedStyle(el);
+                        return {background:s.backgroundColor, transform:s.transform, boxShadow:s.boxShadow};
+                      }""")
                       box = await control.bounding_box()
-                      active_bg = None
+                      active_state = None
                       if box:
                           await page.mouse.move(box["x"] + box["width"]/2, box["y"] + box["height"]/2)
                           await page.mouse.down()
                           await page.wait_for_timeout(250)
-                          active_bg = await control.evaluate("el => getComputedStyle(el).backgroundColor")
+                          active_state = await control.evaluate("""el => {
+                            const s = getComputedStyle(el);
+                            return {background:s.backgroundColor, transform:s.transform, boxShadow:s.boxShadow};
+                          }""")
                           await page.mouse.move(1, 1)
                           await page.mouse.up()
                           await page.wait_for_timeout(100)
@@ -113,8 +119,8 @@ jobs:
                         "console_errors": console_errors,
                         "target_failures": target_failures,
                         "focus_visible": focus_visible,
-                        "hover_background": hover_bg,
-                        "active_background": active_bg,
+                        "hover_state": hover_state,
+                        "active_state": active_state,
                         "a8_anchor_navigation_requests": outbound_a8,
                         "screenshot": str(shot),
                       })
@@ -130,8 +136,9 @@ jobs:
                   if r["page_errors"] or r["console_errors"]: failures.append(f'{r["viewport"]}: browser errors')
                   if r["statuses_now"] != ["掲載中", "開始予定"]: failures.append(f'{r["viewport"]}: current status mismatch {r["statuses_now"]}')
                   if r["statuses_at_2026_10_01_1201"] != ["掲載した受付期間は終了", "掲載中"]: failures.append(f'{r["viewport"]}: rollover status mismatch {r["statuses_at_2026_10_01_1201"]}')
+                  if r["target_failures"]: failures.append(f'{r["viewport"]}: touch target failures {r["target_failures"]}')
                   if not r["focus_visible"]: failures.append(f'{r["viewport"]}: focus-visible')
-                  if r["active_background"] == r["hover_background"]: failures.append(f'{r["viewport"]}: active state not distinct from hover')
+                  if not r["active_state"] or r["active_state"] == r["hover_state"]: failures.append(f'{r["viewport"]}: active state not distinct from hover')
                   if r["a8_anchor_navigation_requests"]: failures.append(f'{r["viewport"]}: A8 anchor navigation occurred')
               if failures:
                   raise SystemExit("\n".join(failures))
