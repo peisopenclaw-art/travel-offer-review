@@ -53,6 +53,14 @@ if index.count(affiliate_href) != 2:
     errors.append(f"index.html affiliate href count must be 2, got {index.count(affiliate_href)}")
 if index.count(affiliate_pixel) != 2:
     errors.append(f"index.html affiliate pixel count must be 2, got {index.count(affiliate_pixel)}")
+official_affiliate_material = f'''<a href="{affiliate_href}" rel="nofollow">【ヤフートラベル】</a>\n              <img border="0" width="1" height="1" src="{affiliate_pixel}" alt="">'''
+official_affiliate_material_feature = f'''<a href="{affiliate_href}" rel="nofollow">【ヤフートラベル】</a>\n              <img border="0" width="1" height="1" src="{affiliate_pixel}" alt="">'''
+if index.count('<a href="' + affiliate_href + '" rel="nofollow">【ヤフートラベル】</a>') != 2:
+    errors.append("index.html must keep the A8-generated Yahoo! Travel text anchor exactly twice")
+if index.count('<img border="0" width="1" height="1" src="' + affiliate_pixel + '" alt="">') != 2:
+    errors.append("index.html must keep the A8-generated tracking pixel markup exactly twice")
+if f'class="primary-cta" href="{affiliate_href}"' in index or "Yahoo!トラベルで見る" in index:
+    errors.append("index.html must not customize the A8-generated Yahoo! Travel ad material")
 if 'アフィリエイト広告はまだ有効化していません' in index:
     errors.append("index.html still says affiliate ads are disabled")
 if '一部リンクは広告です' not in index:

@@ -131,9 +131,14 @@ button,a{touch-action:manipulation}
 .primary-cta small{font-size:9px;border:1px solid rgba(255,255,255,.62);padding:1px 4px;border-radius:2px}
 .primary-cta:hover,.primary-cta:focus-visible{background:var(--green-dark);box-shadow:0 6px 16px rgba(0,75,63,.22);transform:translateY(-1px)}
 .primary-cta:active{transform:translateY(0);box-shadow:none}
+.a8-ad-material{position:relative;display:inline-flex;min-height:48px}
+.a8-ad-material a{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 18px;border-radius:5px;background:var(--green);color:#fff;text-decoration:none;font-family:var(--font-heading);font-weight:700;letter-spacing:.01em;box-shadow:0 4px 12px rgba(0,107,89,.14);transition:background .18s ease,transform .18s ease,box-shadow .18s ease}
+.a8-ad-material a:hover,.a8-ad-material a:focus-visible{background:var(--green-dark);box-shadow:0 6px 16px rgba(0,75,63,.22);transform:translateY(-1px)}
+.a8-ad-material a:active{transform:translateY(0);box-shadow:none}
+.a8-ad-material>img{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .secondary-cta{background:#f3f7f5;color:var(--green-dark);border:1px solid #bfd0ca;padding:12px 16px}
 .secondary-cta:hover,.secondary-cta:focus-visible{background:var(--green-soft)}
-.source-link{font-size:12px;font-weight:800;color:var(--green-dark);text-underline-offset:3px}
+.source-link{display:inline-flex;align-items:center;min-height:24px;font-size:12px;font-weight:800;color:var(--green-dark);text-underline-offset:3px}
 .source-link:hover{text-decoration-thickness:2px}
 .tracking-pixel{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 
@@ -146,7 +151,8 @@ button,a{touch-action:manipulation}
 .offer-card.secondary .offer-facts{margin:12px 0 14px}
 .offer-card.secondary .offer-facts div{grid-template-columns:62px 1fr;padding:7px 0}
 .offer-card.secondary .offer-actions{gap:12px}
-.offer-card.secondary .primary-cta,.offer-card.secondary .secondary-cta{min-height:42px;padding:9px 12px;font-size:12px}
+.offer-card.secondary .primary-cta,.offer-card.secondary .secondary-cta,.offer-card.secondary .a8-ad-material,.offer-card.secondary .a8-ad-material a{min-height:42px;font-size:12px}
+.offer-card.secondary .a8-ad-material a{padding:9px 12px}
 .deadline-note{margin:16px 0 0;color:#64716d;font-size:11px;line-height:1.7}
 
 .trust-section{padding:56px 24px;border-top:1px solid var(--line)}
@@ -176,7 +182,7 @@ footer p,footer small{color:#bfd1cb;font-size:11px}
 footer p{margin:6px 0 0}
 footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding-top:14px}
 .footer-links{display:flex;gap:18px;flex-wrap:wrap}
-.footer-links a{font-size:12px;text-decoration:none;color:#e6f0ed}
+.footer-links a{display:inline-flex;align-items:center;min-height:24px;font-size:12px;text-decoration:none;color:#e6f0ed}
 .footer-links a:hover{text-decoration:underline;text-underline-offset:3px}
 
 /* Secondary pages */
@@ -189,7 +195,7 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
 .text-block p{margin:0;color:#46554f}
 .updated{font-size:12px;color:var(--muted)}
 
-:focus-visible{outline:3px solid #f2b740;outline-offset:3px}
+:focus-visible{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 5px var(--green)}
 
 @media(max-width:1080px){
   .desktop-nav{gap:15px}
@@ -270,14 +276,14 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
   .offer-facts div{grid-template-columns:66px 1fr;gap:10px;padding:9px 0}
   .offer-facts dt,.offer-facts dd{font-size:10px}
   .offer-actions{display:grid;grid-template-columns:1fr;gap:10px}
-  .primary-cta,.secondary-cta{width:100%;min-height:51px;font-size:14px}
+  .primary-cta,.secondary-cta,.a8-ad-material,.a8-ad-material a{width:100%;min-height:51px;font-size:14px}
   .source-link{text-align:center;font-size:11px}
   .secondary-offers{grid-template-columns:1fr;gap:18px}
   .offer-card.secondary{border-radius:8px;box-shadow:var(--shadow)}
   .offer-card.secondary .offer-media{height:190px}
   .offer-card.secondary .offer-body{padding:17px}
   .offer-card.secondary h3{font-size:20px;overflow-wrap:normal}
-  .offer-card.secondary .primary-cta,.offer-card.secondary .secondary-cta{min-height:48px;font-size:13px}
+  .offer-card.secondary .primary-cta,.offer-card.secondary .secondary-cta,.offer-card.secondary .a8-ad-material,.offer-card.secondary .a8-ad-material a{min-height:48px;font-size:13px}
   .deadline-note{font-size:9px}
   .trust-section{padding:38px 14px}
   .trust-section .section-intro{margin-bottom:18px}
