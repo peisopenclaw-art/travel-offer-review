@@ -68,7 +68,7 @@ jobs:
                         const r = el.getBoundingClientRect();
                         return r.width > 0 && r.height > 0 && (r.width < 24 || r.height < 24);
                       }).map(el => ({text:(el.textContent||'').trim(), width:el.getBoundingClientRect().width, height:el.getBoundingClientRect().height}))""")
-                      focus = page.locator(".secondary-cta")
+                      focus = page.locator(".secondary-cta:not(.campaign-mobile-cta)")
                       await focus.focus()
                       focus_visible = await focus.evaluate("el => el.matches(':focus-visible')")
                       await focus.hover()
@@ -114,6 +114,7 @@ jobs:
                   if r["font_status"] != "loaded" or not all(r["font_checks"].values()): failures.append(f'{r["viewport"]}: web font')
                   if r["page_errors"] or r["console_errors"]: failures.append(f'{r["viewport"]}: browser errors')
                   if not r["focus_visible"]: failures.append(f'{r["viewport"]}: focus-visible')
+                  if r["active_background"] == r["hover_background"]: failures.append(f'{r["viewport"]}: active state not distinct from hover')
               if failures:
                   raise SystemExit("\n".join(failures))
               print("visual mechanical QA: PASS")
