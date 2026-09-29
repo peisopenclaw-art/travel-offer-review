@@ -137,7 +137,7 @@ button,a{touch-action:manipulation}
 .a8-ad-material a:active{transform:translateY(0);box-shadow:none}
 .a8-ad-material>img{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .secondary-cta{background:#f3f7f5;color:var(--green-dark);border:1px solid #bfd0ca;padding:12px 16px}
-.secondary-cta:hover,.secondary-cta:focus-visible{background:var(--green-soft)}
+.secondary-cta:hover,.secondary-cta:focus-visible{background:var(--green-soft)}\n.secondary-cta:active{background:#dceae5;transform:translateY(1px)}
 .source-link{display:inline-flex;align-items:center;min-height:24px;font-size:12px;font-weight:800;color:var(--green-dark);text-underline-offset:3px}
 .source-link:hover{text-decoration-thickness:2px}
 .tracking-pixel{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
