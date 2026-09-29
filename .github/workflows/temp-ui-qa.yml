@@ -110,8 +110,8 @@ jobs:
                 clientWidth: document.documentElement.clientWidth,
                 overflowX: document.documentElement.scrollWidth > document.documentElement.clientWidth,
                 fonts: {
-                  shippori: document.fonts.check('16px "Shippori Mincho"'),
-                  zenKaku: document.fonts.check('16px "Zen Kaku Gothic New"')
+                  shippori: document.fonts.check('700 16px "Shippori Mincho"'),
+                  zenKaku: document.fonts.check('700 16px "Zen Kaku Gothic New"')
                 },
                 items
               };
