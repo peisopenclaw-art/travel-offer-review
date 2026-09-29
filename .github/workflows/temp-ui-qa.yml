@@ -1,0 +1,125 @@
+name: temp-ui-qa
+
+on:
+  push:
+    branches:
+      - fix/a8-exact-ad-material
+
+permissions:
+  contents: read
+
+jobs:
+  ui-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Static checks
+        run: python3 scripts/check_site.py
+
+      - name: Install browser tooling
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run local preview
+        run: |
+          python3 -m http.server 8000 --bind 127.0.0.1 > /tmp/travel-ui-http.log 2>&1 &
+          echo $! > /tmp/travel-ui-http.pid
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:8000/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/travel-ui-http.log
+          exit 1
+
+      - name: Capture 1440 / 390 / 375 and inspect layout
+        run: |
+          mkdir -p qa-artifact
+          cat > /tmp/capture.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          import fs from 'fs';
+
+          const widths = [1440, 390, 375];
+          const results = [];
+          const browser = await chromium.launch({headless: true});
+
+          for (const width of widths) {
+            const page = await browser.newPage({ viewport: { width, height: width === 1440 ? 1000 : 844 }, deviceScaleFactor: 1 });
+            await page.goto('http://127.0.0.1:8000/', { waitUntil: 'networkidle' });
+            await page.evaluate(async () => { if (document.fonts?.ready) await document.fonts.ready; });
+            await page.waitForTimeout(1500);
+
+            const data = await page.evaluate(() => {
+              const selectors = 'h1,h2,h3,.a8-ad-material a,.secondary-cta,.source-link';
+              const elements = [...document.querySelectorAll(selectors)];
+              function lineRects(el) {
+                const range = document.createRange();
+                range.selectNodeContents(el);
+                const rects = [...range.getClientRects()]
+                  .filter(r => r.width > 1 && r.height > 1)
+                  .map(r => ({x:Math.round(r.x), y:Math.round(r.y), w:Math.round(r.width), h:Math.round(r.height)}));
+                const ys = [...new Set(rects.map(r => r.y))];
+                return { rects, lineCount: ys.length };
+              }
+              const items = elements.map(el => {
+                const r = el.getBoundingClientRect();
+                const s = getComputedStyle(el);
+                return {
+                  tag: el.tagName,
+                  className: el.className,
+                  text: el.textContent.trim().replace(/\s+/g,' '),
+                  box: {x:Math.round(r.x), y:Math.round(r.y), w:Math.round(r.width), h:Math.round(r.height)},
+                  fontFamily: s.fontFamily,
+                  fontSize: s.fontSize,
+                  lineHeight: s.lineHeight,
+                  ...lineRects(el)
+                };
+              });
+              return {
+                viewport: {w: innerWidth, h: innerHeight},
+                scrollWidth: document.documentElement.scrollWidth,
+                clientWidth: document.documentElement.clientWidth,
+                bodyScrollWidth: document.body.scrollWidth,
+                overflowX: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+                items
+              };
+            });
+
+            await page.keyboard.press('Tab');
+            const focus = await page.evaluate(() => {
+              const el = document.activeElement;
+              const s = getComputedStyle(el);
+              return {
+                tag: el?.tagName,
+                className: el?.className,
+                text: el?.textContent?.trim().replace(/\s+/g,' '),
+                outlineStyle: s.outlineStyle,
+                outlineWidth: s.outlineWidth,
+                outlineColor: s.outlineColor,
+                boxShadow: s.boxShadow
+              };
+            });
+
+            data.focusAfterTab = focus;
+            results.push(data);
+            await page.screenshot({ path: `qa-artifact/pr35-${width}.png`, fullPage: true });
+            await page.close();
+          }
+
+          await browser.close();
+          fs.writeFileSync('qa-artifact/qa.json', JSON.stringify(results, null, 2));
+          if (results.some(x => x.overflowX)) process.exitCode = 2;
+          EOF
+          node /tmp/capture.mjs
+
+      - name: Upload UI QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr35-ui-qa
+          path: qa-artifact/
+          if-no-files-found: error
+          retention-days: 7
