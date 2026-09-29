@@ -1,0 +1,40 @@
+name: Capture Shippori Mincho QA
+
+on:
+  push:
+    branches:
+      - qa/shippori-mincho-20260929
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright Chromium
+        run: npx -y playwright@1.55.0 install --with-deps chromium
+      - name: Serve branch preview
+        shell: bash
+        run: |
+          python3 -m http.server 8000 >/tmp/http.log 2>&1 &
+          for i in $(seq 1 20); do
+            curl -fsS http://127.0.0.1:8000/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/http.log
+          exit 1
+      - name: Capture 3 widths
+        shell: bash
+        run: |
+          mkdir -p qa/shippori
+          npx -y playwright@1.55.0 screenshot --browser=chromium --viewport-size="1440,1200" --full-page http://127.0.0.1:8000/ qa/shippori/shippori-1440.png
+          npx -y playwright@1.55.0 screenshot --browser=chromium --viewport-size="390,844" --full-page http://127.0.0.1:8000/ qa/shippori/shippori-390.png
+          npx -y playwright@1.55.0 screenshot --browser=chromium --viewport-size="375,812" --full-page http://127.0.0.1:8000/ qa/shippori/shippori-375.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shippori-mincho-qa-20260929
+          path: qa/shippori/*.png
+          if-no-files-found: error
+          retention-days: 7
