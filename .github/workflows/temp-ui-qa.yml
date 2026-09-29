@@ -124,6 +124,7 @@ jobs:
               await page.screenshot({ path: `qa-artifact/pr35-${width}.png`, fullPage: true });
             }
 
+            await page.evaluate(() => document.addEventListener('click', e => e.preventDefault(), true));
             const firstA8 = page.locator('.a8-ad-material a').first();
             if (await firstA8.count()) {
               const normal = await firstA8.evaluate(el => {
@@ -161,6 +162,7 @@ jobs:
             });
 
             results.push(data);
+            fs.writeFileSync('qa-artifact/qa.json', JSON.stringify(results, null, 2));
             await page.close();
           }
 
