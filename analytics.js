@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  var meta = document.querySelector('meta[name="ga4-measurement-id"]');
-  var measurementId = meta ? meta.getAttribute("content").trim() : "";
+  var config = window.TRAVEL_ANALYTICS_CONFIG || {};
+  var measurementId = String(config.ga4MeasurementId || "").trim();
   var validMeasurementId = /^G-[A-Z0-9]+$/.test(measurementId);
 
   window.travelAnalytics = {
