@@ -18,7 +18,7 @@ jobs:
         run: |
           set -euo pipefail
           for i in $(seq 1 30); do
-            if curl -fsSL https://travel.tokuerabi.com/ | grep -q 'styles.css?v=20260929-semantic-wrap-v1'; then
+            if curl -fsSL https://travel.tokuerabi.com/ | grep -q 'styles.css?v=20260929-semantic-wrap-v2'; then
               echo "Production is updated"
               exit 0
             fi
@@ -38,7 +38,7 @@ jobs:
           npx -y playwright@1.55.0 screenshot --browser=chromium --viewport-size="375,812" --full-page https://travel.tokuerabi.com/ qa/semantic-wrap/semantic-wrap-375.png
       - uses: actions/upload-artifact@v4
         with:
-          name: semantic-wrap-qa-20260929
+          name: semantic-wrap-v2-qa-20260929
           path: qa/semantic-wrap/*.png
           if-no-files-found: error
           retention-days: 7
