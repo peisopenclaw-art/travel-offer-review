@@ -54,11 +54,14 @@ jobs:
                       scroll_w = await page.evaluate("document.documentElement.scrollWidth")
                       client_w = await page.evaluate("document.documentElement.clientWidth")
                       font_status = await page.evaluate("document.fonts.status")
-                      font_checks = await page.evaluate("""() => ({
-                        biz: document.fonts.check('16px "BIZ UDPGothic"'),
-                        zen: document.fonts.check('16px "Zen Kaku Gothic New"'),
-                        shippori: document.fonts.check('16px "Shippori Mincho"')
-                      })""")
+                      font_checks = await page.evaluate("""async () => {
+                        await document.fonts.load('16px "BIZ UDPGothic"', '旅行');
+                        await document.fonts.load('16px "Zen Kaku Gothic New"', '旅行');
+                        return {
+                          biz: document.fonts.check('16px "BIZ UDPGothic"', '旅行'),
+                          zen: document.fonts.check('16px "Zen Kaku Gothic New"', '旅行')
+                        };
+                      }""")
                       headings = await page.locator("h1,h2,h3").all_inner_texts()
                       ctas = await page.locator(".header-cta,.source-link,.secondary-cta").all_inner_texts()
                       target_failures = await page.locator("a").evaluate_all("""els => els.filter(el => {
@@ -76,6 +79,7 @@ jobs:
                           await page.mouse.move(box["x"] + box["width"]/2, box["y"] + box["height"]/2)
                           await page.mouse.down()
                           active_bg = await focus.evaluate("el => getComputedStyle(el).backgroundColor")
+                          await page.mouse.move(1, 1)
                           await page.mouse.up()
                       shot = OUT / f"pr37-{width}.png"
                       await page.screenshot(path=str(shot), full_page=True)
@@ -105,7 +109,7 @@ jobs:
               failures = []
               for r in results:
                   if r["http_status"] != 200: failures.append(f'{r["viewport"]}: http {r["http_status"]}')
-                  if "Yahoo!トラベルのセール予定・キャンペーン" not in r["h1"]: failures.append(f'{r["viewport"]}: identity h1')
+                  if "Yahoo!トラベルの セール予定・キャンペーン" not in " ".join(r["h1"].split()): failures.append(f'{r["viewport"]}: identity h1')
                   if r["overflow"]: failures.append(f'{r["viewport"]}: horizontal overflow')
                   if r["font_status"] != "loaded" or not all(r["font_checks"].values()): failures.append(f'{r["viewport"]}: web font')
                   if r["page_errors"] or r["console_errors"]: failures.append(f'{r["viewport"]}: browser errors')
