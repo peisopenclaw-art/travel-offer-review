@@ -2,6 +2,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 import re
 import sys
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 SELF = Path(__file__).resolve()
@@ -78,6 +79,10 @@ if not sitemap_path.is_file():
     errors.append("missing: sitemap.xml")
 else:
     sitemap = sitemap_path.read_text(encoding="utf-8")
+    try:
+        ET.fromstring(sitemap)
+    except ET.ParseError as exc:
+        errors.append(f"sitemap.xml parse failed: {exc}")
     for url in CANONICALS.values():
         if sitemap.count(f"<loc>{url}</loc>") != 1:
             errors.append(f"sitemap.xml must contain exactly one URL: {url}")
