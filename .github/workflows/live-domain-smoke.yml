@@ -65,7 +65,7 @@ jobs:
                   clientWidth: document.documentElement.clientWidth,
                   scrollWidth: document.documentElement.scrollWidth,
                   overflowCount: overflow.length,
-                  affiliateCtaCount: document.querySelectorAll('.affiliate-block a').length,
+                  affiliateCtaCount: document.querySelectorAll('.a8-ad-material a').length,
                   offerCardCount: document.querySelectorAll('.offer-card').length,
                 };
               });
