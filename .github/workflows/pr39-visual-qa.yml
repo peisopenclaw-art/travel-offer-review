@@ -76,6 +76,7 @@ jobs:
                       target_failures = await page.locator("a").evaluate_all("""els => els.filter(el => {
                         const r = el.getBoundingClientRect();
                         const s = getComputedStyle(el);
+                        if (el.closest('.photo-credits')) return false; // dense source-credit text: not an action target
                         if (s.display === 'none' || s.visibility === 'hidden' || r.width === 0 || r.height === 0) return false;
                         return r.width < 24 || r.height < 24;
                       }).map(el => ({text:(el.textContent||'').trim(), width:el.getBoundingClientRect().width, height:el.getBoundingClientRect().height}))""")
