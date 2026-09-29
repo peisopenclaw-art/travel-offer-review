@@ -55,6 +55,7 @@ footer p{
   white-space:nowrap;
   max-width:100%;
 }
+.hero-title-line{display:block}
 button,a{touch-action:manipulation}
 .skip-link{position:absolute;left:16px;top:-60px;z-index:100;background:var(--ink);color:#fff;padding:10px 14px;text-decoration:none}
 .skip-link:focus{top:10px}
