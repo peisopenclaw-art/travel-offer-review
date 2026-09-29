@@ -42,10 +42,55 @@ for path in HTML:
         if f'<meta property="{prop}"' not in text:
             errors.append(f"{path.name}: missing {prop}")
 
+    for script_name in ["analytics-config.js", "analytics.js"]:
+        expected_script = f'<script src="{script_name}" defer></script>'
+        if expected_script not in text:
+            errors.append(f"{path.name}: missing analytics script: {script_name}")
+
+analytics_path = ROOT / "analytics.js"
+analytics_config_path = ROOT / "analytics-config.js"
+if not analytics_path.is_file():
+    errors.append("missing: analytics.js")
+if not analytics_config_path.is_file():
+    errors.append("missing: analytics-config.js")
+else:
+    analytics_config = analytics_config_path.read_text(encoding="utf-8")
+    match = re.search(r'ga4MeasurementId:\s*"([^"]*)"', analytics_config)
+    if not match:
+        errors.append("analytics-config.js missing ga4MeasurementId")
+    else:
+        measurement_id = match.group(1)
+        if not re.fullmatch(r"G-[A-Z0-9]+", measurement_id):
+            errors.append("analytics-config.js must contain an active GA4 measurement ID before release")
+
+if analytics_path.is_file():
+    analytics = analytics_path.read_text(encoding="utf-8")
+    for required_event in ["offer_view", "offer_outbound_click"]:
+        if f'"{required_event}"' not in analytics:
+            errors.append(f"analytics.js missing event: {required_event}")
+    for forbidden_param in ["email", "phone", "name"]:
+        if re.search(rf'\b{forbidden_param}\b\s*:', analytics):
+            errors.append(f"analytics.js must not send direct PII field: {forbidden_param}")
+
 index = (ROOT / "index.html").read_text(encoding="utf-8")
 for required in ["旅行オファー比較", "一次情報", "広告"]:
     if required not in index:
         errors.append(f"index.html missing required text: {required}")
+
+required_offer_ids = [
+    "yahoo-always-10",
+    "yahoo-ryokan-resort-sale",
+    "yahoo-package-ryokan-resort-sale",
+]
+for offer_id in required_offer_ids:
+    if index.count(f'data-offer-id="{offer_id}"') != 1:
+        errors.append(f"index.html must contain exactly one analytics offer id: {offer_id}")
+if index.count('data-offer-placement="') != 3:
+    errors.append("index.html must identify exactly 3 offer placements")
+
+privacy = (ROOT / "privacy.html").read_text(encoding="utf-8")
+if "Google Analytics 4" not in privacy:
+    errors.append("privacy.html missing analytics disclosure")
 
 affiliate_href = "https://px.a8.net/svt/ejp?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6"
 affiliate_pixel = "https://www13.a8.net/0.gif?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6"
