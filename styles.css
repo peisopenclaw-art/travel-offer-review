@@ -305,7 +305,7 @@ footer small{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.14);padding
   footer small{grid-column:1}
 }
 
-@media(max-width:380px){\n  .campaign-page h1{font-size:34px}
+@media(max-width:380px){\n  .campaign-page h1{font-size:32px}
   .site-header{padding:0 12px}
   .brand-name{font-size:17px}
   .header-cta{padding:8px 9px}
