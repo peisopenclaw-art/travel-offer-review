@@ -1889,3 +1889,10 @@ body[data-decision-step="3"] .decision-steps{margin-top:8px}
   .destination-card{min-height:145px}
   .comparison-table td{grid-template-columns:100px 1fr}
 }
+
+/* Visual QA target-size hardening */
+.trip-console .field select,
+.trip-console .field input{min-height:44px}
+.stepper{grid-template-columns:44px 1fr 44px;min-height:44px}
+.stepper button{width:44px;height:44px}
+.share-state{min-height:44px;padding:8px 2px}
