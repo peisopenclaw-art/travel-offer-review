@@ -305,7 +305,7 @@ jobs:
                       "fixed": "約5,000円",
                       "badCurrency": "計算条件が未確認",
                       "missingRounding": "計算条件が未確認",
-                      "points": "ポイント型のため割引額に換算しません",
+                      "points": "未算出（ポイント型）",
                   }
                   if r["estimator_contract"] != estimator_expected:
                       failures.append(f"{v}: estimator contract {r['estimator_contract']}")
@@ -327,7 +327,7 @@ jobs:
                       failures.append(f"{v}: disabled state")
                   if not r["dialog_open"] or not r["dialog_box"]:
                       failures.append(f"{v}: details dialog")
-                  if not r["estimate_texts"] or any("ポイント型のため割引額に換算しません" not in text for text in r["estimate_texts"]):
+                  if not r["estimate_texts"] or any("未算出（ポイント型）" not in text for text in r["estimate_texts"]):
                       failures.append(f"{v}: reward points were not safely excluded from discount estimate: {r['estimate_texts']}")
                   if "destination=kanto" not in r["share_url"] or "date=2026-10-14" not in r["share_url"] or "price=50000" not in r["share_url"]:
                       failures.append(f"{v}: share URL missing state {r['share_url']}")
