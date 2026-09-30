@@ -69,6 +69,7 @@
 .stage-heading>div{display:flex;align-items:baseline;gap:20px}
 .stage-index{margin:0;color:var(--decision-green);font-size:10px;font-weight:700;letter-spacing:.12em}
 .stage-heading h2{margin:0;font-family:var(--font-display);font-size:clamp(32px,4vw,48px);line-height:1.2;font-weight:700}
+.compare-phrase,.boundary-phrase{display:inline-block}
 .stage-heading>p{margin:0;color:var(--decision-muted);font-size:13px;line-height:1.8}
 
 .map-workspace,.calendar-workspace{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.5fr);gap:18px}
