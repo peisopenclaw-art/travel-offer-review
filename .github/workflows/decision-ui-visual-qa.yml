@@ -124,13 +124,6 @@ jobs:
                   }""")
                   await page.mouse.up()
 
-              target_failures = await page.locator("button, select, .header-text-link").evaluate_all("""els => els.filter(el => {
-                const r = el.getBoundingClientRect();
-                const s = getComputedStyle(el);
-                if (s.display === 'none' || s.visibility === 'hidden' || r.width === 0 || r.height === 0) return false;
-                return r.width < 44 || r.height < 44;
-              }).map(el => ({tag:el.tagName, text:(el.textContent||'').trim(), width:r=>r.width, height:r=>r.height}))""")
-              # evaluate_all cannot serialize arrow callbacks inside object values reliably; run explicit measurement.
               target_failures = await page.locator("button, select, .header-text-link").evaluate_all("""els => els.flatMap(el => {
                 const r = el.getBoundingClientRect();
                 const s = getComputedStyle(el);
