@@ -35,6 +35,26 @@
 .field>span,.field legend{font-size:10px;font-weight:700;letter-spacing:.08em;color:#687570}
 .field select,.field input{width:100%;min-height:44px;border:0;background:transparent;color:var(--decision-ink);font-weight:700;font-size:15px;padding:0 30px 0 0}
 .field input[type="date"]{padding-right:0}
+.date-input-wrap{position:relative;min-width:0}
+.date-input-wrap #travel-date{position:relative;z-index:1}
+.date-placeholder{
+  position:absolute;
+  z-index:2;
+  left:0;
+  right:36px;
+  top:50%;
+  transform:translateY(-50%);
+  min-height:24px;
+  display:flex;
+  align-items:center;
+  background:var(--decision-paper);
+  color:var(--decision-ink);
+  font-size:15px;
+  font-weight:700;
+  pointer-events:none;
+}
+#travel-date:not(.is-empty)+.date-placeholder{display:none}
+#travel-date.is-empty::-webkit-datetime-edit{color:transparent}
 .field small{font-size:9px;color:#6d7975}
 .field select:focus-visible,.field input:focus-visible{outline:3px solid var(--decision-green);outline-offset:3px;border-radius:2px}
 .party-field{margin:0;border-top:0;border-bottom:0;border-left:0}
