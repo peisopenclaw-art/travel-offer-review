@@ -389,11 +389,11 @@
       var decision = offerDecisionState(offer);
       var estimate = estimateDiscount(offer);
       return '<tr>' +
-        '<td class="provider-cell" data-label="予約先・施策"><strong>' + escapeHtml(offer.provider) + '</strong><span>' + escapeHtml(offer.name) + '</span><span class="status-line ' + status.key + '">' + escapeHtml(status.label) + '</span><span class="status-line ' + decision.key + '">' + escapeHtml(decision.label) + '</span></td>' +
-        '<td class="rate-cell" data-label="特典率"><strong>' + escapeHtml(benefitLabel(offer)) + '</strong></td>' +
-        '<td class="amount-cell" data-label="割引額・上限">' + escapeHtml(benefitCapLabel(offer)) + '</td>' +
+        '<td class="benefit-cell" data-label="お得の大きさ"><strong>' + escapeHtml(benefitLabel(offer)) + '</strong><span>' + escapeHtml(benefitCapLabel(offer)) + '</span></td>' +
+        '<td class="eligibility-cell" data-label="この条件で使える？"><strong>' + escapeHtml(decision.label) + '</strong><span class="status-line ' + status.key + '">' + escapeHtml(status.label) + '</span></td>' +
         '<td class="estimate-cell" data-label="推定割引額"><strong>' + escapeHtml(estimate.label) + '</strong></td>' +
         '<td data-label="予約期間">' + escapeHtml(formatDateTime(offer.booking_start)) + '<br>〜 ' + escapeHtml(formatDateTime(offer.booking_end)) + '</td>' +
+        '<td class="provider-cell" data-label="予約先・施策"><strong>' + escapeHtml(offer.provider) + '</strong><span>' + escapeHtml(offer.name) + '</span></td>' +
         '<td data-label="詳細"><button class="offer-detail-button" type="button" data-offer="' + escapeHtml(offer.id) + '">条件を見る</button></td>' +
       '</tr>';
     }).join("");
