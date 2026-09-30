@@ -269,6 +269,8 @@
     if (state.step > 1 && !state.destination) state.step = 1;
     if (state.step > 2 && !state.travelDate) state.step = 2;
 
+    document.body.dataset.decisionStep = String(state.step);
+
     $all(".step-tab").forEach(function (button) {
       var active = Number(button.dataset.step) === state.step;
       button.classList.toggle("is-active", active);
@@ -333,7 +335,7 @@
       button.className = "calendar-day" + (weekday === 0 || weekday === 6 ? " weekend" : "");
       button.dataset.date = dateString;
       button.setAttribute("aria-label", year + "年" + (monthIndex + 1) + "月" + day + "日を旅行日に選ぶ");
-      button.innerHTML = '<span class="day-number">' + day + '</span><span class="day-note">適用条件は未算出</span>';
+      button.innerHTML = '<span class="day-number">' + day + '</span>';
       if (state.travelDate === dateString) {
         button.classList.add("is-selected");
         button.setAttribute("aria-pressed", "true");
@@ -366,11 +368,9 @@
     els.bookingHints.innerHTML = relevant.map(function (offer) {
       var status = offerStatus(offer);
       return '<div class="booking-hint">' +
-        '<strong>' + escapeHtml(offer.name) + '</strong>' +
-        '<span>予約: ' + escapeHtml(formatDateTime(offer.booking_start)) + ' 〜 ' + escapeHtml(formatDateTime(offer.booking_end)) + '</span>' +
-        '<span class="hint-rate">' + escapeHtml(benefitLabel(offer)) + '</span>' +
-        '<span>宿泊: ' + escapeHtml(stayWindowLabel(offer)) + '</span>' +
-        '<span>' + escapeHtml(status.label) + ' / ' + escapeHtml(offer.provider) + '</span>' +
+        '<div class="booking-benefit-main"><strong class="hint-rate">' + escapeHtml(benefitLabel(offer)) + '</strong><span>' + escapeHtml(offer.provider) + '</span></div>' +
+        '<span class="status-line ' + status.key + '">' + escapeHtml(status.label) + '</span>' +
+        '<small>' + escapeHtml(offer.name) + '</small>' +
       '</div>';
     }).join("");
   }
