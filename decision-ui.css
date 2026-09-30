@@ -773,3 +773,40 @@ background-size:44px 44px;overflow:hidden}
   .region-map{padding-top:245px}
   .japan-map-visual{height:225px}
 }
+
+
+/* visual reset pass 2 — semantic wrapping, font integrity, touch sizing */
+:root{
+  --font-body:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+  --font-heading:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+  --font-display:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+}
+.decision-intro h1 .intro-lead,
+.decision-intro h1 .intro-accent{
+  display:inline-block;
+  white-space:nowrap;
+}
+.decision-intro h1 .intro-lead{margin-right:.16em}
+.data-level-note strong{display:none}
+.data-level-note span{
+  display:block;
+  color:#7a8392;
+  font-size:10px;
+  line-height:1.45;
+  white-space:nowrap;
+}
+.step-tab{min-height:46px}
+.region-button span{display:none}
+.decision-footer,
+.decision-footer *{
+  font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+}
+.decision-footer{background:var(--travel-navy)}
+.decision-footer p,
+.decision-footer small{color:#cbd5e5}
+.decision-footer .footer-brand{font-weight:800}
+@media(max-width:720px){
+  .step-tab{min-height:46px}
+  .data-level-note{min-height:52px}
+  .data-level-note span{white-space:normal}
+}
