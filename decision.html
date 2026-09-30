@@ -189,18 +189,11 @@
           <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG" alt="">
           <span><strong>沖縄</strong><small>九州・沖縄</small></span>
         </button>
-        <button class="destination-card" type="button" data-region="kinki" aria-pressed="false">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/0/02/KiyomizuderaAutumnPond.jpg" alt="">
-          <span><strong>京都</strong><small>近畿</small></span>
-        </button>
         <button class="destination-card" type="button" data-region="chubu" aria-pressed="false">
           <img src="https://upload.wikimedia.org/wikipedia/commons/c/cb/Mt._Fuji_and_Shinkansen.jpg" alt="">
           <span><strong>富士山周辺</strong><small>中部</small></span>
         </button>
-        <button class="destination-card" type="button" data-region="hokkaido" aria-pressed="false">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Lavender_fields%2C_Furano_%2848254611081%29.jpg" alt="">
-          <span><strong>北海道</strong><small>北海道</small></span>
-        </button>
+
       </div>
     </section>
   </section>
@@ -208,10 +201,10 @@
   <section class="decision-stage" data-panel="2" aria-labelledby="calendar-title" hidden>
     <div class="stage-heading">
       <div>
-        <p class="stage-index">02 / TRAVEL DATE</p>
-        <h2 id="calendar-title"><span class="semantic-phrase">いつがお得？</span></h2>
+        <p class="stage-index">STEP 2</p>
+        <h2 id="calendar-title">いつ泊まる？</h2>
       </div>
-      <p>旅行日を選びます。旅行日別の割引差が取れていない日は、無理に「お得」と判定しません。</p>
+      <p>泊まりたい日をひとつ選んでください。</p>
     </div>
 
     <div class="calendar-workspace">
@@ -221,7 +214,7 @@
             <strong id="calendar-month-label">2026年10月</strong>
             <span id="calendar-region-label">地域未選択</span>
           </div>
-          <span class="neutral-badge">旅行日別スコア 未算出</span>
+          <span class="neutral-badge">日付別のお得度は準備中</span>
         </div>
         <div class="weekday-row" aria-hidden="true">
           <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
@@ -230,10 +223,10 @@
       </div>
 
       <aside class="timing-panel">
-        <p class="summary-kicker">BOOKING TIMING</p>
-        <h3>予約する日のヒント</h3>
+        <p class="summary-kicker">AVAILABLE BENEFITS</p>
+        <h3>予約で使える特典</h3>
         <div id="booking-hints"></div>
-        <p class="timing-note">これは「旅行日がお得」という意味ではありません。予約期間と旅行期間は別々に扱います。</p>
+        <p class="timing-note">旅行日の順位ではなく、今確認できる予約特典です。</p>
         <button id="to-compare" class="primary-action" type="button" disabled>この日で予約先を見る <span aria-hidden="true">→</span></button>
       </aside>
     </div>
@@ -242,10 +235,10 @@
   <section class="decision-stage" data-panel="3" aria-labelledby="compare-title" hidden>
     <div class="stage-heading">
       <div>
-        <p class="stage-index">03 / BOOKING OPTION</p>
-        <h2 id="compare-title"><span class="compare-phrase">この条件なら、</span> <span class="compare-phrase">どれがお得？</span></h2>
+        <p class="stage-index">STEP 3</p>
+        <h2 id="compare-title">どこで予約する？</h2>
       </div>
-      <p>まず「どれくらい得か」と「この条件で使えそうか」を見ます。予約先やキャンペーン名は、そのあと確認します。実価格・在庫がないため最安順位はまだ出しません。</p>
+      <p>特典の大きさと条件を見比べて、予約先を選びます。</p>
     </div>
 
     <div class="compare-toolbar">
@@ -253,14 +246,16 @@
       <button id="effective-sort" class="secondary-action" type="button" disabled title="実価格・在庫連携後に有効になります">実質支払額で並べる</button>
     </div>
 
-    <section class="assumed-price-panel" aria-labelledby="assumed-price-title">
-      <div>
-        <p class="summary-kicker">LEVEL 2 INPUT</p>
-        <label id="assumed-price-title" for="assumed-price">対象宿泊料金の目安</label>
-        <div class="price-input-wrap"><span>¥</span><input id="assumed-price" type="number" min="0" step="1000" inputmode="numeric" placeholder="例 50000"></div>
+    <details class="assumed-price-panel" aria-labelledby="assumed-price-title">
+      <summary><span id="assumed-price-title">宿泊料金を入れて試算</span><small>任意</small></summary>
+      <div class="assumed-price-content">
+        <div>
+          <label class="sr-only" for="assumed-price">対象宿泊料金</label>
+          <div class="price-input-wrap"><span>¥</span><input id="assumed-price" type="number" min="0" step="1000" inputmode="numeric" placeholder="例 50000"></div>
+        </div>
+        <p id="estimate-note">計算できるクーポンだけ推定します。ポイント型は現金割引に換算しません。</p>
       </div>
-      <p id="estimate-note">旅行全体の予算ではなく、クーポン計算の対象になる宿泊料金だけを入れます。現在のポイント型施策は割引額へ換算しません。</p>
-    </section>
+    </details>
 
     <div class="comparison-table-wrap">
       <table class="comparison-table">
@@ -277,7 +272,7 @@
         <tbody id="comparison-body"></tbody>
       </table>
     </div>
-    <p class="comparison-note">率の大きさでは順位付けしません。「15％以上」などが基礎10％を含む場合は足し算せず、施設・プラン・支払方法等を確認するまで「使える」と確定しません。</p>
+    <details class="comparison-method"><summary>比較条件について</summary><p class="comparison-note">率だけでは順位付けしません。「15％以上」などが基礎10％を含む場合は足し算せず、施設・プラン・支払方法等を確認してから適用を判断します。</p></details>
   </section>
 
   <section class="prototype-boundary" aria-labelledby="boundary-title">
