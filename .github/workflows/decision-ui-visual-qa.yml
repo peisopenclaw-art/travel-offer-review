@@ -138,12 +138,11 @@ jobs:
                   "adults": (await page.locator("#adult-count").inner_text()).strip(),
               }
 
-              # Restore deterministic review state. Month changes intentionally re-route
-              # destination-known/date-unknown back to step 2, so return to step 1 afterward
-              # before exercising the map interaction itself.
+              # Restore deterministic review state through the public URL contract.
+              # The redesigned flow intentionally hides global inputs outside Step 1,
+              # so visual QA must not depend on clicking hidden controls.
+              await page.goto(URL + "?destination=kanto&month=2026-10&adults=2", wait_until="networkidle")
               await page.locator('.step-tab[data-step="1"]').click()
-              await page.locator("#travel-month").select_option("2026-10")
-              await page.locator("#adult-minus").click()
               await page.locator('[data-region="kanto"]').click()
 
               control = page.locator('[data-region="kanto"]')
