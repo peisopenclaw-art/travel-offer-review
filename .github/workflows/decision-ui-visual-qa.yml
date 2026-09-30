@@ -96,19 +96,23 @@ jobs:
               await page.evaluate("document.fonts.ready")
               font_status = await page.evaluate("document.fonts.status")
               font_checks = await page.evaluate("""async () => {
-                await document.fonts.load('16px "BIZ UDPGothic"', '旅行');
-                await document.fonts.load('16px "Shippori Mincho"', '旅行');
-                await document.fonts.load('16px "Zen Kaku Gothic New"', '旅行');
+                await document.fonts.load('16px "Noto Sans JP"', '旅行');
+                await document.fonts.load('16px "Inter"', '123');
                 return {
-                  biz: document.fonts.check('16px "BIZ UDPGothic"', '旅行'),
-                  shippori: document.fonts.check('16px "Shippori Mincho"', '旅行'),
-                  zen: document.fonts.check('16px "Zen Kaku Gothic New"', '旅行')
+                  noto: document.fonts.check('16px "Noto Sans JP"', '旅行'),
+                  inter: document.fonts.check('16px "Inter"', '123'),
+                  h1Family: getComputedStyle(document.querySelector('#decision-title')).fontFamily,
+                  footerFamily: getComputedStyle(document.querySelector('.decision-footer')).fontFamily
                 };
               }""")
 
               title = await page.title()
               h1 = (await page.locator("h1").inner_text()).strip()
               data_notice = (await page.locator(".data-level-note").inner_text()).strip()
+              image_failures = await page.locator(".intro-visual img, .japan-map-visual, .destination-card img").evaluate_all("""els => els.flatMap(el => {
+                if (el.complete && el.naturalWidth > 0 && el.naturalHeight > 0) return [];
+                return [{src:el.currentSrc || el.src, complete:el.complete, naturalWidth:el.naturalWidth, naturalHeight:el.naturalHeight}];
+              })""")
               estimator_contract = await page.evaluate("""() => {
                 const f = window.__TOKUERABI_QA__ && window.__TOKUERABI_QA__.estimateDiscountForBenefit;
                 if (!f) return {hook:false};
@@ -242,6 +246,7 @@ jobs:
                   "estimator_contract": estimator_contract,
                   "font_status": font_status,
                   "font_checks": font_checks,
+                  "image_failures": image_failures,
                   "page_errors": page_errors,
                   "console_errors": console_errors,
                   "persisted": persisted,
@@ -294,9 +299,9 @@ jobs:
                   if r["http_status"] != 200:
                       failures.append(f"{v}: http {r['http_status']}")
                   normalized_h1 = "".join(r["h1"].split())
-                  if "どこへ行くか。いつ行くか。どこで予約するか。" not in normalized_h1:
+                  if "旅先を、お得から選ぼう。" not in normalized_h1:
                       failures.append(f"{v}: identity h1 mismatch")
-                  if "実価格・在庫はまだ未連携" not in r["data_notice"]:
+                  if "実価格・在庫は未連携" not in r["data_notice"]:
                       failures.append(f"{v}: honest Level 1 boundary missing")
                   estimator_expected = {
                       "hook": True,
@@ -309,8 +314,12 @@ jobs:
                   }
                   if r["estimator_contract"] != estimator_expected:
                       failures.append(f"{v}: estimator contract {r['estimator_contract']}")
-                  if r["font_status"] != "loaded" or not all(r["font_checks"].values()):
-                      failures.append(f"{v}: web font")
+                  if r["font_status"] != "loaded" or not r["font_checks"]["noto"] or not r["font_checks"]["inter"]:
+                      failures.append(f"{v}: web font {r['font_checks']}")
+                  if "Noto Sans JP" not in r["font_checks"]["h1Family"] or "Noto Sans JP" not in r["font_checks"]["footerFamily"]:
+                      failures.append(f"{v}: computed font family {r['font_checks']}")
+                  if r["image_failures"]:
+                      failures.append(f"{v}: broken visual images {r['image_failures']}")
                   if r["page_errors"] or r["console_errors"]:
                       failures.append(f"{v}: browser errors page={r['page_errors']} console={r['console_errors']}")
                   if r["persisted"] != {"destination": "kanto", "month": "2026-11", "adults": "大人3人"}:
