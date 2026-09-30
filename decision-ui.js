@@ -163,7 +163,7 @@
       return { key: "estimated", label: "約" + formatYen(Math.min(assumedPrice, benefit.discount_amount)) };
     }
 
-    return { key: "not-calculable", label: "ポイント型のため割引額に換算しません" };
+    return { key: "not-calculable", label: "未算出（ポイント型）" };
   }
 
   function estimateDiscount(offer) {
@@ -416,7 +416,7 @@
     });
     els.estimateNote.textContent = calculable
       ? formatYen(state.assumedPrice) + "を対象宿泊料金として、条件が揃った単独クーポンだけ推定します。"
-      : formatYen(state.assumedPrice) + "を入力しました。現在の確認済み施策はポイント型なので、割引額として10％/15％を機械換算しません。";
+      : formatYen(state.assumedPrice) + "を入力しました。現在の確認済み施策はポイント型のため割引額に換算しません。";
   }
 
   async function shareState() {
