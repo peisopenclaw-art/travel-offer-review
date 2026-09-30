@@ -102,6 +102,8 @@ jobs:
 
               control = page.locator('[data-region="kanto"]')
               await control.focus()
+              await page.keyboard.press("Tab")
+              await page.keyboard.press("Shift+Tab")
               focus_visible = await control.evaluate("el => el.matches(':focus-visible')")
               base_state = await control.evaluate("""el => {
                 const s = getComputedStyle(el);
@@ -139,19 +141,35 @@ jobs:
                 color: getComputedStyle(el).color
               })""")
 
+              await page.evaluate("window.scrollTo(0, 0)")
+              await page.wait_for_timeout(120)
               map_path = OUT / f"decision-map-{width}.png"
               await page.screenshot(path=str(map_path), full_page=True)
               map_metrics = await metrics(page, width, "map")
 
               await page.locator("#to-calendar").click()
               await page.wait_for_timeout(450)
+              calendar_heading_clear = await page.evaluate("""() => {
+                const header = document.querySelector('.decision-header').getBoundingClientRect();
+                const heading = document.querySelector('[data-panel="2"] h2').getBoundingClientRect();
+                return heading.top >= header.bottom - 2;
+              }""")
               await page.locator('[data-date="2026-10-14"]').click()
+              await page.evaluate("window.scrollTo(0, 0)")
+              await page.wait_for_timeout(120)
               calendar_path = OUT / f"decision-calendar-{width}.png"
               await page.screenshot(path=str(calendar_path), full_page=True)
               calendar_metrics = await metrics(page, width, "calendar")
 
               await page.locator("#to-compare").click()
               await page.wait_for_timeout(450)
+              compare_heading_clear = await page.evaluate("""() => {
+                const header = document.querySelector('.decision-header').getBoundingClientRect();
+                const heading = document.querySelector('[data-panel="3"] h2').getBoundingClientRect();
+                return heading.top >= header.bottom - 2;
+              }""")
+              await page.evaluate("window.scrollTo(0, 0)")
+              await page.wait_for_timeout(120)
               comparison_path = OUT / f"decision-compare-{width}.png"
               await page.screenshot(path=str(comparison_path), full_page=True)
               compare_metrics = await metrics(page, width, "compare")
@@ -161,7 +179,7 @@ jobs:
               dialog_open = await page.locator("#offer-dialog").evaluate("el => el.open")
               dialog_box = await page.locator("#offer-dialog").bounding_box()
               details_path = OUT / f"decision-details-{width}.png"
-              await page.screenshot(path=str(details_path), full_page=True)
+              await page.screenshot(path=str(details_path), full_page=False)
               await page.locator("#dialog-close").click()
 
               result = {
@@ -183,6 +201,8 @@ jobs:
                   "disabled_state": disabled_state,
                   "dialog_open": dialog_open,
                   "dialog_box": dialog_box,
+                  "calendar_heading_clear": calendar_heading_clear,
+                  "compare_heading_clear": compare_heading_clear,
                   "screenshots": {
                       "map": str(map_path),
                       "calendar": str(calendar_path),
@@ -232,6 +252,10 @@ jobs:
                       failures.append(f"{v}: disabled state")
                   if not r["dialog_open"] or not r["dialog_box"]:
                       failures.append(f"{v}: details dialog")
+                  if not r["calendar_heading_clear"] or not r["compare_heading_clear"]:
+                      failures.append(f"{v}: sticky header overlaps stage heading")
+                  if v[0] <= 390 and r["dialog_box"] and r["dialog_box"]["width"] < v[0] - 2:
+                      failures.append(f"{v}: mobile bottom sheet width {r['dialog_box']['width']}")
                   panels = [m["visible_panel"] for m in r["stage_metrics"]]
                   if panels != ["1", "2", "3"]:
                       failures.append(f"{v}: stage flow {panels}")
