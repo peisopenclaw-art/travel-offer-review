@@ -174,7 +174,7 @@ jobs:
               await page.mouse.move(1, 1)
               await page.evaluate("document.activeElement && document.activeElement.blur()")
               await page.wait_for_timeout(120)
-              await page.evaluate("window.scrollTo(0, 0)")
+              await page.evaluate("() => { document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, 0); }")
               await page.wait_for_timeout(120)
               map_path = OUT / f"decision-map-{width}.png"
               await page.screenshot(path=str(map_path), full_page=True)
@@ -188,7 +188,7 @@ jobs:
                 return heading.top >= header.bottom - 2;
               }""")
               await page.locator('[data-date="2026-10-14"]').click()
-              await page.evaluate("window.scrollTo(0, 0)")
+              await page.evaluate("() => { document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, 0); }")
               await page.wait_for_timeout(120)
               calendar_path = OUT / f"decision-calendar-{width}.png"
               await page.screenshot(path=str(calendar_path), full_page=True)
@@ -203,7 +203,7 @@ jobs:
                 const heading = document.querySelector('[data-panel="3"] h2').getBoundingClientRect();
                 return heading.top >= header.bottom - 2;
               }""")
-              await page.evaluate("window.scrollTo(0, 0)")
+              await page.evaluate("() => { document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, 0); }")
               await page.wait_for_timeout(120)
               comparison_path = OUT / f"decision-compare-{width}.png"
               await page.screenshot(path=str(comparison_path), full_page=True)
