@@ -256,6 +256,13 @@
 
     var hasDestination = Boolean(state.destination);
     var hasDate = Boolean(state.travelDate);
+    if (els.searchConditions) {
+      els.searchConditions.innerHTML = hasDestination && hasDate
+        ? 'この条件で予約先を見る <span aria-hidden="true">→</span>'
+        : hasDestination
+          ? 'この条件で宿泊日を見る <span aria-hidden="true">→</span>'
+          : '旅行先から選ぶ <span aria-hidden="true">→</span>';
+    }
     var step2 = $('.step-tab[data-step="2"]');
     var step3 = $('.step-tab[data-step="3"]');
     step2.disabled = !hasDestination;
@@ -503,7 +510,7 @@
   function bindEvents() {
     els.destination.addEventListener("change", function () {
       state.destination = this.value;
-      state.step = entryStep();
+      state.step = 1;
       persistState();
       renderAll();
       if (state.destination) announce(destinationName() + "を選びました");
@@ -512,7 +519,7 @@
     els.month.addEventListener("change", function () {
       state.month = this.value;
       if (state.travelDate && state.travelDate.slice(0, 7) !== state.month) state.travelDate = "";
-      state.step = entryStep();
+      state.step = 1;
       persistState();
       renderAll();
       announce(formatMonth(state.month) + "に変更しました");
@@ -521,7 +528,7 @@
     els.travelDate.addEventListener("change", function () {
       state.travelDate = this.value;
       if (state.travelDate) state.month = state.travelDate.slice(0, 7);
-      state.step = entryStep();
+      state.step = 1;
       persistState();
       renderAll();
       announce(state.travelDate ? formatDate(state.travelDate) + "を宿泊日にしました" : "宿泊日を未定に戻しました");
@@ -558,6 +565,19 @@
       });
     });
 
+    if (els.searchConditions) {
+      els.searchConditions.addEventListener("click", function () {
+        if (!state.destination) {
+          var map = $("#region-map");
+          if (map) map.scrollIntoView({ behavior: "smooth", block: "center" });
+          var firstRegion = $(".region-button");
+          if (firstRegion) window.setTimeout(function () { firstRegion.focus({ preventScroll: true }); }, 320);
+          announce("旅行先を地図または写真から選んでください");
+          return;
+        }
+        goToStep(state.travelDate ? 3 : 2);
+      });
+    }
     els.toCalendar.addEventListener("click", function () { goToStep(state.travelDate ? 3 : 2); });
     els.toCompare.addEventListener("click", function () { goToStep(3); });
     els.assumedPrice.addEventListener("input", function () {
@@ -584,6 +604,7 @@
     els.travelDate = $("#travel-date");
     els.assumedPrice = $("#assumed-price");
     els.shareState = $("#share-state");
+    els.searchConditions = $("#search-conditions");
     els.estimateNote = $("#estimate-note");
     els.adultMinus = $("#adult-minus");
     els.adultPlus = $("#adult-plus");
