@@ -1028,3 +1028,19 @@ details.assumed-price-panel{
   }
   .offer-detail-button{min-height:48px}
 }
+
+
+/* visual reset pass 5 — keep each step about one choice */
+.decision-page .summary-kicker{
+  font-family:"Inter","Noto Sans JP",sans-serif;
+}
+#trip-form{grid-template-columns:1.15fr .9fr .9fr}
+.date-field{display:none}
+@media(max-width:720px){
+  #trip-form{grid-template-columns:1fr 1fr}
+  .party-field{grid-column:1/-1}
+}
+@media(max-width:390px){
+  #trip-form{grid-template-columns:1fr}
+  .party-field{grid-column:auto}
+}
