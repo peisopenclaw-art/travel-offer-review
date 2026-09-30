@@ -249,6 +249,10 @@
       var selected = button.dataset.region === state.destination;
       button.setAttribute("aria-selected", selected ? "true" : "false");
     });
+    $all(".destination-card").forEach(function (button) {
+      var selected = button.dataset.region === state.destination;
+      button.setAttribute("aria-pressed", selected ? "true" : "false");
+    });
 
     var hasDestination = Boolean(state.destination);
     var hasDate = Boolean(state.travelDate);
@@ -537,7 +541,7 @@
       renderAll();
     });
 
-    $all(".region-button").forEach(function (button) {
+    $all(".region-button, .destination-card").forEach(function (button) {
       button.addEventListener("click", function () {
         state.destination = this.dataset.region;
         state.step = state.travelDate ? 3 : 1;
