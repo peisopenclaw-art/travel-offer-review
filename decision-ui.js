@@ -90,6 +90,34 @@
     return { key: "active", label: "掲載中" };
   }
 
+  function offerDecisionState(offer) {
+    var lifecycle = offerStatus(offer);
+    if (lifecycle.key === "ended") return { key: "ended", label: "受付期間終了" };
+    if (lifecycle.key === "scheduled") return { key: "scheduled", label: "開始予定" };
+    if ((offer.match_requirements || []).length) {
+      return { key: "needs-more-data", label: offer.match_state_label || "追加条件の確認が必要" };
+    }
+    return { key: "candidate", label: "条件上の候補" };
+  }
+
+  function benefitLabel(offer) {
+    return offer.benefit && offer.benefit.display_label ? offer.benefit.display_label : "確認中";
+  }
+
+  function benefitCapLabel(offer) {
+    return offer.benefit && offer.benefit.cap_label ? offer.benefit.cap_label : "確認中";
+  }
+
+  function stayWindowLabel(offer) {
+    return offer.stay_window && offer.stay_window.label ? offer.stay_window.label : "確認中";
+  }
+
+  function includesBenefitNote(offer) {
+    var includes = offer.benefit && offer.benefit.includes_offer_ids ? offer.benefit.includes_offer_ids : [];
+    if (!includes.length) return "";
+    return (offer.stacking && offer.stacking.note) || "他施策を含む総率です。別加算しません。";
+  }
+
   function offersForRegion() {
     if (!data) return [];
     return data.offers.filter(function (offer) {
@@ -160,8 +188,9 @@
       ? "地域別の確認済み施策を比較しています。"
       : "今の確認済みデータでは全国施策が中心のため、地域間の優劣はまだ付けません。";
     els.regionOfferCount.textContent = offers.length + "施策";
-    els.regionRate.textContent = offers.map(function (offer) { return offer.rate_label; }).join(" / ");
+    els.regionRate.textContent = offers.map(benefitLabel).join(" / ");
     els.regionMetrics.hidden = false;
+    els.regionCaveat.textContent = "「15％以上」等が基礎10％を含む場合は足し算しません。施設・プラン等を確認するまで「使える」と確定しません。";
     els.regionCaveat.hidden = offers.length < 2;
     els.calendarRegion.textContent = region.name;
   }
@@ -210,44 +239,37 @@
     }
   }
 
-  function bookingOverlap(offer) {
-    var monthStart = Date.parse(state.month + "-01T00:00:00+09:00");
-    var parts = state.month.split("-");
-    var nextMonthYear = Number(parts[0]);
-    var nextMonth = Number(parts[1]) + 1;
-    if (nextMonth === 13) {
-      nextMonth = 1;
-      nextMonthYear += 1;
-    }
-    var nextMonthValue = nextMonthYear + "-" + String(nextMonth).padStart(2, "0") + "-01T00:00:00+09:00";
-    var monthEnd = Date.parse(nextMonthValue) - 1;
-    var start = offer.booking_start ? Date.parse(offer.booking_start) : -Infinity;
-    var end = offer.booking_end ? Date.parse(offer.booking_end) : Infinity;
-    return start <= monthEnd && end >= monthStart;
-  }
-
   function renderBookingHints() {
-    var relevant = data.offers.filter(bookingOverlap).sort(function (a, b) {
-      return b.rate_value - a.rate_value;
+    var relevant = data.offers.filter(function (offer) {
+      return offerStatus(offer).key !== "ended";
+    }).sort(function (a, b) {
+      var order = { active: 0, scheduled: 1, ended: 2 };
+      var statusDiff = order[offerStatus(a).key] - order[offerStatus(b).key];
+      if (statusDiff) return statusDiff;
+      return Date.parse(a.booking_start) - Date.parse(b.booking_start);
     });
     if (!relevant.length) {
-      els.bookingHints.innerHTML = '<div class="booking-hint"><strong>この月の予約期間データは未確認</strong><span>旅行日の選択はできます。予約施策は公式情報の確認範囲を広げてから表示します。</span></div>';
+      els.bookingHints.innerHTML = '<div class="booking-hint"><strong>現在表示できる予約施策はありません</strong><span>旅行日の選択はできます。一次情報を更新後に施策を追加します。</span></div>';
       return;
     }
     els.bookingHints.innerHTML = relevant.map(function (offer) {
       var status = offerStatus(offer);
       return '<div class="booking-hint">' +
         '<strong>' + escapeHtml(offer.name) + '</strong>' +
-        '<span>' + escapeHtml(formatDateTime(offer.booking_start)) + ' 〜 ' + escapeHtml(formatDateTime(offer.booking_end)) + '</span>' +
-        '<span class="hint-rate">' + escapeHtml(offer.rate_label) + '</span>' +
+        '<span>予約: ' + escapeHtml(formatDateTime(offer.booking_start)) + ' 〜 ' + escapeHtml(formatDateTime(offer.booking_end)) + '</span>' +
+        '<span class="hint-rate">' + escapeHtml(benefitLabel(offer)) + '</span>' +
+        '<span>宿泊: ' + escapeHtml(stayWindowLabel(offer)) + '</span>' +
         '<span>' + escapeHtml(status.label) + ' / ' + escapeHtml(offer.provider) + '</span>' +
       '</div>';
     }).join("");
   }
 
   function renderComparison() {
+    var statusOrder = { active: 0, scheduled: 1, ended: 2 };
     var offers = offersForRegion().slice().sort(function (a, b) {
-      return b.rate_value - a.rate_value;
+      var diff = statusOrder[offerStatus(a).key] - statusOrder[offerStatus(b).key];
+      if (diff) return diff;
+      return a.name.localeCompare(b.name, "ja");
     });
 
     els.tripSummary.innerHTML =
@@ -257,10 +279,11 @@
 
     els.comparisonBody.innerHTML = offers.map(function (offer) {
       var status = offerStatus(offer);
+      var decision = offerDecisionState(offer);
       return '<tr>' +
-        '<td class="provider-cell" data-label="予約先・施策"><strong>' + escapeHtml(offer.provider) + '</strong><span>' + escapeHtml(offer.name) + '</span><span class="status-line ' + status.key + '">' + escapeHtml(status.label) + '</span></td>' +
-        '<td class="rate-cell" data-label="特典率"><strong>' + escapeHtml(offer.rate_label) + '</strong></td>' +
-        '<td class="amount-cell" data-label="割引額・上限">' + escapeHtml(offer.amount_label) + '</td>' +
+        '<td class="provider-cell" data-label="予約先・施策"><strong>' + escapeHtml(offer.provider) + '</strong><span>' + escapeHtml(offer.name) + '</span><span class="status-line ' + status.key + '">' + escapeHtml(status.label) + '</span><span class="status-line ' + decision.key + '">' + escapeHtml(decision.label) + '</span></td>' +
+        '<td class="rate-cell" data-label="特典率"><strong>' + escapeHtml(benefitLabel(offer)) + '</strong></td>' +
+        '<td class="amount-cell" data-label="割引額・上限">' + escapeHtml(benefitCapLabel(offer)) + '</td>' +
         '<td data-label="予約期間">' + escapeHtml(formatDateTime(offer.booking_start)) + '<br>〜 ' + escapeHtml(formatDateTime(offer.booking_end)) + '</td>' +
         '<td data-label="詳細"><button class="offer-detail-button" type="button" data-offer="' + escapeHtml(offer.id) + '">条件を見る</button></td>' +
       '</tr>';
@@ -277,17 +300,21 @@
     var offer = data.offers.find(function (item) { return item.id === id; });
     if (!offer) return;
     var status = offerStatus(offer);
+    var decision = offerDecisionState(offer);
+    var included = includesBenefitNote(offer);
     els.dialogProvider.textContent = offer.provider + " / " + offer.product;
     els.dialogTitle.textContent = offer.name;
     els.dialogContent.innerHTML =
       '<p class="dialog-summary">' + escapeHtml(offer.summary) + '</p>' +
-      '<div class="dialog-fact"><span>現在の状態</span><strong>' + escapeHtml(status.label) + '</strong></div>' +
-      '<div class="dialog-fact"><span>特典率</span><strong>' + escapeHtml(offer.rate_label) + '</strong></div>' +
-      '<div class="dialog-fact"><span>割引額・還元上限</span><strong>' + escapeHtml(offer.amount_label) + '</strong></div>' +
+      '<div class="dialog-fact"><span>予約受付の状態</span><strong>' + escapeHtml(status.label) + '</strong></div>' +
+      '<div class="dialog-fact"><span>この入力だけでの判定</span><strong>' + escapeHtml(decision.label) + '</strong></div>' +
+      '<div class="dialog-fact"><span>特典</span><strong>' + escapeHtml(benefitLabel(offer)) + '</strong></div>' +
+      '<div class="dialog-fact"><span>上限・最低額</span><strong>' + escapeHtml(benefitCapLabel(offer)) + '</strong></div>' +
       '<div class="dialog-fact"><span>予約期間</span><strong>' + escapeHtml(formatDateTime(offer.booking_start)) + ' 〜 ' + escapeHtml(formatDateTime(offer.booking_end)) + '</strong></div>' +
-      '<div class="dialog-fact"><span>旅行日条件</span><strong>' + escapeHtml(offer.travel_start ? offer.travel_start + "〜" + (offer.travel_end || "終了日記載なし") : "このプロトタイプでは未取得") + '</strong></div>' +
+      '<div class="dialog-fact"><span>宿泊日の条件</span><strong>' + escapeHtml(stayWindowLabel(offer)) + '</strong></div>' +
+      (included ? '<div class="dialog-fact"><span>重複・内包</span><strong>' + escapeHtml(included) + '</strong></div>' : '') +
       '<div class="dialog-fact"><span>注意</span><strong>' + escapeHtml(offer.condition_note) + '</strong></div>' +
-      '<a class="dialog-source" href="' + escapeHtml(offer.official_url) + '" target="_blank" rel="noopener noreferrer">公式情報で確認する ↗</a>';
+      '<a class="dialog-source" href="' + escapeHtml(offer.source.official_url) + '" target="_blank" rel="noopener noreferrer">公式情報で確認する ↗</a>';
     if (typeof els.dialog.showModal === "function") {
       els.dialog.showModal();
     } else {
