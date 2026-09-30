@@ -240,6 +240,7 @@
     els.destination.value = state.destination;
     els.month.value = state.month;
     els.travelDate.value = state.travelDate;
+    els.travelDate.classList.toggle("is-empty", !state.travelDate);
     els.assumedPrice.value = Number.isFinite(state.assumedPrice) && state.assumedPrice > 0 ? String(state.assumedPrice) : "";
     els.adultCount.textContent = "大人" + state.adults + "人";
     els.adultMinus.disabled = state.adults <= 1;
