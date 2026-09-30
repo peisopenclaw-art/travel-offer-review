@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260929-shippori-v1">
-  <link rel="stylesheet" href="decision-ui.css?v=20260930-v1">
+  <link rel="stylesheet" href="decision-ui.css?v=20260930-v2">
 </head>
 <body class="decision-page">
 <a class="skip-link" href="#decision-main">本文へ移動</a>
@@ -63,6 +63,11 @@
           <option value="2026-12">2026年12月</option>
         </select>
       </label>
+      <label class="field date-field">
+        <span>宿泊日</span>
+        <input id="travel-date" name="travel-date" type="date" min="2026-10-01" max="2026-12-31">
+        <small>未定なら空欄でOK</small>
+      </label>
       <fieldset class="field party-field">
         <legend>人数</legend>
         <div class="stepper" aria-label="大人人数">
@@ -75,6 +80,7 @@
     <div class="data-level-note">
       <strong>今わかる範囲で比較</strong>
       <span>実価格・在庫はまだ未連携です。割引率と割引額は混ぜず、別々に表示します。</span>
+      <button id="share-state" class="share-state" type="button">条件URLを共有</button>
     </div>
   </section>
 
@@ -214,6 +220,15 @@
       <button id="effective-sort" class="secondary-action" type="button" disabled title="実価格・在庫連携後に有効になります">実質支払額で並べる</button>
     </div>
 
+    <section class="assumed-price-panel" aria-labelledby="assumed-price-title">
+      <div>
+        <p class="summary-kicker">LEVEL 2 INPUT</p>
+        <label id="assumed-price-title" for="assumed-price">対象宿泊料金の目安</label>
+        <div class="price-input-wrap"><span>¥</span><input id="assumed-price" type="number" min="0" step="1000" inputmode="numeric" placeholder="例 50000"></div>
+      </div>
+      <p id="estimate-note">旅行全体の予算ではなく、クーポン計算の対象になる宿泊料金だけを入れます。現在のポイント型施策は割引額へ換算しません。</p>
+    </section>
+
     <div class="comparison-table-wrap">
       <table class="comparison-table">
         <thead>
@@ -221,6 +236,7 @@
             <th scope="col">予約先・施策</th>
             <th scope="col">特典率</th>
             <th scope="col">割引額・上限</th>
+            <th scope="col">推定割引額</th>
             <th scope="col">予約期間</th>
             <th scope="col"><span class="sr-only">操作</span></th>
           </tr>
@@ -237,7 +253,7 @@
       <h2 id="boundary-title">今できること / 次にデータ連携すること</h2>
     </div>
     <dl>
-      <div><dt>今できる</dt><dd>行き先未定から地域を選ぶ / 旅行日を選ぶ / 確認済み施策を重複加算せず比較 / 追加条件が必要な施策を明示 / 詳細条件へ進む</dd></div>
+      <div><dt>今できる</dt><dd>4つの旅行条件入口 / 再読込・共有URLで条件保持 / 確認済み施策を重複加算せず比較 / 安全に計算できる単独クーポンだけ推定割引額を算出 / 追加条件を明示 / 正式予約先・根拠へ進む</dd></div>
       <div><dt>次に連携</dt><dd>施設・プランまで含む適用確定 / 地域別の施策差 / 宿・交通の実価格 / 在庫 / 税・手数料 / 実質支払額</dd></div>
     </dl>
   </section>
@@ -259,6 +275,6 @@
   <small>このページは実装レビュー用プロトタイプです。実価格・在庫の未取得部分を推測で補っていません。</small>
 </footer>
 
-<script src="decision-ui.js?v=20260930-v1" defer></script>
+<script src="decision-ui.js?v=20260930-v2" defer></script>
 </body>
 </html>
