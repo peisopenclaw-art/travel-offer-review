@@ -59,7 +59,7 @@
 .step-tab small{font-size:9px;letter-spacing:.08em;opacity:.7}
 .step-tab strong{font-size:14px;margin-top:2px}
 
-.decision-stage{padding:16px 0 58px}
+.decision-stage{padding:16px 0 58px;scroll-margin-top:94px}
 .stage-heading{display:grid;grid-template-columns:minmax(0,.82fr) minmax(280px,.58fr);gap:42px;align-items:end;margin-bottom:24px}
 .stage-heading>div{display:flex;align-items:baseline;gap:20px}
 .stage-index{margin:0;color:var(--decision-green);font-size:10px;font-weight:700;letter-spacing:.12em}
@@ -83,7 +83,7 @@ background-size:44px 44px;overflow:hidden}
 .region-map::before{content:"";position:absolute;left:7%;right:7%;top:55%;height:1px;background:#d7e2de;transform:rotate(-12deg);transform-origin:center}
 .region-button{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;min-width:0;padding:10px 12px;border:1px solid #9dbab1;background:#eaf3f0;color:#1c4940;text-align:left;transition:background .16s ease,border-color .16s ease,transform .16s ease,box-shadow .16s ease}
 .region-button strong{font-size:14px;line-height:1.3}
-.region-button span{margin-top:4px;font-size:9px;line-height:1.35;color:#57716a}
+.region-button span{margin-top:4px;font-size:10px;line-height:1.35;color:#57716a}
 .region-button:hover,.region-button:focus-visible{background:#d9ebe5;border-color:var(--decision-green);transform:translateY(-2px);box-shadow:0 7px 16px rgba(0,75,63,.1)}
 .region-button:active{transform:translateY(0);box-shadow:none;background:#cbe3db}
 .region-button[aria-selected="true"]{background:var(--decision-green-dark);border-color:var(--decision-green-dark);color:#fff}
@@ -192,9 +192,10 @@ background-size:44px 44px;overflow:hidden}
 .offer-dialog{width:min(460px,calc(100vw - 40px));height:100dvh;max-height:100dvh;margin:0 0 0 auto;border:0;border-left:1px solid var(--decision-line);padding:0;background:#fff;color:var(--decision-ink)}
 .offer-dialog::backdrop{background:rgba(8,27,22,.38)}
 .dialog-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:24px;border-bottom:1px solid var(--decision-line)}
-.dialog-head h2{margin:0;font-family:var(--font-display);font-size:28px}
+.dialog-head h2{margin:0;font-family:var(--font-display);font-size:27px;word-break:normal;overflow-wrap:normal;text-wrap:balance}
 .icon-button{width:46px;background:#f3f6f4;color:#33423e;font-size:24px}
 .icon-button:hover{background:#e5ece9}
+@supports (word-break:auto-phrase){#dialog-title{word-break:auto-phrase}}
 .dialog-content{padding:24px}
 .dialog-fact{padding:13px 0;border-bottom:1px solid var(--decision-line)}
 .dialog-fact span,.dialog-fact strong{display:block}
@@ -235,7 +236,7 @@ background-size:44px 44px;overflow:hidden}
   .step-tab{min-height:60px;border-right:0;border-bottom:1px solid var(--decision-line);grid-template-columns:34px 1fr}
   .step-tab:last-child{border-bottom:0}
   .step-number{width:28px;height:28px}
-  .decision-stage{padding-bottom:42px}
+  .decision-stage{padding-bottom:42px;scroll-margin-top:78px}
   .stage-heading>div{display:block}
   .stage-index{margin-bottom:4px}
   .stage-heading h2{font-size:34px}
@@ -246,7 +247,7 @@ background-size:44px 44px;overflow:hidden}
   .region-map{grid-template-columns:repeat(5,minmax(42px,1fr));grid-template-rows:66px 70px 74px 74px 74px;gap:7px;padding:24px 4px;min-height:430px;background-size:36px 36px}
   .region-button{padding:7px 8px}
   .region-button strong{font-size:12px}
-  .region-button span{font-size:8px}
+  .region-button span{font-size:9px}
   .region-hokkaido{grid-column:4/6;grid-row:1}
   .region-tohoku{grid-column:4/5;grid-row:2}
   .region-kanto{grid-column:4/5;grid-row:3}
@@ -278,7 +279,7 @@ background-size:44px 44px;overflow:hidden}
   .comparison-table td::before{content:attr(data-label);display:block;margin-bottom:4px;color:#77817e;font-size:8px;letter-spacing:.06em}
   .offer-detail-button{width:100%;min-height:46px}
   .prototype-boundary dl div{grid-template-columns:74px 1fr;gap:12px}
-  .offer-dialog{width:100%;height:auto;max-height:78dvh;margin:auto 0 0;border-left:0;border-top:1px solid var(--decision-line)}
+  .offer-dialog{width:100vw;max-width:100vw;height:auto;max-height:78dvh;margin:auto 0 0;inset:auto 0 0;border-left:0;border-top:1px solid var(--decision-line)}
   .dialog-head{padding:18px}
   .dialog-content{padding:18px}
 }
@@ -291,7 +292,7 @@ background-size:44px 44px;overflow:hidden}
   .party-field{grid-column:auto;border-top:0;border-bottom:0}
   .region-map{grid-template-columns:repeat(5,minmax(38px,1fr));gap:6px}
   .region-button strong{font-size:11px}
-  .region-button span{font-size:7px}
+  .region-button span{font-size:9px}
   .calendar-day,.calendar-blank{min-height:57px}
   .trip-summary span{font-size:10px}
 }
