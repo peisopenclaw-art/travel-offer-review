@@ -121,10 +121,12 @@ jobs:
                   "adults": (await page.locator("#adult-count").inner_text()).strip(),
               }
 
-              # Restore deterministic review state. URL entry routing may land on step 2.
-              await page.locator('.step-tab[data-step="1"]').click()
+              # Restore deterministic review state. Month changes intentionally re-route
+              # destination-known/date-unknown back to step 2, so return to step 1 afterward
+              # before exercising the map interaction itself.
               await page.locator("#travel-month").select_option("2026-10")
               await page.locator("#adult-minus").click()
+              await page.locator('.step-tab[data-step="1"]').click()
               await page.locator('[data-region="kanto"]').click()
 
               control = page.locator('[data-region="kanto"]')
