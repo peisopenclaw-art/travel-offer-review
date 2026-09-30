@@ -91,9 +91,6 @@
   }
 
   function offerDecisionState(offer) {
-    var lifecycle = offerStatus(offer);
-    if (lifecycle.key === "ended") return { key: "ended", label: "受付期間終了" };
-    if (lifecycle.key === "scheduled") return { key: "scheduled", label: "開始予定" };
     if ((offer.match_requirements || []).length) {
       return { key: "needs-more-data", label: offer.match_state_label || "追加条件の確認が必要" };
     }
