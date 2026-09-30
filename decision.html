@@ -69,8 +69,11 @@
       </label>
       <label class="field date-field">
         <span>宿泊日</span>
-        <input id="travel-date" name="travel-date" type="date" min="2026-10-01" max="2026-12-31">
-        <small>未定なら空欄でOK</small>
+        <div class="date-input-wrap">
+          <input id="travel-date" name="travel-date" type="date" min="2026-10-01" max="2026-12-31" aria-describedby="travel-date-hint">
+          <span class="date-placeholder" aria-hidden="true">日付を選択</span>
+        </div>
+        <small id="travel-date-hint">未定なら空欄でOK</small>
       </label>
       <fieldset class="field party-field">
         <legend>人数</legend>
