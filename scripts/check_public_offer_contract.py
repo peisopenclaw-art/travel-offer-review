@@ -52,7 +52,7 @@ known_ids = set(ids)
 
 for offer in offers:
     oid = offer.get("id") or "<missing-id>"
-    for key in ["provider", "product", "name", "scope", "booking_start", "stay_window", "property_scope", "benefit", "stacking", "match_requirements", "match_state_label", "summary", "condition_note", "source"]:
+    for key in ["provider", "product", "name", "scope", "booking_start", "stay_window", "property_scope", "benefit", "stacking", "match_requirements", "match_state_label", "summary", "condition_note", "source", "booking"]:
         if key not in offer:
             fail(f"{oid}: missing {key}")
     parse_dt(offer.get("booking_start"), f"{oid}.booking_start")
@@ -64,6 +64,13 @@ for offer in offers:
         fail(f"{oid}: official_url must be Yahoo! Travel official source in current sample")
     parse_dt(source.get("source_updated_at"), f"{oid}.source_updated_at")
     parse_dt(source.get("checked_at"), f"{oid}.checked_at")
+
+    booking = offer.get("booking") or {}
+    provider_url = booking.get("provider_url", "")
+    if not provider_url.startswith("https://travel.yahoo.co.jp/"):
+        fail(f"{oid}: booking.provider_url must use the official Yahoo! Travel destination in current sample")
+    if booking.get("monetization") != "official_non_affiliate_prototype":
+        fail(f"{oid}: prototype booking link must explicitly remain non-affiliate until revenue wiring is approved")
 
     benefit = offer.get("benefit") or {}
     semantics = benefit.get("rate_semantics")
@@ -103,6 +110,20 @@ if "offerDecisionState" not in ui:
     fail("decision-ui.js must expose additional-condition decision state")
 if "includes_offer_ids" not in ui:
     fail("decision-ui.js must surface included-benefit semantics")
+if "function entryStep" not in ui or "function loadUrlState" not in ui or "function buildStateUrl" not in ui:
+    fail("decision-ui.js must support the four entry states and shareable URL state")
+if "function estimateDiscount" not in ui:
+    fail("decision-ui.js must implement the guarded Level 2 estimator")
+estimate_block = ui.split("function estimateDiscount", 1)[1].split("function formatDateTime", 1)[0] if "function estimateDiscount" in ui and "function formatDateTime" in ui else ""
+for allowed in ['benefit.kind === "coupon_rate"', 'benefit.kind === "coupon_fixed"']:
+    if allowed not in estimate_block:
+        fail(f"safe estimator missing whitelist branch: {allowed}")
+if 'benefit.kind === "paypay_total_rate"' in estimate_block:
+    fail("paypay_total_rate must never be converted to a coupon discount estimate")
+if "ポイント型のため割引額に換算しません" not in ui:
+    fail("UI must explicitly refuse reward-point-to-discount conversion")
+if "navigator.share" not in ui or "navigator.clipboard" not in ui:
+    fail("shareable URL control must support native share or clipboard fallback")
 
 if errors:
     print("\n".join(errors))
