@@ -112,7 +112,7 @@ if "includes_offer_ids" not in ui:
     fail("decision-ui.js must surface included-benefit semantics")
 if "function entryStep" not in ui or "function loadUrlState" not in ui or "function buildStateUrl" not in ui:
     fail("decision-ui.js must support the four entry states and shareable URL state")
-if "function estimateDiscount" not in ui:
+if "function estimateDiscountForBenefit" not in ui or "function estimateDiscount" not in ui:
     fail("decision-ui.js must implement the guarded Level 2 estimator")
 estimate_block = ui.split("function estimateDiscount", 1)[1].split("function formatDateTime", 1)[0] if "function estimateDiscount" in ui and "function formatDateTime" in ui else ""
 for allowed in ['benefit.kind === "coupon_rate"', 'benefit.kind === "coupon_fixed"']:
@@ -120,6 +120,9 @@ for allowed in ['benefit.kind === "coupon_rate"', 'benefit.kind === "coupon_fixe
         fail(f"safe estimator missing whitelist branch: {allowed}")
 if 'benefit.kind === "paypay_total_rate"' in estimate_block:
     fail("paypay_total_rate must never be converted to a coupon discount estimate")
+for guard in ['benefit.currency === "JPY"', 'benefit.calculation_base === "eligible_stay_amount"', 'benefit.rounding !== "floor"', 'benefit.minimum_spend']:
+    if guard not in estimate_block:
+        fail(f"safe estimator missing required calculation guard: {guard}")
 if "ポイント型のため割引額に換算しません" not in ui:
     fail("UI must explicitly refuse reward-point-to-discount conversion")
 if "navigator.share" not in ui or "navigator.clipboard" not in ui:
