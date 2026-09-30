@@ -8,6 +8,8 @@ on:
       - "decision-ui.css"
       - "decision-ui.js"
       - "decision-data.json"
+      - "docs/public-offer-contract-v1.md"
+      - "scripts/check_public_offer_contract.py"
       - ".github/workflows/decision-ui-visual-qa.yml"
   workflow_dispatch:
 
@@ -20,6 +22,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: python3 scripts/check_site.py
+      - run: python3 scripts/check_public_offer_contract.py
       - run: pip install playwright
       - run: python -m playwright install chromium
       - name: Start isolated static preview
