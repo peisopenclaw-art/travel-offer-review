@@ -141,6 +141,10 @@ jobs:
                 color: getComputedStyle(el).color
               })""")
 
+              # State checks must not contaminate human-review screenshots.
+              await page.mouse.move(1, 1)
+              await page.evaluate("document.activeElement && document.activeElement.blur()")
+              await page.wait_for_timeout(120)
               await page.evaluate("window.scrollTo(0, 0)")
               await page.wait_for_timeout(120)
               map_path = OUT / f"decision-map-{width}.png"
