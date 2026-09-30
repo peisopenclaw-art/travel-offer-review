@@ -1,0 +1,260 @@
+name: decision-ui-visual-qa
+# temporary pre-human proof for decision UI prototype
+
+on:
+  pull_request:
+    paths:
+      - "decision.html"
+      - "decision-ui.css"
+      - "decision-ui.js"
+      - "decision-data.json"
+      - ".github/workflows/decision-ui-visual-qa.yml"
+  workflow_dispatch:
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 scripts/check_site.py
+      - run: pip install playwright
+      - run: python -m playwright install chromium
+      - name: Start isolated static preview
+        run: |
+          python3 -m http.server 4173 > /tmp/decision-ui-http.log 2>&1 &
+          for i in {1..20}; do
+            curl -fsS http://127.0.0.1:4173/decision.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/decision-ui-http.log
+          exit 1
+      - name: Mechanical QA and screenshots
+        run: |
+          mkdir -p artifacts/decision-ui
+          cat > /tmp/capture_decision.py <<'PY'
+          import asyncio
+          import json
+          from pathlib import Path
+          from playwright.async_api import async_playwright
+
+          OUT = Path("artifacts/decision-ui")
+          URL = "http://127.0.0.1:4173/decision.html"
+          VIEWPORTS = [(1440, 1100), (390, 844), (375, 812)]
+
+          async def metrics(page, width, stage):
+              scroll_w = await page.evaluate("document.documentElement.scrollWidth")
+              client_w = await page.evaluate("document.documentElement.clientWidth")
+              visible_panel = await page.locator(".decision-stage.is-active").get_attribute("data-panel")
+              heading_texts = await page.locator("h1,h2,h3").all_inner_texts()
+              return {
+                  "viewport": [width, await page.evaluate("window.innerHeight")],
+                  "stage": stage,
+                  "visible_panel": visible_panel,
+                  "scrollWidth": scroll_w,
+                  "clientWidth": client_w,
+                  "overflow": scroll_w > client_w,
+                  "headings": heading_texts,
+              }
+
+          async def capture_width(browser, width, height):
+              page_errors = []
+              console_errors = []
+              page = await browser.new_page(viewport={"width": width, "height": height})
+              page.on("pageerror", lambda exc: page_errors.append(str(exc)))
+              page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
+
+              resp = await page.goto(URL, wait_until="networkidle")
+              await page.evaluate("document.fonts.ready")
+              font_status = await page.evaluate("document.fonts.status")
+              font_checks = await page.evaluate("""async () => {
+                await document.fonts.load('16px "BIZ UDPGothic"', '旅行');
+                await document.fonts.load('16px "Shippori Mincho"', '旅行');
+                await document.fonts.load('16px "Zen Kaku Gothic New"', '旅行');
+                return {
+                  biz: document.fonts.check('16px "BIZ UDPGothic"', '旅行'),
+                  shippori: document.fonts.check('16px "Shippori Mincho"', '旅行'),
+                  zen: document.fonts.check('16px "Zen Kaku Gothic New"', '旅行')
+                };
+              }""")
+
+              title = await page.title()
+              h1 = (await page.locator("h1").inner_text()).strip()
+              data_notice = (await page.locator(".data-level-note").inner_text()).strip()
+
+              # Form persistence proof: change → reload → preserved.
+              await page.locator("#adult-plus").click()
+              await page.locator("#travel-month").select_option("2026-11")
+              await page.locator('[data-region="kanto"]').click()
+              await page.reload(wait_until="networkidle")
+              persisted = {
+                  "destination": await page.locator("#destination").input_value(),
+                  "month": await page.locator("#travel-month").input_value(),
+                  "adults": (await page.locator("#adult-count").inner_text()).strip(),
+              }
+
+              # Restore deterministic review state.
+              await page.locator("#travel-month").select_option("2026-10")
+              await page.locator("#adult-minus").click()
+              await page.locator('[data-region="kanto"]').click()
+
+              control = page.locator('[data-region="kanto"]')
+              await control.focus()
+              focus_visible = await control.evaluate("el => el.matches(':focus-visible')")
+              base_state = await control.evaluate("""el => {
+                const s = getComputedStyle(el);
+                return {background:s.backgroundColor, transform:s.transform, boxShadow:s.boxShadow};
+              }""")
+              await control.hover()
+              hover_state = await control.evaluate("""el => {
+                const s = getComputedStyle(el);
+                return {background:s.backgroundColor, transform:s.transform, boxShadow:s.boxShadow};
+              }""")
+              box = await control.bounding_box()
+              active_state = None
+              if box:
+                  await page.mouse.move(box["x"] + box["width"]/2, box["y"] + box["height"]/2)
+                  await page.mouse.down()
+                  await page.wait_for_timeout(220)
+                  active_state = await control.evaluate("""el => {
+                    const s = getComputedStyle(el);
+                    return {background:s.backgroundColor, transform:s.transform, boxShadow:s.boxShadow};
+                  }""")
+                  await page.mouse.up()
+
+              target_failures = await page.locator("button, select, .header-text-link").evaluate_all("""els => els.filter(el => {
+                const r = el.getBoundingClientRect();
+                const s = getComputedStyle(el);
+                if (s.display === 'none' || s.visibility === 'hidden' || r.width === 0 || r.height === 0) return false;
+                return r.width < 44 || r.height < 44;
+              }).map(el => ({tag:el.tagName, text:(el.textContent||'').trim(), width:r=>r.width, height:r=>r.height}))""")
+              # evaluate_all cannot serialize arrow callbacks inside object values reliably; run explicit measurement.
+              target_failures = await page.locator("button, select, .header-text-link").evaluate_all("""els => els.flatMap(el => {
+                const r = el.getBoundingClientRect();
+                const s = getComputedStyle(el);
+                if (s.display === 'none' || s.visibility === 'hidden' || r.width === 0 || r.height === 0) return [];
+                if (r.width >= 44 && r.height >= 44) return [];
+                return [{tag:el.tagName, text:(el.textContent||'').trim(), width:r.width, height:r.height}];
+              })""")
+
+              disabled_state = await page.locator("#effective-sort").evaluate("""el => ({
+                disabled: el.disabled,
+                cursor: getComputedStyle(el).cursor,
+                background: getComputedStyle(el).backgroundColor,
+                color: getComputedStyle(el).color
+              })""")
+
+              map_path = OUT / f"decision-map-{width}.png"
+              await page.screenshot(path=str(map_path), full_page=True)
+              map_metrics = await metrics(page, width, "map")
+
+              await page.locator("#to-calendar").click()
+              await page.wait_for_timeout(450)
+              await page.locator('[data-date="2026-10-14"]').click()
+              calendar_path = OUT / f"decision-calendar-{width}.png"
+              await page.screenshot(path=str(calendar_path), full_page=True)
+              calendar_metrics = await metrics(page, width, "calendar")
+
+              await page.locator("#to-compare").click()
+              await page.wait_for_timeout(450)
+              comparison_path = OUT / f"decision-compare-{width}.png"
+              await page.screenshot(path=str(comparison_path), full_page=True)
+              compare_metrics = await metrics(page, width, "compare")
+
+              await page.locator(".offer-detail-button").first.click()
+              await page.wait_for_timeout(180)
+              dialog_open = await page.locator("#offer-dialog").evaluate("el => el.open")
+              dialog_box = await page.locator("#offer-dialog").bounding_box()
+              details_path = OUT / f"decision-details-{width}.png"
+              await page.screenshot(path=str(details_path), full_page=True)
+              await page.locator("#dialog-close").click()
+
+              result = {
+                  "viewport": [width, height],
+                  "http_status": resp.status if resp else None,
+                  "title": title,
+                  "h1": h1,
+                  "data_notice": data_notice,
+                  "font_status": font_status,
+                  "font_checks": font_checks,
+                  "page_errors": page_errors,
+                  "console_errors": console_errors,
+                  "persisted": persisted,
+                  "target_failures": target_failures,
+                  "focus_visible": focus_visible,
+                  "base_state": base_state,
+                  "hover_state": hover_state,
+                  "active_state": active_state,
+                  "disabled_state": disabled_state,
+                  "dialog_open": dialog_open,
+                  "dialog_box": dialog_box,
+                  "screenshots": {
+                      "map": str(map_path),
+                      "calendar": str(calendar_path),
+                      "compare": str(comparison_path),
+                      "details": str(details_path),
+                  },
+                  "stage_metrics": [map_metrics, calendar_metrics, compare_metrics],
+              }
+              await page.close()
+              return result
+
+          async def main():
+              async with async_playwright() as p:
+                  browser = await p.chromium.launch()
+                  results = []
+                  for width, height in VIEWPORTS:
+                      results.append(await capture_width(browser, width, height))
+                  await browser.close()
+
+              (OUT / "qa.json").write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
+
+              failures = []
+              for r in results:
+                  v = r["viewport"]
+                  if r["http_status"] != 200:
+                      failures.append(f"{v}: http {r['http_status']}")
+                  normalized_h1 = "".join(r["h1"].split())
+                  if "どこへ行くか。いつ行くか。どこで予約するか。" not in normalized_h1:
+                      failures.append(f"{v}: identity h1 mismatch")
+                  if "実価格・在庫はまだ未連携" not in r["data_notice"]:
+                      failures.append(f"{v}: honest Level 1 boundary missing")
+                  if r["font_status"] != "loaded" or not all(r["font_checks"].values()):
+                      failures.append(f"{v}: web font")
+                  if r["page_errors"] or r["console_errors"]:
+                      failures.append(f"{v}: browser errors page={r['page_errors']} console={r['console_errors']}")
+                  if r["persisted"] != {"destination": "kanto", "month": "2026-11", "adults": "大人3人"}:
+                      failures.append(f"{v}: form persistence {r['persisted']}")
+                  if r["target_failures"]:
+                      failures.append(f"{v}: target size {r['target_failures']}")
+                  if not r["focus_visible"]:
+                      failures.append(f"{v}: focus-visible")
+                  if r["hover_state"] == r["base_state"]:
+                      failures.append(f"{v}: hover state not distinct")
+                  if not r["active_state"] or r["active_state"] == r["hover_state"]:
+                      failures.append(f"{v}: active state not distinct")
+                  if not r["disabled_state"]["disabled"] or r["disabled_state"]["cursor"] != "not-allowed":
+                      failures.append(f"{v}: disabled state")
+                  if not r["dialog_open"] or not r["dialog_box"]:
+                      failures.append(f"{v}: details dialog")
+                  panels = [m["visible_panel"] for m in r["stage_metrics"]]
+                  if panels != ["1", "2", "3"]:
+                      failures.append(f"{v}: stage flow {panels}")
+                  for m in r["stage_metrics"]:
+                      if m["overflow"]:
+                          failures.append(f"{v} stage {m['stage']}: horizontal overflow {m['scrollWidth']}>{m['clientWidth']}")
+              if failures:
+                  raise SystemExit("\n".join(failures))
+              print("decision UI mechanical QA: PASS")
+
+          asyncio.run(main())
+          PY
+          python /tmp/capture_decision.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: decision-ui-visual-qa
+          path: artifacts/decision-ui/
+          if-no-files-found: error
