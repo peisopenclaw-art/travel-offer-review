@@ -21,7 +21,7 @@ DBの正式情報 → 公開許可項目だけのJSON → 地図 / 宿泊日 / �
 9. 実価格・在庫が無いLevel 1では実質支払額の順位、最安、通常価格差を表示しない。
 10. 出典URL・出典更新日・確認時点を必須にする。不明値を0/falseで埋めない。
 11. 根拠URLと予約先URLを分離する。現プロトタイプの予約先は公式Yahoo!トラベルURLで、アフィリエイト接続済みとは扱わない。
-12. Level 2の推定割引額は `coupon_rate` / `coupon_fixed` のように単独クーポンとして計算条件が構造化されたものだけ。PayPayポイント等の `paypay_total_rate` を「割引額」に機械換算しない。
+12. Level 2の推定割引額は `coupon_rate` / `coupon_fixed` のように単独クーポンとして計算条件が構造化されたものだけ。最低利用額、JPY通貨単位、計算基準（eligible_stay_amount）、率型は丸め規則と上限有無まで確認済みでなければ計算しない。PayPayポイント等の `paypay_total_rate` を「割引額」に機械換算しない。
 13. 共有URLは destination / month / date / adults / price の旅行条件だけを持ち、認証情報・DB・ログ・内部IDを入れない。
 
 ## 現在の公開サンプル
