@@ -811,3 +811,8 @@ background-size:44px 44px;overflow:hidden}
   .data-level-note{min-height:52px}
   .data-level-note span{white-space:normal}
 }
+
+
+/* visual reset pass 3 — minimum pointer targets */
+.header-text-link{min-width:44px;justify-content:center}
+.region-button{min-height:48px}
