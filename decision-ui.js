@@ -129,26 +129,49 @@
     return new Intl.NumberFormat("ja-JP").format(Math.round(value)) + "円";
   }
 
-  function estimateDiscount(offer) {
-    if (!Number.isFinite(state.assumedPrice) || state.assumedPrice <= 0) {
+  function estimateDiscountForBenefit(benefit, assumedPrice) {
+    if (!Number.isFinite(assumedPrice) || assumedPrice <= 0) {
       return { key: "not-entered", label: "料金未入力" };
     }
-    var benefit = offer.benefit || {};
-    if (benefit.kind === "coupon_rate" && Number.isFinite(benefit.rate_percent)) {
-      if (Number.isFinite(benefit.minimum_spend) && state.assumedPrice < benefit.minimum_spend) {
+    benefit = benefit || {};
+    var baseReady = benefit.currency === "JPY" &&
+      benefit.calculation_base === "eligible_stay_amount" &&
+      Number.isFinite(benefit.minimum_spend) &&
+      benefit.minimum_spend >= 0;
+
+    if (benefit.kind === "coupon_rate") {
+      var capKnown = Object.prototype.hasOwnProperty.call(benefit, "max_discount_amount") &&
+        (benefit.max_discount_amount === null || Number.isFinite(benefit.max_discount_amount));
+      if (!baseReady || benefit.rounding !== "floor" || !Number.isFinite(benefit.rate_percent) || !capKnown) {
+        return { key: "not-calculable", label: "計算条件が未確認" };
+      }
+      if (assumedPrice < benefit.minimum_spend) {
         return { key: "below-minimum", label: "最低利用額未満" };
       }
-      var rateAmount = state.assumedPrice * benefit.rate_percent / 100;
+      var rateAmount = Math.floor(assumedPrice * benefit.rate_percent / 100);
       if (Number.isFinite(benefit.max_discount_amount)) rateAmount = Math.min(rateAmount, benefit.max_discount_amount);
       return { key: "estimated", label: "約" + formatYen(rateAmount) };
     }
-    if (benefit.kind === "coupon_fixed" && Number.isFinite(benefit.discount_amount)) {
-      if (Number.isFinite(benefit.minimum_spend) && state.assumedPrice < benefit.minimum_spend) {
+
+    if (benefit.kind === "coupon_fixed") {
+      if (!baseReady || !Number.isFinite(benefit.discount_amount)) {
+        return { key: "not-calculable", label: "計算条件が未確認" };
+      }
+      if (assumedPrice < benefit.minimum_spend) {
         return { key: "below-minimum", label: "最低利用額未満" };
       }
-      return { key: "estimated", label: "約" + formatYen(Math.min(state.assumedPrice, benefit.discount_amount)) };
+      return { key: "estimated", label: "約" + formatYen(Math.min(assumedPrice, benefit.discount_amount)) };
     }
+
     return { key: "not-calculable", label: "ポイント型のため割引額に換算しません" };
+  }
+
+  function estimateDiscount(offer) {
+    return estimateDiscountForBenefit(offer.benefit || {}, state.assumedPrice);
+  }
+
+  if (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost") {
+    window.__TOKUERABI_QA__ = Object.freeze({ estimateDiscountForBenefit: estimateDiscountForBenefit });
   }
 
   function formatDateTime(value) {
