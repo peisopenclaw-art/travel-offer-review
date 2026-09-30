@@ -1,0 +1,57 @@
+{
+  "as_of": "2026-09-30T13:28:00+09:00",
+  "data_level": 1,
+  "price_inventory_available": false,
+  "regional_comparison_ready": false,
+  "travel_date_comparison_ready": false,
+  "regions": [
+    {"id":"hokkaido","name":"北海道","map_label":"北海道"},
+    {"id":"tohoku","name":"東北","map_label":"東北"},
+    {"id":"kanto","name":"関東","map_label":"関東"},
+    {"id":"chubu","name":"中部","map_label":"中部"},
+    {"id":"kinki","name":"近畿","map_label":"近畿"},
+    {"id":"chugoku","name":"中国","map_label":"中国"},
+    {"id":"shikoku","name":"四国","map_label":"四国"},
+    {"id":"kyushu","name":"九州・沖縄","map_label":"九州・沖縄"}
+  ],
+  "offers": [
+    {
+      "id":"yahoo-always-10",
+      "provider":"Yahoo!トラベル",
+      "product":"宿泊",
+      "name":"いつでも誰でも10％お得",
+      "scope":"全国",
+      "discount_kind":"reward_rate",
+      "rate_label":"10％",
+      "rate_value":10,
+      "amount_label":"上限額の確認データなし",
+      "booking_start":"2023-09-25T12:00:00+09:00",
+      "booking_end":null,
+      "travel_start":"2023-09-26",
+      "travel_end":null,
+      "status_hint":"ongoing",
+      "summary":"オンラインカード決済でPayPayポイント合計10％。一部対象外施設があります。",
+      "condition_note":"対象外施設は公式ページ上の表示で確認します。",
+      "official_url":"https://travel.yahoo.co.jp/feature/campaign_pointup/"
+    },
+    {
+      "id":"yahoo-popular-15",
+      "provider":"Yahoo!トラベル",
+      "product":"宿泊",
+      "name":"超得セール！人気宿スペシャル",
+      "scope":"全国",
+      "discount_kind":"reward_rate",
+      "rate_label":"15％以上",
+      "rate_value":15,
+      "amount_label":"上限額の確認データなし",
+      "booking_start":"2026-10-01T12:00:00+09:00",
+      "booking_end":"2026-10-09T11:59:00+09:00",
+      "travel_start":null,
+      "travel_end":null,
+      "status_hint":"scheduled",
+      "summary":"対象施設・プラン限定。オンラインカード決済でPayPayポイント15％以上。",
+      "condition_note":"旅行日ごとの適用条件はこのプロトタイプではまだ判定しません。",
+      "official_url":"https://travel.yahoo.co.jp/notice/special/post_7/"
+    }
+  ]
+}
