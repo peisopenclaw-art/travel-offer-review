@@ -15,7 +15,7 @@
   <link rel="canonical" href="https://travel.tokuerabi.com/decision.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260929-shippori-v1">
   <link rel="stylesheet" href="decision-ui.css?v=20260930-v2">
 </head>
@@ -33,10 +33,14 @@
 <main id="decision-main" class="decision-main">
   <section class="decision-intro" aria-labelledby="decision-title">
     <div>
-      <p class="eyebrow">DECISION FIRST / LEVEL 1</p>
-      <h1 id="decision-title"><span class="semantic-phrase">どこへ行くか。</span><span class="semantic-phrase">いつ行くか。</span><span class="semantic-phrase">どこで予約するか。</span></h1>
+      <p class="eyebrow">TOKU ERABI</p>
+      <h1 id="decision-title">旅先を、<span>お得から選ぼう。</span></h1>
+      <p class="intro-copy">行き先 → 泊まる日 → 予約先。3つ選ぶだけで、旅行のお得を絞り込みます。</p>
     </div>
-    <p class="intro-copy">わかる条件だけ入れてください。行き先や日付が未定でも、その状態から比較を始められます。</p>
+    <div class="intro-visual" aria-hidden="true">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG" alt="">
+      <span>TRAVEL, SIMPLIFIED.</span>
+    </div>
   </section>
 
   <section class="trip-console" aria-label="旅行条件">
@@ -104,22 +108,23 @@
   <section class="decision-stage is-active" data-panel="1" aria-labelledby="map-title">
     <div class="stage-heading">
       <div>
-        <p class="stage-index">01 / DESTINATION</p>
-        <h2 id="map-title"><span class="semantic-phrase">どこがお得？</span></h2>
+        <p class="stage-index">STEP 1</p>
+        <h2 id="map-title">どこへ行く？</h2>
       </div>
-      <p>地域を選ぶと、その地域で確認できている施策だけを右側にまとめます。</p>
+      <p>気になる地域を選ぶだけ。次に、その地域で泊まる日を選びます。</p>
     </div>
 
     <div class="map-workspace">
       <div class="map-board">
         <div class="map-board-head">
           <div>
-            <strong>日本地図</strong>
-            <span>地域単位</span>
+            <strong>日本地図から選ぶ</strong>
+            <span>地域をタップ</span>
           </div>
-          <p id="regional-readiness">確認済み施策は全国共通が中心です</p>
+          <p id="regional-readiness">いま確認できる特典は全国施策が中心です</p>
         </div>
         <div id="region-map" class="region-map" role="listbox" aria-label="旅行先の地域を選択">
+          <img class="japan-map-visual" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Regions_and_Prefectures_of_Japan_-_blank.svg" alt="" aria-hidden="true">
           <button class="region-button region-hokkaido" type="button" data-region="hokkaido" role="option" aria-selected="false" data-tooltip="北海道を選ぶ">
             <strong>北海道</strong><span>確認済み 3施策</span>
           </button>
@@ -170,6 +175,34 @@
         <button id="to-calendar" class="primary-action" type="button" disabled>この地域で日付を見る <span aria-hidden="true">→</span></button>
       </aside>
     </div>
+
+    <section class="destination-strip" aria-labelledby="popular-destination-title">
+      <div class="destination-strip-head">
+        <div>
+          <span>POPULAR DESTINATIONS</span>
+          <h3 id="popular-destination-title">写真から選ぶ</h3>
+        </div>
+        <p>地図が苦手なら、気になる景色をタップ。</p>
+      </div>
+      <div class="destination-cards">
+        <button class="destination-card" type="button" data-region="kyushu" aria-pressed="false">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG" alt="">
+          <span><strong>沖縄</strong><small>九州・沖縄</small></span>
+        </button>
+        <button class="destination-card" type="button" data-region="kinki" aria-pressed="false">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/02/KiyomizuderaAutumnPond.jpg" alt="">
+          <span><strong>京都</strong><small>近畿</small></span>
+        </button>
+        <button class="destination-card" type="button" data-region="chubu" aria-pressed="false">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/FujiLakeShore.jpg" alt="">
+          <span><strong>富士山周辺</strong><small>中部</small></span>
+        </button>
+        <button class="destination-card" type="button" data-region="hokkaido" aria-pressed="false">
+          <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Hinode%20park%20lavender%204.jpg" alt="">
+          <span><strong>北海道</strong><small>北海道</small></span>
+        </button>
+      </div>
+    </section>
   </section>
 
   <section class="decision-stage" data-panel="2" aria-labelledby="calendar-title" hidden>
