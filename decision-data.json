@@ -1,7 +1,7 @@
 {
   "schema_version": "public-offer-v1",
-  "data_version": "2026-09-30T16:26:00+09:00",
-  "as_of": "2026-09-30T16:26:00+09:00",
+  "data_version": "2026-09-30T19:25:00+09:00",
+  "as_of": "2026-09-30T19:25:00+09:00",
   "data_level": 1,
   "price_inventory_available": false,
   "regional_comparison_ready": false,
@@ -150,6 +150,57 @@
         "official_url": "https://travel.yahoo.co.jp/notice/special/post_7/",
         "source_updated_at": "2026-09-29T00:00:00+09:00",
         "checked_at": "2026-09-30T15:25:00+09:00"
+      },
+      "booking": {
+        "provider_url": "https://travel.yahoo.co.jp/",
+        "monetization": "official_non_affiliate_prototype"
+      }
+    },
+    {
+      "id": "yahoo-luxury-30",
+      "provider": "Yahoo!トラベル",
+      "product": "宿泊",
+      "name": "ラグジュアリールームセール",
+      "scope": "全国",
+      "booking_start": "2026-10-01T12:00:00+09:00",
+      "booking_end": "2026-10-09T11:59:00+09:00",
+      "stay_window": {
+        "mode": "provider_plan_availability",
+        "label": "対象プランの予約可能期間に準ずる",
+        "campaign_level_date_decidable": false
+      },
+      "property_scope": {
+        "mode": "limited_property_plan",
+        "label": "対象施設・部屋限定"
+      },
+      "benefit": {
+        "kind": "paypay_total_rate",
+        "display_label": "30％以上",
+        "rate_percent": 30,
+        "rate_semantics": "minimum_total",
+        "cap_label": "上限額はキャンペーン表では明示なし",
+        "realization": "instant_or_later",
+        "includes_offer_ids": [
+          "yahoo-always-10"
+        ]
+      },
+      "stacking": {
+        "mode": "exclusive_best_campaign",
+        "selection_group": "yahoo-stay-special-campaign",
+        "note": "対象キャンペーン同士は重複適用せず、予約時に最もお得なキャンペーンが適用されます。「30％以上」は「いつでも誰でも10％お得」と宿泊施設提供ポイントを含む総率です。"
+      },
+      "match_requirements": [
+        "property_plan_check",
+        "stay_date_plan_check",
+        "online_card_payment"
+      ],
+      "match_state_label": "対象施設・部屋の確認が必要",
+      "summary": "対象施設・部屋限定。オンラインカード決済でPayPayポイント等の総率が30％以上。",
+      "condition_note": "宿泊日は対象プランの予約可能期間に準ずるため、旅行日だけでは適用確定しません。対象施設・部屋と支払方法を確認します。",
+      "source": {
+        "official_url": "https://travel.yahoo.co.jp/notice/special/post_7/",
+        "source_updated_at": "2026-09-29T00:00:00+09:00",
+        "checked_at": "2026-09-30T19:25:00+09:00"
       },
       "booking": {
         "provider_url": "https://travel.yahoo.co.jp/",
