@@ -32,14 +32,14 @@
 
 <main id="decision-main" class="decision-main">
   <section class="decision-intro" aria-labelledby="decision-title">
-    <div>
-      <p class="eyebrow">TOKU ERABI</p>
-      <h1 id="decision-title"><span class="intro-lead semantic-phrase">旅先を、</span><span class="intro-accent semantic-phrase">お得から選ぼう。</span></h1>
-      <p class="intro-copy">行き先 → 泊まる日 → 予約先。3つ選ぶだけで、旅行のお得を絞り込みます。</p>
+    <div class="intro-copy-block">
+      <p class="step-kicker">1 / 3　行き先を決める</p>
+      <h1 id="decision-title"><span class="semantic-phrase">どこへ行く？</span></h1>
+      <p class="intro-copy">行き先が決まっていても、まだ決まっていなくても大丈夫。泊まる日と人数を入れると、使える特典へ最短で進めます。</p>
     </div>
-    <div class="intro-visual" aria-hidden="true">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG" alt="">
-      <span>TRAVEL, SIMPLIFIED.</span>
+    <div class="intro-visual">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG" alt="青い海と白い砂浜が広がる沖縄の風景">
+      <div class="intro-photo-caption"><strong>旅先を、お得から。</strong><span>行き先 → 宿泊日 → 予約先</span></div>
     </div>
   </section>
 
@@ -80,15 +80,15 @@
           <button id="adult-plus" type="button" aria-label="大人を1人増やす">＋</button>
         </div>
       </fieldset>
+      <button id="search-conditions" class="search-action" type="button">旅行先から選ぶ <span aria-hidden="true">→</span></button>
     </form>
     <div class="data-level-note">
-      <strong>確認済み特典で比較</strong>
-      <span>実価格・在庫は未連携</span>
+      <span><strong>確認済み特典</strong>をもとに比較</span>
       <button id="share-state" class="share-state" type="button">条件URLを共有</button>
     </div>
   </section>
 
-  <nav class="decision-steps" aria-label="比較ステップ">
+  <nav class="decision-steps"<nav class="decision-steps" aria-label="比較ステップ">
     <button class="step-tab is-active" type="button" data-step="1" aria-current="step">
       <span class="step-number">1</span>
       <span><small>まず</small><strong>どこへ行く？</strong></span>
@@ -179,10 +179,10 @@
     <section class="destination-strip" aria-labelledby="popular-destination-title">
       <div class="destination-strip-head">
         <div>
-          <span>POPULAR DESTINATIONS</span>
-          <h3 id="popular-destination-title">写真から選ぶ</h3>
+          <span>旅行先から選ぶ</span>
+          <h3 id="popular-destination-title">景色から選ぶ</h3>
         </div>
-        <p>地図が苦手なら、気になる景色をタップ。</p>
+        <p>地図より写真のほうが選びやすいときはこちら。</p>
       </div>
       <div class="destination-cards">
         <button class="destination-card" type="button" data-region="kyushu" aria-pressed="false">
@@ -243,7 +243,7 @@
 
     <div class="compare-toolbar">
       <div id="trip-summary" class="trip-summary"></div>
-      <button id="effective-sort" class="secondary-action" type="button" disabled title="実価格・在庫連携後に有効になります">実質支払額で並べる</button>
+      <button id="effective-sort" class="secondary-action" type="button" disabled hidden title="実価格・在庫連携後に有効になります">実質支払額で並べる</button>
     </div>
 
     <details class="assumed-price-panel" aria-labelledby="assumed-price-title">
@@ -275,16 +275,7 @@
     <details class="comparison-method"><summary>比較条件について</summary><p class="comparison-note">率だけでは順位付けしません。「15％以上」などが基礎10％を含む場合は足し算せず、施設・プラン・支払方法等を確認してから適用を判断します。</p></details>
   </section>
 
-  <section class="prototype-boundary" aria-labelledby="boundary-title">
-    <div>
-      <p class="eyebrow">IMPLEMENTED BOUNDARY</p>
-      <h2 id="boundary-title"><span class="boundary-phrase">今できること /</span> <span class="boundary-phrase">次にデータ連携すること</span></h2>
-    </div>
-    <dl>
-      <div><dt>今できる</dt><dd>4つの旅行条件入口 / 再読込・共有URLで条件保持 / 確認済み施策を重複加算せず比較 / 安全に計算できる単独クーポンだけ推定割引額を算出 / 追加条件を明示 / 正式予約先・根拠へ進む</dd></div>
-      <div><dt>次に連携</dt><dd>施設・プランまで含む適用確定 / 地域別の施策差 / 宿・交通の実価格 / 在庫 / 税・手数料 / 実質支払額</dd></div>
-    </dl>
-  </section>
+
 </main>
 
 <dialog id="offer-dialog" class="offer-dialog" aria-labelledby="dialog-title">
