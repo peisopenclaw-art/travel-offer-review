@@ -1896,3 +1896,9 @@ body[data-decision-step="3"] .decision-steps{margin-top:8px}
 .stepper{grid-template-columns:44px 1fr 44px;min-height:44px}
 .stepper button{width:44px;height:44px}
 .share-state{min-height:44px;padding:8px 2px}
+
+/* Pre-human visual fixes from fresh screenshots */
+.date-field{display:flex}
+.decision-intro h1 span{color:var(--decision-navy)}
+.data-level-note>span{display:none}
+.map-sea-label{display:none}
