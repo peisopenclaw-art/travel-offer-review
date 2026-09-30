@@ -303,8 +303,10 @@ jobs:
                   if r["http_status"] != 200:
                       failures.append(f"{v}: http {r['http_status']}")
                   normalized_h1 = "".join(r["h1"].split())
-                  if "旅先を、お得から選ぼう。" not in normalized_h1:
-                      failures.append(f"{v}: identity h1 mismatch")
+                  if normalized_h1 != "どこへ行く？":
+                      failures.append(f"{v}: identity h1 mismatch {r['h1']}")
+                  if "旅行のお得を決める" not in r["title"]:
+                      failures.append(f"{v}: identity title mismatch {r['title']}")
                   if "実価格・在庫は未連携" not in r["data_notice"]:
                       failures.append(f"{v}: honest Level 1 boundary missing")
                   estimator_expected = {
