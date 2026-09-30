@@ -62,6 +62,29 @@ jobs:
                   "headings": heading_texts,
               }
 
+          async def check_entry_routes(browser):
+              cases = [
+                  ("", "1", "", ""),
+                  ("?destination=kanto&month=2026-10", "2", "kanto", ""),
+                  ("?date=2026-10-14", "1", "", "2026-10-14"),
+                  ("?destination=kanto&date=2026-10-14", "3", "kanto", "2026-10-14"),
+              ]
+              results = []
+              for query, expected_panel, expected_destination, expected_date in cases:
+                  page = await browser.new_page(viewport={"width": 390, "height": 844})
+                  await page.goto(URL + query, wait_until="networkidle")
+                  results.append({
+                      "query": query,
+                      "expected_panel": expected_panel,
+                      "visible_panel": await page.locator(".decision-stage.is-active").get_attribute("data-panel"),
+                      "destination": await page.locator("#destination").input_value(),
+                      "date": await page.locator("#travel-date").input_value(),
+                      "expected_destination": expected_destination,
+                      "expected_date": expected_date,
+                  })
+                  await page.close()
+              return results
+
           async def capture_width(browser, width, height):
               page_errors = []
               console_errors = []
@@ -98,7 +121,8 @@ jobs:
                   "adults": (await page.locator("#adult-count").inner_text()).strip(),
               }
 
-              # Restore deterministic review state.
+              # Restore deterministic review state. URL entry routing may land on step 2.
+              await page.locator('.step-tab[data-step="1"]').click()
               await page.locator("#travel-month").select_option("2026-10")
               await page.locator("#adult-minus").click()
               await page.locator('[data-region="kanto"]').click()
@@ -129,7 +153,7 @@ jobs:
                   }""")
                   await page.mouse.up()
 
-              target_failures = await page.locator("button, select, .header-text-link").evaluate_all("""els => els.flatMap(el => {
+              target_failures = await page.locator("button, select, input, .header-text-link").evaluate_all("""els => els.flatMap(el => {
                 const r = el.getBoundingClientRect();
                 const s = getComputedStyle(el);
                 if (s.display === 'none' || s.visibility === 'hidden' || r.width === 0 || r.height === 0) return [];
@@ -170,6 +194,8 @@ jobs:
 
               await page.locator("#to-compare").click()
               await page.wait_for_timeout(450)
+              await page.locator("#assumed-price").fill("50000")
+              await page.wait_for_timeout(120)
               compare_heading_clear = await page.evaluate("""() => {
                 const header = document.querySelector('.decision-header').getBoundingClientRect();
                 const heading = document.querySelector('[data-panel="3"] h2').getBoundingClientRect();
@@ -180,11 +206,14 @@ jobs:
               comparison_path = OUT / f"decision-compare-{width}.png"
               await page.screenshot(path=str(comparison_path), full_page=True)
               compare_metrics = await metrics(page, width, "compare")
+              estimate_texts = [text.strip() for text in await page.locator(".estimate-cell").all_inner_texts()]
+              share_url = page.url
 
               await page.locator(".offer-detail-button").first.click()
               await page.wait_for_timeout(180)
               dialog_open = await page.locator("#offer-dialog").evaluate("el => el.open")
               dialog_box = await page.locator("#offer-dialog").bounding_box()
+              booking_href = await page.locator('.dialog-links a').nth(1).get_attribute("href")
               details_path = OUT / f"decision-details-{width}.png"
               await page.screenshot(path=str(details_path), full_page=False)
               await page.locator("#dialog-close").click()
@@ -208,6 +237,9 @@ jobs:
                   "disabled_state": disabled_state,
                   "dialog_open": dialog_open,
                   "dialog_box": dialog_box,
+                  "estimate_texts": estimate_texts,
+                  "share_url": share_url,
+                  "booking_href": booking_href,
                   "calendar_heading_clear": calendar_heading_clear,
                   "compare_heading_clear": compare_heading_clear,
                   "screenshots": {
@@ -224,14 +256,23 @@ jobs:
           async def main():
               async with async_playwright() as p:
                   browser = await p.chromium.launch()
+                  entry_routes = await check_entry_routes(browser)
                   results = []
                   for width, height in VIEWPORTS:
                       results.append(await capture_width(browser, width, height))
                   await browser.close()
 
               (OUT / "qa.json").write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
+              (OUT / "entry-routes.json").write_text(json.dumps(entry_routes, ensure_ascii=False, indent=2), encoding="utf-8")
 
               failures = []
+              for route in entry_routes:
+                  if route["visible_panel"] != route["expected_panel"]:
+                      failures.append(f"entry {route['query']}: panel {route['visible_panel']} != {route['expected_panel']}")
+                  if route["destination"] != route["expected_destination"]:
+                      failures.append(f"entry {route['query']}: destination {route['destination']} != {route['expected_destination']}")
+                  if route["date"] != route["expected_date"]:
+                      failures.append(f"entry {route['query']}: date {route['date']} != {route['expected_date']}")
               for r in results:
                   v = r["viewport"]
                   if r["http_status"] != 200:
@@ -259,6 +300,12 @@ jobs:
                       failures.append(f"{v}: disabled state")
                   if not r["dialog_open"] or not r["dialog_box"]:
                       failures.append(f"{v}: details dialog")
+                  if not r["estimate_texts"] or any("ポイント型のため割引額に換算しません" not in text for text in r["estimate_texts"]):
+                      failures.append(f"{v}: reward points were not safely excluded from discount estimate: {r['estimate_texts']}")
+                  if "destination=kanto" not in r["share_url"] or "date=2026-10-14" not in r["share_url"] or "price=50000" not in r["share_url"]:
+                      failures.append(f"{v}: share URL missing state {r['share_url']}")
+                  if not (r["booking_href"] or "").startswith("https://travel.yahoo.co.jp/"):
+                      failures.append(f"{v}: official booking destination missing {r['booking_href']}")
                   if not r["calendar_heading_clear"] or not r["compare_heading_clear"]:
                       failures.append(f"{v}: sticky header overlaps stage heading")
                   if v[0] <= 390 and r["dialog_box"] and r["dialog_box"]["width"] < v[0] - 2:
