@@ -181,11 +181,13 @@ background-size:44px 44px;overflow:hidden}
 .comparison-table td{font-size:12px}
 .comparison-table tbody tr:last-child td{border-bottom:0}
 .comparison-table tbody tr:hover{background:#fafcfb}
-.provider-cell strong,.provider-cell span{display:block}
-.provider-cell strong{font-size:13px}
-.provider-cell span{margin-top:4px;color:#65736e;font-size:10px}
-.rate-cell strong{font-size:20px;color:var(--decision-green-dark)}
-.amount-cell,.estimate-cell{color:#687570}
+.benefit-cell strong,.benefit-cell span,.provider-cell strong,.provider-cell span{display:block}
+.benefit-cell strong{font-family:var(--font-display);font-size:25px;line-height:1.2;color:var(--decision-green-dark)}
+.benefit-cell span{margin-top:6px;color:#65736e;font-size:10px;line-height:1.5}
+.eligibility-cell strong{display:block;max-width:190px;font-size:12px;line-height:1.55}
+.provider-cell strong{font-size:12px;color:#44534e}
+.provider-cell span{margin-top:4px;color:#74807c;font-size:10px}
+.estimate-cell{color:#687570}
 .estimate-cell strong{display:block;color:var(--decision-green-dark);font-size:13px}
 .status-line{display:inline-flex;margin-top:7px;padding:3px 6px;border:1px solid #bed0ca;background:#edf5f2;color:#31584f;font-size:9px;font-weight:700}
 .status-line.scheduled{background:#fff5e6;border-color:#e6c78b;color:#75531c}
