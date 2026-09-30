@@ -247,7 +247,7 @@ background-size:44px 44px;overflow:hidden}
   .region-map{grid-template-columns:repeat(5,minmax(42px,1fr));grid-template-rows:66px 70px 74px 74px 74px;gap:7px;padding:24px 4px;min-height:430px;background-size:36px 36px}
   .region-button{padding:7px 8px}
   .region-button strong{font-size:12px}
-  .region-button span{font-size:9px}
+  .region-button span{font-size:10px}
   .region-hokkaido{grid-column:4/6;grid-row:1}
   .region-tohoku{grid-column:4/5;grid-row:2}
   .region-kanto{grid-column:4/5;grid-row:3}
@@ -276,7 +276,7 @@ background-size:44px 44px;overflow:hidden}
   .comparison-table td:first-child{grid-column:1/-1}
   .comparison-table td:nth-child(4){grid-column:1/-1}
   .comparison-table td:last-child{grid-column:1/-1;border-bottom:0}
-  .comparison-table td::before{content:attr(data-label);display:block;margin-bottom:4px;color:#77817e;font-size:8px;letter-spacing:.06em}
+  .comparison-table td::before{content:attr(data-label);display:block;margin-bottom:4px;color:#687570;font-size:9px;letter-spacing:.06em}
   .offer-detail-button{width:100%;min-height:46px}
   .prototype-boundary dl div{grid-template-columns:74px 1fr;gap:12px}
   .offer-dialog{width:100vw;max-width:100vw;height:auto;max-height:78dvh;margin:auto 0 0;inset:auto 0 0;border-left:0;border-top:1px solid var(--decision-line)}
@@ -292,7 +292,7 @@ background-size:44px 44px;overflow:hidden}
   .party-field{grid-column:auto;border-top:0;border-bottom:0}
   .region-map{grid-template-columns:repeat(5,minmax(38px,1fr));gap:6px}
   .region-button strong{font-size:11px}
-  .region-button span{font-size:9px}
+  .region-button span{font-size:10px}
   .calendar-day,.calendar-blank{min-height:57px}
   .trip-summary span{font-size:10px}
 }
