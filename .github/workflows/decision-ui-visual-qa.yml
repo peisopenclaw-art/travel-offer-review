@@ -71,7 +71,7 @@ jobs:
               ]
               results = []
               for query, expected_panel, expected_destination, expected_date in cases:
-                  page = await browser.new_page(viewport={"width": 390, "height": 844})
+                  page = await browser.new_page(viewport={"width": 390, "height": 844}, locale="ja-JP", timezone_id="Asia/Tokyo")
                   await page.goto(URL + query, wait_until="networkidle")
                   results.append({
                       "query": query,
@@ -88,7 +88,7 @@ jobs:
           async def capture_width(browser, width, height):
               page_errors = []
               console_errors = []
-              page = await browser.new_page(viewport={"width": width, "height": height})
+              page = await browser.new_page(viewport={"width": width, "height": height}, locale="ja-JP", timezone_id="Asia/Tokyo")
               page.on("pageerror", lambda exc: page_errors.append(str(exc)))
               page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
 
