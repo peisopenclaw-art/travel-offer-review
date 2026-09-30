@@ -349,7 +349,7 @@ background-size:44px 44px;overflow:hidden}
 .decision-page select,
 .decision-page input{font-family:"Noto Sans JP",system-ui,-apple-system,sans-serif}
 .decision-page .header-context{display:none}
-.decision-page .header-text-link{color:var(--travel-navy);font-weight:600}
+.decision-page .header-text-link{min-width:44px;padding-inline:8px;color:var(--travel-navy);font-weight:600}
 .decision-main{max-width:1200px;padding-top:34px}
 .decision-intro{
   grid-template-columns:minmax(0,1.05fr) minmax(300px,.72fr);
@@ -537,6 +537,7 @@ background-size:44px 44px;overflow:hidden}
   position:absolute;
   z-index:3;
   min-width:122px;
+  min-height:44px;
   padding:10px 12px 11px;
   border:1px solid rgba(13,42,84,.12);
   border-radius:14px;
