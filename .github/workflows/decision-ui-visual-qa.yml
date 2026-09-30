@@ -213,8 +213,13 @@ jobs:
 
               await page.locator("#to-compare").click()
               await page.wait_for_timeout(450)
+              estimator_panel = page.locator(".assumed-price-panel")
+              if not await estimator_panel.evaluate("el => el.open"):
+                  await estimator_panel.locator("summary").click()
               await page.locator("#assumed-price").fill("50000")
               await page.wait_for_timeout(120)
+              if await estimator_panel.evaluate("el => el.open"):
+                  await estimator_panel.locator("summary").click()
               compare_heading_clear = await page.evaluate("""() => {
                 const header = document.querySelector('.decision-header').getBoundingClientRect();
                 const heading = document.querySelector('[data-panel="3"] h2').getBoundingClientRect();
