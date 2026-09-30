@@ -448,7 +448,7 @@ background-size:44px 44px;overflow:hidden}
 .step-tab{
   display:flex;
   flex:0 1 auto;
-  min-height:42px;
+  min-height:46px;
   padding:7px 12px;
   border:0;
   border-radius:999px;
@@ -705,7 +705,7 @@ background-size:44px 44px;overflow:hidden}
     justify-content:center;
     gap:6px;
     min-width:0;
-    min-height:40px;
+    min-height:46px;
     padding:6px 5px;
     border-radius:10px;
   }
