@@ -7,6 +7,7 @@
     month: "2026-10",
     adults: 2,
     travelDate: "",
+    assumedPrice: null,
     step: 1
   };
   var data = null;
@@ -36,14 +37,71 @@
       if (/^2026-(10|11|12)$/.test(saved.month || "")) state.month = saved.month;
       if (Number.isInteger(saved.adults) && saved.adults >= 1 && saved.adults <= 9) state.adults = saved.adults;
       if (/^2026-(10|11|12)-\d{2}$/.test(saved.travelDate || "")) state.travelDate = saved.travelDate;
+      if (Number.isFinite(saved.assumedPrice) && saved.assumedPrice >= 0) state.assumedPrice = saved.assumedPrice;
       if ([1, 2, 3].indexOf(saved.step) >= 0) state.step = saved.step;
     } catch (error) {
       sessionStorage.removeItem(STORAGE_KEY);
     }
   }
 
+  function entryStep() {
+    if (state.destination && state.travelDate) return 3;
+    if (state.destination) return 2;
+    return 1;
+  }
+
+  function loadUrlState() {
+    var params = new URLSearchParams(window.location.search);
+    var touched = false;
+    var destination = params.get("destination");
+    var month = params.get("month");
+    var date = params.get("date");
+    var adults = Number(params.get("adults"));
+    var price = Number(params.get("price"));
+
+    if (destination !== null && (destination === "" || ["hokkaido","tohoku","kanto","chubu","kinki","chugoku","shikoku","kyushu"].indexOf(destination) >= 0)) {
+      state.destination = destination;
+      touched = true;
+    }
+    if (/^2026-(10|11|12)$/.test(month || "")) {
+      state.month = month;
+      touched = true;
+    }
+    if (/^2026-(10|11|12)-\d{2}$/.test(date || "") && !Number.isNaN(Date.parse(date + "T00:00:00+09:00"))) {
+      state.travelDate = date;
+      state.month = date.slice(0, 7);
+      touched = true;
+    }
+    if (Number.isInteger(adults) && adults >= 1 && adults <= 9) {
+      state.adults = adults;
+      touched = true;
+    }
+    if (Number.isFinite(price) && price >= 0) {
+      state.assumedPrice = Math.round(price);
+      touched = true;
+    }
+    if (touched) state.step = entryStep();
+    return touched;
+  }
+
+  function buildStateUrl() {
+    var url = new URL(window.location.href);
+    url.search = "";
+    if (state.destination) url.searchParams.set("destination", state.destination);
+    url.searchParams.set("month", state.month);
+    if (state.travelDate) url.searchParams.set("date", state.travelDate);
+    if (state.adults !== 2) url.searchParams.set("adults", String(state.adults));
+    if (Number.isFinite(state.assumedPrice) && state.assumedPrice > 0) url.searchParams.set("price", String(state.assumedPrice));
+    return url;
+  }
+
+  function syncUrl() {
+    window.history.replaceState(null, "", buildStateUrl().toString());
+  }
+
   function persistState() {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    syncUrl();
   }
 
   function regionById(id) {
@@ -65,6 +123,32 @@
     if (!dateString) return "未選択";
     var parts = dateString.split("-");
     return Number(parts[1]) + "月" + Number(parts[2]) + "日";
+  }
+
+  function formatYen(value) {
+    return new Intl.NumberFormat("ja-JP").format(Math.round(value)) + "円";
+  }
+
+  function estimateDiscount(offer) {
+    if (!Number.isFinite(state.assumedPrice) || state.assumedPrice <= 0) {
+      return { key: "not-entered", label: "料金未入力" };
+    }
+    var benefit = offer.benefit || {};
+    if (benefit.kind === "coupon_rate" && Number.isFinite(benefit.rate_percent)) {
+      if (Number.isFinite(benefit.minimum_spend) && state.assumedPrice < benefit.minimum_spend) {
+        return { key: "below-minimum", label: "最低利用額未満" };
+      }
+      var rateAmount = state.assumedPrice * benefit.rate_percent / 100;
+      if (Number.isFinite(benefit.max_discount_amount)) rateAmount = Math.min(rateAmount, benefit.max_discount_amount);
+      return { key: "estimated", label: "約" + formatYen(rateAmount) };
+    }
+    if (benefit.kind === "coupon_fixed" && Number.isFinite(benefit.discount_amount)) {
+      if (Number.isFinite(benefit.minimum_spend) && state.assumedPrice < benefit.minimum_spend) {
+        return { key: "below-minimum", label: "最低利用額未満" };
+      }
+      return { key: "estimated", label: "約" + formatYen(Math.min(state.assumedPrice, benefit.discount_amount)) };
+    }
+    return { key: "not-calculable", label: "ポイント型のため割引額に換算しません" };
   }
 
   function formatDateTime(value) {
@@ -132,6 +216,8 @@
   function syncControls() {
     els.destination.value = state.destination;
     els.month.value = state.month;
+    els.travelDate.value = state.travelDate;
+    els.assumedPrice.value = Number.isFinite(state.assumedPrice) && state.assumedPrice > 0 ? String(state.assumedPrice) : "";
     els.adultCount.textContent = "大人" + state.adults + "人";
     els.adultMinus.disabled = state.adults <= 1;
     els.adultPlus.disabled = state.adults >= 9;
@@ -148,6 +234,7 @@
     step2.disabled = !hasDestination;
     step3.disabled = !(hasDestination && hasDate);
     els.toCalendar.disabled = !hasDestination;
+    els.toCalendar.innerHTML = hasDate ? 'この条件で予約先を見る <span aria-hidden="true">→</span>' : 'この地域で日付を見る <span aria-hidden="true">→</span>';
     els.toCompare.disabled = !(hasDestination && hasDate);
   }
 
@@ -277,10 +364,12 @@
     els.comparisonBody.innerHTML = offers.map(function (offer) {
       var status = offerStatus(offer);
       var decision = offerDecisionState(offer);
+      var estimate = estimateDiscount(offer);
       return '<tr>' +
         '<td class="provider-cell" data-label="予約先・施策"><strong>' + escapeHtml(offer.provider) + '</strong><span>' + escapeHtml(offer.name) + '</span><span class="status-line ' + status.key + '">' + escapeHtml(status.label) + '</span><span class="status-line ' + decision.key + '">' + escapeHtml(decision.label) + '</span></td>' +
         '<td class="rate-cell" data-label="特典率"><strong>' + escapeHtml(benefitLabel(offer)) + '</strong></td>' +
         '<td class="amount-cell" data-label="割引額・上限">' + escapeHtml(benefitCapLabel(offer)) + '</td>' +
+        '<td class="estimate-cell" data-label="推定割引額"><strong>' + escapeHtml(estimate.label) + '</strong></td>' +
         '<td data-label="予約期間">' + escapeHtml(formatDateTime(offer.booking_start)) + '<br>〜 ' + escapeHtml(formatDateTime(offer.booking_end)) + '</td>' +
         '<td data-label="詳細"><button class="offer-detail-button" type="button" data-offer="' + escapeHtml(offer.id) + '">条件を見る</button></td>' +
       '</tr>';
@@ -293,12 +382,46 @@
     });
   }
 
+  function renderEstimateNote() {
+    if (!Number.isFinite(state.assumedPrice) || state.assumedPrice <= 0) {
+      els.estimateNote.textContent = "旅行全体の予算ではなく、クーポン計算の対象になる宿泊料金だけを入れます。現在のポイント型施策は割引額へ換算しません。";
+      return;
+    }
+    var calculable = offersForRegion().some(function (offer) {
+      var kind = offer.benefit && offer.benefit.kind;
+      return kind === "coupon_rate" || kind === "coupon_fixed";
+    });
+    els.estimateNote.textContent = calculable
+      ? formatYen(state.assumedPrice) + "を対象宿泊料金として、条件が揃った単独クーポンだけ推定します。"
+      : formatYen(state.assumedPrice) + "を入力しました。現在の確認済み施策はポイント型なので、割引額として10％/15％を機械換算しません。";
+  }
+
+  async function shareState() {
+    var url = buildStateUrl().toString();
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: document.title, url: url });
+        announce("旅行条件のURLを共有しました");
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+        announce("旅行条件のURLをコピーしました");
+        return;
+      }
+    } catch (error) {
+      if (error && error.name === "AbortError") return;
+    }
+    window.prompt("このURLをコピーしてください", url);
+  }
+
   function openOffer(id) {
     var offer = data.offers.find(function (item) { return item.id === id; });
     if (!offer) return;
     var status = offerStatus(offer);
     var decision = offerDecisionState(offer);
     var included = includesBenefitNote(offer);
+    var estimate = estimateDiscount(offer);
     els.dialogProvider.textContent = offer.provider + " / " + offer.product;
     els.dialogTitle.textContent = offer.name;
     els.dialogContent.innerHTML =
@@ -307,11 +430,15 @@
       '<div class="dialog-fact"><span>この入力だけでの判定</span><strong>' + escapeHtml(decision.label) + '</strong></div>' +
       '<div class="dialog-fact"><span>特典</span><strong>' + escapeHtml(benefitLabel(offer)) + '</strong></div>' +
       '<div class="dialog-fact"><span>上限・最低額</span><strong>' + escapeHtml(benefitCapLabel(offer)) + '</strong></div>' +
+      '<div class="dialog-fact"><span>入力料金での推定割引額</span><strong>' + escapeHtml(estimate.label) + '</strong></div>' +
       '<div class="dialog-fact"><span>予約期間</span><strong>' + escapeHtml(formatDateTime(offer.booking_start)) + ' 〜 ' + escapeHtml(formatDateTime(offer.booking_end)) + '</strong></div>' +
       '<div class="dialog-fact"><span>宿泊日の条件</span><strong>' + escapeHtml(stayWindowLabel(offer)) + '</strong></div>' +
       (included ? '<div class="dialog-fact"><span>重複・内包</span><strong>' + escapeHtml(included) + '</strong></div>' : '') +
       '<div class="dialog-fact"><span>注意</span><strong>' + escapeHtml(offer.condition_note) + '</strong></div>' +
-      '<a class="dialog-source" href="' + escapeHtml(offer.source.official_url) + '" target="_blank" rel="noopener noreferrer">公式情報で確認する ↗</a>';
+      '<div class="dialog-links">' +
+        '<a class="dialog-source" href="' + escapeHtml(offer.source.official_url) + '" target="_blank" rel="noopener noreferrer">公式条件を見る ↗</a>' +
+        '<a class="dialog-source" href="' + escapeHtml(offer.booking.provider_url) + '" target="_blank" rel="noopener noreferrer">正式予約先を開く ↗</a>' +
+      '</div>';
     if (typeof els.dialog.showModal === "function") {
       els.dialog.showModal();
     } else {
@@ -343,13 +470,13 @@
     renderCalendar();
     renderBookingHints();
     renderComparison();
+    renderEstimateNote();
   }
 
   function bindEvents() {
     els.destination.addEventListener("change", function () {
       state.destination = this.value;
-      state.travelDate = "";
-      state.step = 1;
+      state.step = entryStep();
       persistState();
       renderAll();
       if (state.destination) announce(destinationName() + "を選びました");
@@ -358,10 +485,19 @@
     els.month.addEventListener("change", function () {
       state.month = this.value;
       if (state.travelDate && state.travelDate.slice(0, 7) !== state.month) state.travelDate = "";
-      if (state.step === 3 && !state.travelDate) state.step = 2;
+      state.step = entryStep();
       persistState();
       renderAll();
       announce(formatMonth(state.month) + "に変更しました");
+    });
+
+    els.travelDate.addEventListener("change", function () {
+      state.travelDate = this.value;
+      if (state.travelDate) state.month = state.travelDate.slice(0, 7);
+      state.step = entryStep();
+      persistState();
+      renderAll();
+      announce(state.travelDate ? formatDate(state.travelDate) + "を宿泊日にしました" : "宿泊日を未定に戻しました");
     });
 
     els.adultMinus.addEventListener("click", function () {
@@ -381,8 +517,7 @@
     $all(".region-button").forEach(function (button) {
       button.addEventListener("click", function () {
         state.destination = this.dataset.region;
-        state.travelDate = "";
-        state.step = 1;
+        state.step = state.travelDate ? 3 : 1;
         persistState();
         renderAll();
         announce(destinationName() + "を選びました");
@@ -396,8 +531,16 @@
       });
     });
 
-    els.toCalendar.addEventListener("click", function () { goToStep(2); });
+    els.toCalendar.addEventListener("click", function () { goToStep(state.travelDate ? 3 : 2); });
     els.toCompare.addEventListener("click", function () { goToStep(3); });
+    els.assumedPrice.addEventListener("input", function () {
+      var value = this.value === "" ? null : Number(this.value);
+      state.assumedPrice = Number.isFinite(value) && value >= 0 ? Math.round(value) : null;
+      persistState();
+      renderComparison();
+      renderEstimateNote();
+    });
+    els.shareState.addEventListener("click", shareState);
 
     els.dialogClose.addEventListener("click", function () {
       els.dialog.close();
@@ -411,6 +554,10 @@
   function cacheElements() {
     els.destination = $("#destination");
     els.month = $("#travel-month");
+    els.travelDate = $("#travel-date");
+    els.assumedPrice = $("#assumed-price");
+    els.shareState = $("#share-state");
+    els.estimateNote = $("#estimate-note");
     els.adultMinus = $("#adult-minus");
     els.adultPlus = $("#adult-plus");
     els.adultCount = $("#adult-count");
@@ -439,6 +586,8 @@
   async function boot() {
     cacheElements();
     loadStoredState();
+    loadUrlState();
+    persistState();
     try {
       var response = await fetch("decision-data.json", { cache: "no-store" });
       if (!response.ok) throw new Error("decision data http " + response.status);
