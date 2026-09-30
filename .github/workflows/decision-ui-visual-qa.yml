@@ -109,6 +109,19 @@ jobs:
               title = await page.title()
               h1 = (await page.locator("h1").inner_text()).strip()
               data_notice = (await page.locator(".data-level-note").inner_text()).strip()
+              estimator_contract = await page.evaluate("""() => {
+                const f = window.__TOKUERABI_QA__ && window.__TOKUERABI_QA__.estimateDiscountForBenefit;
+                if (!f) return {hook:false};
+                return {
+                  hook: true,
+                  capped: f({kind:"coupon_rate",currency:"JPY",calculation_base:"eligible_stay_amount",minimum_spend:10000,rate_percent:20,max_discount_amount:3000,rounding:"floor"}, 20000).label,
+                  below: f({kind:"coupon_rate",currency:"JPY",calculation_base:"eligible_stay_amount",minimum_spend:10000,rate_percent:20,max_discount_amount:3000,rounding:"floor"}, 8000).label,
+                  fixed: f({kind:"coupon_fixed",currency:"JPY",calculation_base:"eligible_stay_amount",minimum_spend:30000,discount_amount:5000}, 40000).label,
+                  badCurrency: f({kind:"coupon_rate",currency:"USD",calculation_base:"eligible_stay_amount",minimum_spend:0,rate_percent:20,max_discount_amount:null,rounding:"floor"}, 20000).label,
+                  missingRounding: f({kind:"coupon_rate",currency:"JPY",calculation_base:"eligible_stay_amount",minimum_spend:0,rate_percent:20,max_discount_amount:null}, 20000).label,
+                  points: f({kind:"paypay_total_rate",rate_percent:10}, 50000).label
+                };
+              }""")
 
               # Form persistence proof: change → reload → preserved.
               await page.locator("#adult-plus").click()
@@ -226,6 +239,7 @@ jobs:
                   "title": title,
                   "h1": h1,
                   "data_notice": data_notice,
+                  "estimator_contract": estimator_contract,
                   "font_status": font_status,
                   "font_checks": font_checks,
                   "page_errors": page_errors,
@@ -284,6 +298,17 @@ jobs:
                       failures.append(f"{v}: identity h1 mismatch")
                   if "実価格・在庫はまだ未連携" not in r["data_notice"]:
                       failures.append(f"{v}: honest Level 1 boundary missing")
+                  estimator_expected = {
+                      "hook": True,
+                      "capped": "約3,000円",
+                      "below": "最低利用額未満",
+                      "fixed": "約5,000円",
+                      "badCurrency": "計算条件が未確認",
+                      "missingRounding": "計算条件が未確認",
+                      "points": "ポイント型のため割引額に換算しません",
+                  }
+                  if r["estimator_contract"] != estimator_expected:
+                      failures.append(f"{v}: estimator contract {r['estimator_contract']}")
                   if r["font_status"] != "loaded" or not all(r["font_checks"].values()):
                       failures.append(f"{v}: web font")
                   if r["page_errors"] or r["console_errors"]:
