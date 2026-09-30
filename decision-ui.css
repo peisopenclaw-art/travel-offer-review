@@ -816,3 +816,215 @@ background-size:44px 44px;overflow:hidden}
 /* visual reset pass 3 — minimum pointer targets */
 .header-text-link{min-width:44px;justify-content:center}
 .region-button{min-height:48px}
+
+
+/* visual reset pass 4 — one-screen-one-decision for steps 2 and 3 */
+body[data-decision-step="2"] .decision-intro,
+body[data-decision-step="3"] .decision-intro,
+body[data-decision-step="2"] .trip-console,
+body[data-decision-step="3"] .trip-console{
+  display:none;
+}
+body[data-decision-step="2"] .decision-main,
+body[data-decision-step="3"] .decision-main{
+  padding-top:24px;
+}
+body[data-decision-step="2"] .decision-steps,
+body[data-decision-step="3"] .decision-steps{
+  margin-top:0;
+}
+.destination-cards{grid-template-columns:repeat(2,minmax(0,1fr));max-width:760px}
+.booking-hint{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px 12px;
+  align-items:center;
+  padding:14px 0;
+  border-color:var(--travel-line);
+}
+.booking-benefit-main{min-width:0}
+.booking-benefit-main .hint-rate{
+  display:block;
+  margin:0;
+  color:var(--travel-pink);
+  font-family:"Inter","Noto Sans JP",sans-serif;
+  font-size:24px;
+  line-height:1.1;
+  font-weight:800;
+}
+.booking-benefit-main>span{
+  margin-top:3px;
+  color:var(--travel-navy);
+  font-size:10px;
+  font-weight:700;
+}
+.booking-hint>.status-line{
+  margin:0;
+  white-space:nowrap;
+}
+.booking-hint>small{
+  grid-column:1/-1;
+  color:#8a93a2;
+  font-size:9px;
+  line-height:1.5;
+}
+.timing-note{
+  margin:12px 0 18px;
+  padding:10px 0 0;
+  border-top:1px solid var(--travel-line);
+  border-bottom:0;
+  color:#8a93a2!important;
+}
+.secondary-action:disabled{display:none}
+.trip-summary span{
+  min-height:34px;
+  padding:6px 10px;
+  border:0;
+  border-radius:999px;
+  background:#eef3fa;
+  color:var(--travel-navy);
+}
+details.assumed-price-panel{
+  display:block;
+  margin:0 0 14px;
+  padding:0;
+  overflow:hidden;
+  border:1px solid var(--travel-line);
+  border-radius:14px;
+  box-shadow:none;
+}
+.assumed-price-panel>summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:52px;
+  padding:12px 16px;
+  color:var(--travel-navy);
+  cursor:pointer;
+  font-weight:700;
+  list-style:none;
+}
+.assumed-price-panel>summary::-webkit-details-marker{display:none}
+.assumed-price-panel>summary::after{
+  content:"+";
+  display:grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:#f1f4f8;
+  color:var(--travel-navy);
+  font-size:18px;
+}
+.assumed-price-panel[open]>summary::after{content:"−"}
+.assumed-price-panel>summary small{
+  margin-left:auto;
+  color:#8a93a2;
+  font-size:10px;
+  font-weight:600;
+}
+.assumed-price-panel[open]>summary{border-bottom:1px solid var(--travel-line)}
+.assumed-price-content{
+  display:grid;
+  grid-template-columns:minmax(220px,.55fr) minmax(0,1.45fr);
+  gap:20px;
+  align-items:center;
+  padding:14px 16px 16px;
+}
+.assumed-price-content>p{
+  margin:0;
+  color:#7a8392;
+  font-size:10px;
+  line-height:1.7;
+}
+.comparison-table-wrap{
+  overflow-x:auto;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.comparison-table{
+  border-collapse:separate;
+  border-spacing:0 9px;
+}
+.comparison-table th{
+  padding-top:8px;
+  padding-bottom:8px;
+  background:transparent;
+  color:#8a93a2;
+}
+.comparison-table tbody td{
+  background:#fff;
+  border-top:1px solid var(--travel-line);
+  border-bottom:1px solid var(--travel-line);
+}
+.comparison-table tbody td:first-child{
+  border-left:1px solid var(--travel-line);
+  border-radius:14px 0 0 14px;
+}
+.comparison-table tbody td:last-child{
+  border-right:1px solid var(--travel-line);
+  border-radius:0 14px 14px 0;
+}
+.comparison-table tbody tr:hover td{background:#fff8fa}
+.benefit-cell strong{font-size:28px;font-weight:800;letter-spacing:-.03em}
+.offer-detail-button{
+  min-height:44px;
+  padding:9px 14px;
+  border:0;
+  border-radius:10px;
+  background:var(--travel-pink);
+  color:#fff;
+  box-shadow:0 7px 16px rgba(244,37,104,.14);
+}
+.offer-detail-button:hover{background:var(--travel-pink-dark)}
+.comparison-method{
+  margin-top:6px;
+  color:#7b8494;
+  font-size:10px;
+}
+.comparison-method summary{
+  display:inline-flex;
+  min-height:44px;
+  align-items:center;
+  cursor:pointer;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.comparison-method .comparison-note{
+  max-width:760px;
+  margin:0 0 8px;
+  line-height:1.7;
+}
+@media(max-width:720px){
+  body[data-decision-step="2"] .decision-main,
+  body[data-decision-step="3"] .decision-main{padding-top:14px}
+  .destination-cards{max-width:none}
+  .calendar-workspace{gap:12px}
+  .timing-panel{min-height:0}
+  .booking-hint{grid-template-columns:minmax(0,1fr) auto}
+  .assumed-price-content{grid-template-columns:1fr;gap:10px}
+  .comparison-table tbody{gap:10px}
+  .comparison-table tr{
+    border:1px solid var(--travel-line);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 7px 18px rgba(17,35,67,.05);
+  }
+  .comparison-table tbody td,
+  .comparison-table tbody td:first-child,
+  .comparison-table tbody td:last-child{
+    border-left:0;
+    border-right:0;
+    border-top:0;
+    border-radius:0;
+    background:#fff;
+  }
+  .comparison-table tbody td:first-child{
+    padding-top:16px;
+    background:linear-gradient(180deg,#fff7fa 0%,#fff 100%);
+  }
+  .offer-detail-button{min-height:48px}
+}
