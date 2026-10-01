@@ -5,6 +5,12 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "dist"
 PUBLIC_FILES = [
     "index.html",
+    "offers.html",
+    "decision.html",
+    "decision-ui.css",
+    "decision-ui.js",
+    "decision-data.json",
+    "yahoo-travel-campaign.html",
     "about.html",
     "privacy.html",
     "styles.css",
