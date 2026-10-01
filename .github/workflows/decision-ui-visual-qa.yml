@@ -29,7 +29,7 @@ jobs:
         run: |
           python3 -m http.server 4173 > /tmp/decision-ui-http.log 2>&1 &
           for i in {1..20}; do
-            curl -fsS http://127.0.0.1:4173/decision.html >/dev/null && exit 0
+            curl -fsS http://127.0.0.1:4173/ >/dev/null && exit 0
             sleep 1
           done
           cat /tmp/decision-ui-http.log
@@ -44,7 +44,7 @@ jobs:
           from playwright.async_api import async_playwright
 
           OUT = Path("artifacts/decision-ui")
-          URL = "http://127.0.0.1:4173/decision.html"
+          URL = "http://127.0.0.1:4173/"
           VIEWPORTS = [(1440, 1100), (390, 844), (375, 812)]
 
           async def metrics(page, width, stage):
