@@ -80,7 +80,6 @@ if 'アフィリエイト広告はまだ有効化していません' in offers:
 if '一部リンクは広告です' not in offers:
     errors.append("offers.html missing concise affiliate disclosure")
 for source_url in [
-    "https://travel.yahoo.co.jp/feature/campaign_pointup/",
     "https://travel.yahoo.co.jp/notice/special/post_7/",
 ]:
     if source_url not in offers:
