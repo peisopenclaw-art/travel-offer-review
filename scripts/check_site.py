@@ -58,16 +58,16 @@ for required in ["旅行オファー比較", "一次情報", "広告"]:
 
 affiliate_href = "https://px.a8.net/svt/ejp?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6"
 affiliate_pixel = "https://www13.a8.net/0.gif?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6"
-if offers.count(affiliate_href) != 2:
-    errors.append(f"offers.html affiliate href count must be 2, got {offers.count(affiliate_href)}")
-if offers.count(affiliate_pixel) != 2:
-    errors.append(f"offers.html affiliate pixel count must be 2, got {offers.count(affiliate_pixel)}")
+if offers.count(affiliate_href) != 3:
+    errors.append(f"offers.html affiliate href count must be 3, got {offers.count(affiliate_href)}")
+if offers.count(affiliate_pixel) != 3:
+    errors.append(f"offers.html affiliate pixel count must be 3, got {offers.count(affiliate_pixel)}")
 official_affiliate_material = f'''<a href="{affiliate_href}" rel="nofollow">【ヤフートラベル】</a>\n              <img border="0" width="1" height="1" src="{affiliate_pixel}" alt="">'''
 official_affiliate_material_feature = f'''<a href="{affiliate_href}" rel="nofollow">【ヤフートラベル】</a>\n              <img border="0" width="1" height="1" src="{affiliate_pixel}" alt="">'''
-if offers.count('<a href="' + affiliate_href + '" rel="nofollow">【ヤフートラベル】</a>') != 2:
-    errors.append("offers.html must keep the A8-generated Yahoo! Travel text anchor exactly twice")
-if offers.count('<img border="0" width="1" height="1" src="' + affiliate_pixel + '" alt="">') != 2:
-    errors.append("offers.html must keep the A8-generated tracking pixel markup exactly twice")
+if offers.count('<a href="' + affiliate_href + '" rel="nofollow">【ヤフートラベル】</a>') != 3:
+    errors.append("offers.html must keep the A8-generated Yahoo! Travel text anchor exactly three times")
+if offers.count('<img border="0" width="1" height="1" src="' + affiliate_pixel + '" alt="">') != 3:
+    errors.append("offers.html must keep the A8-generated tracking pixel markup exactly three times")
 if f'class="primary-cta" href="{affiliate_href}"' in offers or "Yahoo!トラベルで見る" in offers:
     errors.append("offers.html must not customize the A8-generated Yahoo! Travel ad material")
 if 'アフィリエイト広告はまだ有効化していません' in offers:

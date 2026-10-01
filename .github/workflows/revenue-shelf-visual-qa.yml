@@ -1,0 +1,205 @@
+name: revenue-shelf-visual-qa
+
+on:
+  pull_request:
+    paths:
+      - "offers.html"
+      - "styles.css"
+      - ".github/workflows/revenue-shelf-visual-qa.yml"
+  workflow_dispatch:
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 scripts/check_site.py
+      - run: pip install playwright
+      - run: python -m playwright install chromium
+      - name: Start isolated static preview
+        run: |
+          python3 -m http.server 4173 > /tmp/revenue-shelf-http.log 2>&1 &
+          for i in {1..20}; do
+            curl -fsS http://127.0.0.1:4173/offers.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/revenue-shelf-http.log
+          exit 1
+      - name: Mechanical QA and screenshots
+        run: |
+          mkdir -p artifacts/revenue-shelf
+          cat > /tmp/capture_revenue_shelf.py <<'PY'
+          import asyncio, json
+          from pathlib import Path
+          from playwright.async_api import async_playwright
+
+          OUT = Path("artifacts/revenue-shelf")
+          URL = "http://127.0.0.1:4173/offers.html"
+          VIEWPORTS = [(1440, 1100), (390, 844), (375, 812)]
+          REVIEW_TIME = "2026-10-01T20:55:00+09:00"
+          AFTER_END = "2026-10-09T12:00:00+09:00"
+          A8_HREF = "https://px.a8.net/svt/ejp?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6"
+          A8_PIXEL = "https://www13.a8.net/0.gif?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6"
+
+          async def main():
+              results = []
+              async with async_playwright() as p:
+                  browser = await p.chromium.launch()
+                  for width, height in VIEWPORTS:
+                      page_errors, console_errors, outbound_a8 = [], [], []
+                      page = await browser.new_page(viewport={"width": width, "height": height}, locale="ja-JP", timezone_id="Asia/Tokyo")
+                      page.on("pageerror", lambda exc: page_errors.append(str(exc)))
+                      page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
+                      page.on("request", lambda req: outbound_a8.append(req.url) if req.url.startswith("https://px.a8.net/") else None)
+                      resp = await page.goto(URL, wait_until="networkidle")
+                      await page.evaluate("document.fonts.ready")
+                      font_status = await page.evaluate("document.fonts.status")
+                      font_checks = await page.evaluate("""async () => {
+                        await document.fonts.load('16px "BIZ UDPGothic"', '旅行');
+                        await document.fonts.load('16px "Shippori Mincho"', '旅行');
+                        await document.fonts.load('16px "Zen Kaku Gothic New"', '旅行');
+                        return {
+                          biz: document.fonts.check('16px "BIZ UDPGothic"', '旅行'),
+                          shippori: document.fonts.check('16px "Shippori Mincho"', '旅行'),
+                          zen: document.fonts.check('16px "Zen Kaku Gothic New"', '旅行')
+                        };
+                      }""")
+                      await page.evaluate(f"updateOfferStatuses(Date.parse('{REVIEW_TIME}'))")
+
+                      title = await page.title()
+                      h1 = (await page.locator("h1").inner_text()).strip()
+                      scroll_w = await page.evaluate("document.documentElement.scrollWidth")
+                      client_w = await page.evaluate("document.documentElement.clientWidth")
+                      statuses_review = await page.locator(".secondary-offers .status").all_inner_texts()
+                      names = await page.locator(".secondary-offers h3").all_inner_texts()
+                      ids = await page.locator("#yahoo-always-10, #yahoo-luxury-30, #yahoo-popular-15").evaluate_all("els => els.map(el => el.id)")
+                      a8 = await page.locator(".a8-ad-material").evaluate_all("""els => els.map(el => ({
+                        href: el.querySelector('a')?.href || '',
+                        pixel: el.querySelector('img')?.src || ''
+                      }))""")
+
+                      control = page.locator("#yahoo-luxury-30 .a8-ad-material a")
+                      await control.focus()
+                      focus_visible = await control.evaluate("el => el.matches(':focus-visible')")
+                      await control.hover()
+                      hover_state = await control.evaluate("""el => {
+                        const s = getComputedStyle(el);
+                        return {background:s.backgroundColor, transform:s.transform, boxShadow:s.boxShadow};
+                      }""")
+                      box = await control.bounding_box()
+                      active_state = None
+                      if box:
+                          await page.mouse.move(box["x"] + box["width"]/2, box["y"] + box["height"]/2)
+                          await page.mouse.down()
+                          await page.wait_for_timeout(220)
+                          active_state = await control.evaluate("""el => {
+                            const s = getComputedStyle(el);
+                            return {background:s.backgroundColor, transform:s.transform, boxShadow:s.boxShadow};
+                          }""")
+                          await page.mouse.move(1, 1)
+                          await page.mouse.up()
+
+                      target_failures = await page.locator("a").evaluate_all("""els => els.flatMap(el => {
+                        const r = el.getBoundingClientRect();
+                        const s = getComputedStyle(el);
+                        if (el.closest('.photo-credits')) return [];
+                        if (s.display === 'none' || s.visibility === 'hidden' || r.width === 0 || r.height === 0) return [];
+                        return (r.width < 24 || r.height < 24) ? [{text:(el.textContent||'').trim(), width:r.width, height:r.height}] : [];
+                      })""")
+
+                      await page.evaluate(f"updateOfferStatuses(Date.parse('{REVIEW_TIME}'))")
+                      await page.mouse.move(1, 1)
+                      await page.evaluate("document.activeElement && document.activeElement.blur()")
+                      await page.evaluate("window.scrollTo(0, 0)")
+                      await page.wait_for_timeout(100)
+                      shot = OUT / f"revenue-shelf-{width}.png"
+                      await page.screenshot(path=str(shot), full_page=True)
+
+                      await page.evaluate(f"updateOfferStatuses(Date.parse('{AFTER_END}'))")
+                      statuses_after = await page.locator(".secondary-offers .status").all_inner_texts()
+
+                      results.append({
+                        "viewport":[width,height],
+                        "http_status": resp.status if resp else None,
+                        "title":title,
+                        "h1":h1,
+                        "scrollWidth":scroll_w,
+                        "clientWidth":client_w,
+                        "overflow":scroll_w > client_w,
+                        "font_status":font_status,
+                        "font_checks":font_checks,
+                        "statuses_review":statuses_review,
+                        "statuses_after":statuses_after,
+                        "names":names,
+                        "ids":ids,
+                        "a8":a8,
+                        "page_errors":page_errors,
+                        "console_errors":console_errors,
+                        "target_failures":target_failures,
+                        "focus_visible":focus_visible,
+                        "hover_state":hover_state,
+                        "active_state":active_state,
+                        "a8_anchor_navigation_requests":outbound_a8,
+                        "screenshot":str(shot),
+                      })
+                      await page.close()
+
+                  reflow = {}
+                  page = await browser.new_page(viewport={"width": 320, "height": 812}, locale="ja-JP", timezone_id="Asia/Tokyo")
+                  await page.goto(URL, wait_until="networkidle")
+                  reflow["width320"] = {
+                    "scrollWidth": await page.evaluate("document.documentElement.scrollWidth"),
+                    "clientWidth": await page.evaluate("document.documentElement.clientWidth")
+                  }
+                  await page.close()
+
+                  page = await browser.new_page(viewport={"width": 375, "height": 812}, locale="ja-JP", timezone_id="Asia/Tokyo")
+                  await page.goto(URL, wait_until="networkidle")
+                  await page.add_style_tag(content="html { font-size: 200% !important; }")
+                  await page.wait_for_timeout(100)
+                  reflow["text200"] = {
+                    "scrollWidth": await page.evaluate("document.documentElement.scrollWidth"),
+                    "clientWidth": await page.evaluate("document.documentElement.clientWidth")
+                  }
+                  await page.close()
+                  await browser.close()
+
+              (OUT/"reflow.json").write_text(json.dumps(reflow, ensure_ascii=False, indent=2), encoding="utf-8")
+              (OUT/"qa.json").write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
+              failures=[]
+              expected_names=["ラグジュアリールームセール 30％以上","超得セール！ 人気宿スペシャル"]
+              for r in results:
+                  v=r["viewport"]
+                  if r["http_status"] != 200: failures.append(f"{v}: http")
+                  if "日本の、いい旅を見つける。" not in "".join(r["h1"].split()): failures.append(f"{v}: identity")
+                  if r["overflow"]: failures.append(f"{v}: overflow")
+                  if r["font_status"] != "loaded" or not all(r["font_checks"].values()): failures.append(f"{v}: web font {r['font_checks']}")
+                  if r["statuses_review"] != ["掲載中","掲載中"]: failures.append(f"{v}: active statuses {r['statuses_review']}")
+                  if r["statuses_after"] != ["掲載した受付期間は終了","掲載した受付期間は終了"]: failures.append(f"{v}: expiry statuses {r['statuses_after']}")
+                  if [" ".join(x.split()) for x in r["names"]] != expected_names: failures.append(f"{v}: names {r['names']}")
+                  if set(r["ids"]) != {"yahoo-always-10","yahoo-luxury-30","yahoo-popular-15"}: failures.append(f"{v}: ids {r['ids']}")
+                  if len(r["a8"]) != 3 or any(x["href"] != A8_HREF or x["pixel"] != A8_PIXEL for x in r["a8"]): failures.append(f"{v}: A8 material changed {r['a8']}")
+                  if r["page_errors"] or r["console_errors"]: failures.append(f"{v}: browser errors")
+                  if r["target_failures"]: failures.append(f"{v}: target failures {r['target_failures']}")
+                  if not r["focus_visible"]: failures.append(f"{v}: focus-visible")
+                  if not r["active_state"] or r["active_state"] == r["hover_state"]: failures.append(f"{v}: active state")
+                  if r["a8_anchor_navigation_requests"]: failures.append(f"{v}: A8 navigation occurred")
+              if reflow["width320"]["scrollWidth"] > reflow["width320"]["clientWidth"]:
+                  failures.append(f"320px reflow overflow {reflow['width320']}")
+              if reflow["text200"]["scrollWidth"] > reflow["text200"]["clientWidth"]:
+                  failures.append(f"200% text resize overflow {reflow['text200']}")
+              if failures:
+                  raise SystemExit("\n".join(failures))
+              print("revenue shelf visual mechanical QA: PASS")
+          asyncio.run(main())
+          PY
+          python /tmp/capture_revenue_shelf.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: revenue-shelf-visual-qa
+          path: artifacts/revenue-shelf/
+          if-no-files-found: error
