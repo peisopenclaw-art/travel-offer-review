@@ -1,0 +1,131 @@
+name: pr37-visual-qa\n# final-head visual proof; remove after human approval
+
+on:
+  push:
+    branches: [feat/yahoo-travel-search-landing-20260929]
+  workflow_dispatch:
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install playwright
+      - run: python -m playwright install chromium
+      - name: Start isolated static preview
+        run: |
+          python3 -m http.server 4173 > /tmp/pr37-http.log 2>&1 &
+          echo $! > /tmp/pr37-http.pid
+          for i in {1..20}; do
+            curl -fsS http://127.0.0.1:4173/yahoo-travel-campaign.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/pr37-http.log
+          exit 1
+      - name: Mechanical QA and screenshots
+        run: |
+          mkdir -p artifacts/pr37
+          cat > /tmp/capture.py <<'PY'
+          import asyncio, json
+          from pathlib import Path
+          from playwright.async_api import async_playwright
+
+          OUT = Path("artifacts/pr37")
+          URL = "http://127.0.0.1:4173/yahoo-travel-campaign.html"
+          viewports = [(1440, 1100), (390, 844), (375, 812)]
+
+          async def main():
+              results = []
+              async with async_playwright() as p:
+                  browser = await p.chromium.launch()
+                  for width, height in viewports:
+                      page_errors = []
+                      console_errors = []
+                      page = await browser.new_page(viewport={"width": width, "height": height})
+                      page.on("pageerror", lambda exc: page_errors.append(str(exc)))
+                      page.on("console", lambda msg: console_errors.append(msg.text) if msg.type == "error" else None)
+                      resp = await page.goto(URL, wait_until="networkidle")
+                      await page.evaluate("document.fonts.ready")
+                      title = await page.title()
+                      h1 = (await page.locator("h1").inner_text()).strip()
+                      scroll_w = await page.evaluate("document.documentElement.scrollWidth")
+                      client_w = await page.evaluate("document.documentElement.clientWidth")
+                      font_status = await page.evaluate("document.fonts.status")
+                      font_checks = await page.evaluate("""async () => {
+                        await document.fonts.load('16px "BIZ UDPGothic"', '旅行');
+                        await document.fonts.load('16px "Zen Kaku Gothic New"', '旅行');
+                        return {
+                          biz: document.fonts.check('16px "BIZ UDPGothic"', '旅行'),
+                          zen: document.fonts.check('16px "Zen Kaku Gothic New"', '旅行')
+                        };
+                      }""")
+                      headings = await page.locator("h1,h2,h3").all_inner_texts()
+                      ctas = await page.locator(".header-cta,.source-link,.secondary-cta").all_inner_texts()
+                      target_failures = await page.locator("a").evaluate_all("""els => els.filter(el => {
+                        const r = el.getBoundingClientRect();
+                        return r.width > 0 && r.height > 0 && (r.width < 24 || r.height < 24);
+                      }).map(el => ({text:(el.textContent||'').trim(), width:el.getBoundingClientRect().width, height:el.getBoundingClientRect().height}))""")
+                      focus = page.locator(".secondary-cta:not(.campaign-mobile-cta)")
+                      await focus.focus()
+                      focus_visible = await focus.evaluate("el => el.matches(':focus-visible')")
+                      await focus.hover()
+                      hover_bg = await focus.evaluate("el => getComputedStyle(el).backgroundColor")
+                      box = await focus.bounding_box()
+                      active_bg = None
+                      if box:
+                          await page.mouse.move(box["x"] + box["width"]/2, box["y"] + box["height"]/2)
+                          await page.mouse.down()
+                          await page.wait_for_timeout(250)  # allow the 180ms active-state transition to settle
+                          active_bg = await focus.evaluate("el => getComputedStyle(el).backgroundColor")
+                          await page.mouse.move(1, 1)
+                          await page.mouse.up()
+                      # Return to the neutral/default UI before the human-review screenshot.\n                      await page.evaluate("document.activeElement && document.activeElement.blur()")\n                      await page.mouse.move(1, 1)\n                      await page.wait_for_timeout(100)\n                      shot = OUT / f"pr37-{width}.png"
+                      await page.screenshot(path=str(shot), full_page=True)
+                      results.append({
+                        "viewport": [width, height],
+                        "http_status": resp.status if resp else None,
+                        "title": title,
+                        "h1": h1,
+                        "headings": headings,
+                        "ctas": ctas,
+                        "scrollWidth": scroll_w,
+                        "clientWidth": client_w,
+                        "overflow": scroll_w > client_w,
+                        "font_status": font_status,
+                        "font_checks": font_checks,
+                        "page_errors": page_errors,
+                        "console_errors": console_errors,
+                        "target_failures": target_failures,
+                        "focus_visible": focus_visible,
+                        "hover_background": hover_bg,
+                        "active_background": active_bg,
+                        "screenshot": str(shot),
+                      })
+                      await page.close()
+                  await browser.close()
+              (OUT / "qa.json").write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
+              failures = []
+              for r in results:
+                  if r["http_status"] != 200: failures.append(f'{r["viewport"]}: http {r["http_status"]}')
+                  if "Yahoo!トラベルのセール予定・キャンペーン" not in "".join(r["h1"].split()): failures.append(f'{r["viewport"]}: identity h1')
+                  if r["overflow"]: failures.append(f'{r["viewport"]}: horizontal overflow')
+                  if r["font_status"] != "loaded" or not all(r["font_checks"].values()): failures.append(f'{r["viewport"]}: web font')
+                  if r["page_errors"] or r["console_errors"]: failures.append(f'{r["viewport"]}: browser errors')
+                  if not r["focus_visible"]: failures.append(f'{r["viewport"]}: focus-visible')
+                  if r["active_background"] == r["hover_background"]: failures.append(f'{r["viewport"]}: active state not distinct from hover')
+              if failures:
+                  raise SystemExit("\n".join(failures))
+              print("visual mechanical QA: PASS")
+          asyncio.run(main())
+          PY
+          python /tmp/capture.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pr37-visual-qa
+# post-pr39 reconciliation visual rerun
+          path: artifacts/pr37/
+          if-no-files-found: error
