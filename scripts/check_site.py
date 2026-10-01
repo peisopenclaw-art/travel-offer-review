@@ -1,5 +1,6 @@
 from html.parser import HTMLParser
 from pathlib import Path
+import os
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -46,12 +47,69 @@ for path in HTML:
         if f'<meta property="{prop}"' not in text:
             errors.append(f"{path.name}: missing {prop}")
 
+public_analytics_pages = ["index.html", "offers.html", "about.html", "privacy.html", "yahoo-travel-campaign.html"]
+for page_name in public_analytics_pages:
+    page_text = (ROOT / page_name).read_text(encoding="utf-8")
+    for script_name in ["analytics-config.js", "analytics.js"]:
+        expected_script = f'<script src="{script_name}" defer></script>'
+        if expected_script not in page_text:
+            errors.append(f"{page_name}: missing analytics script: {script_name}")
+
+analytics_path = ROOT / "analytics.js"
+analytics_config_path = ROOT / "analytics-config.js"
+measurement_id = ""
+if not analytics_path.is_file():
+    errors.append("missing: analytics.js")
+if not analytics_config_path.is_file():
+    errors.append("missing: analytics-config.js")
+else:
+    analytics_config = analytics_config_path.read_text(encoding="utf-8")
+    match = re.search(r'ga4MeasurementId:\\s*"([^"]*)"', analytics_config)
+    if not match:
+        errors.append("analytics-config.js missing ga4MeasurementId")
+    else:
+        measurement_id = match.group(1)
+        if measurement_id and not re.fullmatch(r"G-[A-Z0-9]+", measurement_id):
+            errors.append("analytics-config.js contains an invalid GA4 measurement ID")
+        if os.environ.get("REQUIRE_GA4") == "1" and not re.fullmatch(r"G-[A-Z0-9]+", measurement_id):
+            errors.append("GA4 release gate requires an active measurement ID")
+
+if analytics_path.is_file():
+    analytics = analytics_path.read_text(encoding="utf-8")
+    for required_event in [
+        "offer_view",
+        "offer_outbound_click",
+        "decision_destination_select",
+        "decision_step_action",
+        "offer_detail_open",
+    ]:
+        if f'"{required_event}"' not in analytics:
+            errors.append(f"analytics.js missing event: {required_event}")
+    for forbidden_param in ["email", "phone", "full_name", "user_name"]:
+        if re.search(rf'["\\']{forbidden_param}["\\']\\s*:', analytics):
+            errors.append(f"analytics.js must not send direct PII field: {forbidden_param}")
+
+privacy_text = (ROOT / "privacy.html").read_text(encoding="utf-8")
+if "Google Analytics 4" not in privacy_text:
+    errors.append("privacy.html missing analytics disclosure")
+
 index = (ROOT / "index.html").read_text(encoding="utf-8")
 for required in ["トクえらび", "どこへ行く？", "decision-ui.css", "decision-ui.js"]:
     if required not in index:
         errors.append(f"index.html missing decision UI marker: {required}")
 
 offers = (ROOT / "offers.html").read_text(encoding="utf-8")
+required_offer_ids = [
+    "yahoo-always-10",
+    "yahoo-ryokan-resort-sale",
+    "yahoo-popular-hotels-sale",
+]
+for offer_id in required_offer_ids:
+    if offers.count(f'data-offer-id="{offer_id}"') != 1:
+        errors.append(f"offers.html must contain exactly one analytics offer id: {offer_id}")
+if offers.count('data-offer-placement="') != 3:
+    errors.append("offers.html must identify exactly 3 offer placements")
+
 for required in ["旅行オファー比較", "一次情報", "広告"]:
     if required not in offers:
         errors.append(f"offers.html missing required text: {required}")
