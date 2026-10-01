@@ -2,15 +2,17 @@ from html.parser import HTMLParser
 from pathlib import Path
 import re
 import sys
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 SELF = Path(__file__).resolve()
-HTML = [ROOT / "index.html", ROOT / "about.html", ROOT / "privacy.html"]
+HTML = [ROOT / "index.html", ROOT / "about.html", ROOT / "privacy.html", ROOT / "yahoo-travel-campaign.html"]
 PUBLIC_ORIGIN = "https://travel.tokuerabi.com"
 CANONICALS = {
     "index.html": f"{PUBLIC_ORIGIN}/",
     "about.html": f"{PUBLIC_ORIGIN}/about.html",
     "privacy.html": f"{PUBLIC_ORIGIN}/privacy.html",
+    "yahoo-travel-campaign.html": f"{PUBLIC_ORIGIN}/yahoo-travel-campaign.html",
 }
 
 class Parser(HTMLParser):
@@ -77,9 +79,21 @@ if not sitemap_path.is_file():
     errors.append("missing: sitemap.xml")
 else:
     sitemap = sitemap_path.read_text(encoding="utf-8")
+    try:
+        ET.fromstring(sitemap)
+    except ET.ParseError as exc:
+        errors.append(f"sitemap.xml parse failed: {exc}")
     for url in CANONICALS.values():
         if sitemap.count(f"<loc>{url}</loc>") != 1:
             errors.append(f"sitemap.xml must contain exactly one URL: {url}")
+
+styles_path = ROOT / "styles.css"
+if not styles_path.is_file():
+    errors.append("missing: styles.css")
+else:
+    styles = styles_path.read_text(encoding="utf-8")
+    if "\\n" in styles:
+        errors.append("styles.css contains literal backslash-n escape; use real newlines")
 
 robots_path = ROOT / "robots.txt"
 if not robots_path.is_file():
