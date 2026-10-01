@@ -64,7 +64,7 @@ if not analytics_config_path.is_file():
     errors.append("missing: analytics-config.js")
 else:
     analytics_config = analytics_config_path.read_text(encoding="utf-8")
-    match = re.search(r'ga4MeasurementId:\\s*"([^"]*)"', analytics_config)
+    match = re.search(r'ga4MeasurementId:\s*"([^"]*)"', analytics_config)
     if not match:
         errors.append("analytics-config.js missing ga4MeasurementId")
     else:
@@ -86,7 +86,7 @@ if analytics_path.is_file():
         if f'"{required_event}"' not in analytics:
             errors.append(f"analytics.js missing event: {required_event}")
     for forbidden_param in ["email", "phone", "full_name", "user_name"]:
-        if re.search(rf'["\\']{forbidden_param}["\\']\\s*:', analytics):
+        if re.search(rf"[\"']{re.escape(forbidden_param)}[\"']\s*:", analytics):
             errors.append(f"analytics.js must not send direct PII field: {forbidden_param}")
 
 privacy_text = (ROOT / "privacy.html").read_text(encoding="utf-8")
