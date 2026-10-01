@@ -11,6 +11,7 @@ PUBLIC_FILES = [
     "decision-ui.js",
     "decision-data.json",
     "yahoo-travel-campaign.html",
+    "kyushu-recovery-discount.html",
     "about.html",
     "privacy.html",
     "styles.css",
