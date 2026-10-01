@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="旅行条件から、どこ・いつ・どこで予約するかを順番に決めるトクえらび意思決定UIの実装プロトタイプです。">
+  <title>旅行のお得を決める | トクえらび UI Prototype</title>
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:site_name" content="旅行オファー比較 β">
+  <meta property="og:title" content="旅行のお得を決める | トクえらび UI Prototype">
+  <meta property="og:description" content="どこがお得？いつがお得？どこで予約する？を3段階で判断するUIプロトタイプ。">
+  <meta property="og:url" content="https://travel.tokuerabi.com/decision.html">
+  <link rel="canonical" href="https://travel.tokuerabi.com/decision.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260929-shippori-v1">
+  <link rel="stylesheet" href="decision-ui.css?v=20260930-v2">
+</head>
+<body class="decision-page">
+<a class="skip-link" href="#decision-main">本文へ移動</a>
+<header class="site-header decision-header">
+  <a class="brand" href="./" aria-label="旅行オファー比較 ホーム">
+    <svg class="brand-mark" viewBox="0 0 54 34" aria-hidden="true"><path d="M2 29 18 5l8 12L34 2l18 27H2Z"/><path d="m18 5 8 12-7 12H2L18 5Z" opacity=".58"/></svg>
+    <span class="brand-name">トクえらび</span>
+  </a>
+  <p class="header-context">旅行のお得を、読むより先に決める。</p>
+  <a class="header-text-link" href="./">トップへ</a>
+</header>
+
+<main id="decision-main" class="decision-main">
+  <section class="decision-intro" aria-labelledby="decision-title">
+    <div class="intro-copy-block">
+      <p class="step-kicker">1 / 3　行き先を決める</p>
+      <h1 id="decision-title"><span class="semantic-phrase">どこへ行く？</span></h1>
+      <p class="intro-copy">行き先が決まっていても、まだ決まっていなくても大丈夫。泊まる日と人数を入れると、使える特典へ最短で進めます。</p>
+    </div>
+    <div class="intro-visual">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG" alt="青い海と白い砂浜が広がる沖縄の風景">
+      <div class="intro-photo-caption"><strong>旅先を、お得から。</strong><span>行き先 → 宿泊日 → 予約先</span></div>
+    </div>
+  </section>
+
+  <section class="trip-console" aria-label="旅行条件">
+    <form id="trip-form" autocomplete="off">
+      <label class="field">
+        <span>行き先</span>
+        <select id="destination" name="destination">
+          <option value="">まだ決めていない</option>
+          <option value="hokkaido">北海道</option>
+          <option value="tohoku">東北</option>
+          <option value="kanto">関東</option>
+          <option value="chubu">中部</option>
+          <option value="kinki">近畿</option>
+          <option value="chugoku">中国</option>
+          <option value="shikoku">四国</option>
+          <option value="kyushu">九州・沖縄</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>旅行月</span>
+        <select id="travel-month" name="travel-month">
+          <option value="2026-10">2026年10月</option>
+          <option value="2026-11">2026年11月</option>
+          <option value="2026-12">2026年12月</option>
+        </select>
+      </label>
+      <label class="field date-field">
+        <span>宿泊日</span>
+        <div class="date-input-wrap">
+          <input id="travel-date" name="travel-date" type="date" min="2026-10-01" max="2026-12-31" aria-describedby="travel-date-hint">
+          <span class="date-placeholder" aria-hidden="true">日付を選択</span>
+        </div>
+        <small id="travel-date-hint">未定なら空欄でOK</small>
+      </label>
+      <fieldset class="field party-field">
+        <legend>人数</legend>
+        <div class="stepper" aria-label="大人人数">
+          <button id="adult-minus" type="button" aria-label="大人を1人減らす">−</button>
+          <output id="adult-count" for="adult-minus adult-plus">大人2人</output>
+          <button id="adult-plus" type="button" aria-label="大人を1人増やす">＋</button>
+        </div>
+      </fieldset>
+      <button id="search-conditions" class="search-action" type="button">旅行先から選ぶ <span aria-hidden="true">→</span></button>
+    </form>
+    <div class="data-level-note">
+      <span><strong>確認済み特典</strong>をもとに比較</span>
+      <button id="share-state" class="share-state" type="button">条件URLを共有</button>
+    </div>
+  </section>
+
+  <nav class="decision-steps" aria-label="比較ステップ">
+    <button class="step-tab is-active" type="button" data-step="1" aria-current="step">
+      <span class="step-number">1</span><strong>行き先</strong>
+    </button>
+    <span class="step-connector" aria-hidden="true"></span>
+    <button class="step-tab" type="button" data-step="2" disabled>
+      <span class="step-number">2</span><strong>宿泊日</strong>
+    </button>
+    <span class="step-connector" aria-hidden="true"></span>
+    <button class="step-tab" type="button" data-step="3" disabled>
+      <span class="step-number">3</span><strong>予約先</strong>
+    </button>
+  </nav>
+
+  <div id="status-message" class="sr-only" aria-live="polite"></div>
+
+  <section class="decision-stage is-active" data-panel="1" aria-labelledby="map-title">
+    <div class="stage-heading">
+      <div>
+        <p class="stage-index">STEP 1</p>
+        <h2 id="map-title">旅行先から選ぶ</h2>
+      </div>
+      <p>気になる地域を選ぶだけ。次に、その地域で泊まる日を選びます。</p>
+    </div>
+
+    <div class="map-workspace">
+      <div class="map-board">
+        <div class="map-board-head">
+          <div>
+            <strong>日本地図から選ぶ</strong>
+            <span>地域をタップ</span>
+          </div>
+          <p id="regional-readiness">いま確認できる特典は全国施策が中心です</p>
+        </div>
+        <div id="region-map" class="region-map" role="listbox" aria-label="旅行先の地域を選択">
+          <img class="japan-map-visual" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Regions_and_Prefectures_of_Japan_-_blank.svg" alt="" aria-hidden="true">
+          <button class="region-button region-hokkaido" type="button" data-region="hokkaido" role="option" aria-selected="false" data-tooltip="北海道を選ぶ">
+            <strong>北海道</strong><span>確認済み 3施策</span>
+          </button>
+          <button class="region-button region-tohoku" type="button" data-region="tohoku" role="option" aria-selected="false" data-tooltip="東北を選ぶ">
+            <strong>東北</strong><span>確認済み 3施策</span>
+          </button>
+          <button class="region-button region-kanto" type="button" data-region="kanto" role="option" aria-selected="false" data-tooltip="関東を選ぶ">
+            <strong>関東</strong><span>確認済み 3施策</span>
+          </button>
+          <button class="region-button region-chubu" type="button" data-region="chubu" role="option" aria-selected="false" data-tooltip="中部を選ぶ">
+            <strong>中部</strong><span>確認済み 3施策</span>
+          </button>
+          <button class="region-button region-kinki" type="button" data-region="kinki" role="option" aria-selected="false" data-tooltip="近畿を選ぶ">
+            <strong>近畿</strong><span>確認済み 3施策</span>
+          </button>
+          <button class="region-button region-chugoku" type="button" data-region="chugoku" role="option" aria-selected="false" data-tooltip="中国を選ぶ">
+            <strong>中国</strong><span>確認済み 3施策</span>
+          </button>
+          <button class="region-button region-shikoku" type="button" data-region="shikoku" role="option" aria-selected="false" data-tooltip="四国を選ぶ">
+            <strong>四国</strong><span>確認済み 3施策</span>
+          </button>
+          <button class="region-button region-kyushu" type="button" data-region="kyushu" role="option" aria-selected="false" data-tooltip="九州・沖縄を選ぶ">
+            <strong>九州・沖縄</strong><span>確認済み 3施策</span>
+          </button>
+          <div class="map-sea-label" aria-hidden="true">PACIFIC</div>
+        </div>
+        <div class="map-legend" aria-label="地図の見方">
+          <span><i class="legend-swatch verified"></i>確認済み施策あり</span>
+          <span><i class="legend-swatch regional"></i>地域差の算出は未対応</span>
+        </div>
+      </div>
+
+      <aside class="decision-summary" aria-labelledby="region-summary-title">
+        <p class="summary-kicker">選択中</p>
+        <h3 id="region-summary-title">地域を選んでください</h3>
+        <p id="region-summary-copy">行き先が未定なら、地図から気になる地域を選べます。</p>
+        <div id="region-metrics" class="summary-metrics" hidden>
+          <div>
+            <span>確認済み</span>
+            <strong id="region-offer-count">2施策</strong>
+          </div>
+          <div>
+            <span>特典率</span>
+            <strong id="region-rate">10％ / 15％以上</strong>
+          </div>
+        </div>
+        <p id="region-caveat" class="summary-caveat" hidden>2つの数字は別施策です。合算した「最大25％」とは表示しません。</p>
+        <button id="to-calendar" class="primary-action" type="button" disabled>この地域で日付を見る <span aria-hidden="true">→</span></button>
+      </aside>
+    </div>
+
+    <section class="destination-strip" aria-labelledby="popular-destination-title">
+      <div class="destination-strip-head">
+        <div>
+          <span>旅行先から選ぶ</span>
+          <h3 id="popular-destination-title">景色から選ぶ</h3>
+        </div>
+        <p>地図より写真のほうが選びやすいときはこちら。</p>
+      </div>
+      <div class="destination-cards">
+        <button class="destination-card" type="button" data-region="kyushu" aria-pressed="false">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG" alt="">
+          <span><strong>沖縄</strong><small>九州・沖縄</small></span>
+        </button>
+        <button class="destination-card" type="button" data-region="chubu" aria-pressed="false">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/cb/Mt._Fuji_and_Shinkansen.jpg" alt="">
+          <span><strong>富士山周辺</strong><small>中部</small></span>
+        </button>
+
+      </div>
+    </section>
+  </section>
+
+  <section class="decision-stage" data-panel="2" aria-labelledby="calendar-title" hidden>
+    <div class="stage-heading">
+      <div>
+        <p class="stage-index">STEP 2</p>
+        <h2 id="calendar-title">いつ泊まる？</h2>
+      </div>
+      <p>泊まりたい日をひとつ選んでください。</p>
+    </div>
+
+    <div class="calendar-workspace">
+      <div class="calendar-panel">
+        <div class="calendar-toolbar">
+          <div>
+            <strong id="calendar-month-label">2026年10月</strong>
+            <span id="calendar-region-label">地域未選択</span>
+          </div>
+          <span class="neutral-badge">日付別のお得度は準備中</span>
+        </div>
+        <div class="weekday-row" aria-hidden="true">
+          <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+        </div>
+        <div id="calendar-grid" class="calendar-grid" aria-label="旅行日を選択"></div>
+      </div>
+
+      <aside class="timing-panel">
+        <p class="summary-kicker">予約特典</p>
+        <h3>予約で使える特典</h3>
+        <div id="booking-hints"></div>
+        <p class="timing-note">旅行日の順位ではなく、今確認できる予約特典です。</p>
+        <button id="to-compare" class="primary-action" type="button" disabled>この日で予約先を見る <span aria-hidden="true">→</span></button>
+      </aside>
+    </div>
+  </section>
+
+  <section class="decision-stage" data-panel="3" aria-labelledby="compare-title" hidden>
+    <div class="stage-heading">
+      <div>
+        <p class="stage-index">STEP 3</p>
+        <h2 id="compare-title">どこで予約する？</h2>
+      </div>
+      <p>特典の大きさと条件を見比べて、予約先を選びます。</p>
+    </div>
+
+    <div class="compare-toolbar">
+      <div id="trip-summary" class="trip-summary"></div>
+      <button id="effective-sort" class="secondary-action" type="button" disabled hidden title="実価格・在庫連携後に有効になります">実質支払額で並べる</button>
+    </div>
+
+    <details class="assumed-price-panel" aria-labelledby="assumed-price-title">
+      <summary><span id="assumed-price-title">宿泊料金を入れて試算</span><small>任意</small></summary>
+      <div class="assumed-price-content">
+        <div>
+          <label class="sr-only" for="assumed-price">対象宿泊料金</label>
+          <div class="price-input-wrap"><span>¥</span><input id="assumed-price" type="number" min="0" step="1000" inputmode="numeric" placeholder="例 50000"></div>
+        </div>
+        <p id="estimate-note">計算できるクーポンだけ推定します。ポイント型は現金割引に換算しません。</p>
+      </div>
+    </details>
+
+    <div class="comparison-table-wrap">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th scope="col">お得の大きさ</th>
+            <th scope="col">この条件で使える？</th>
+            <th scope="col">推定割引額</th>
+            <th scope="col">予約期間</th>
+            <th scope="col">予約先・施策</th>
+            <th scope="col"><span class="sr-only">操作</span></th>
+          </tr>
+        </thead>
+        <tbody id="comparison-body"></tbody>
+      </table>
+    </div>
+    <details class="comparison-method"><summary>比較条件について</summary><p class="comparison-note">率だけでは順位付けしません。「15％以上」などが基礎10％を含む場合は足し算せず、施設・プラン・支払方法等を確認してから適用を判断します。</p></details>
+  </section>
+
+
+</main>
+
+<dialog id="offer-dialog" class="offer-dialog" aria-labelledby="dialog-title">
+  <div class="dialog-head">
+    <div>
+      <p id="dialog-provider" class="summary-kicker"></p>
+      <h2 id="dialog-title">施策詳細</h2>
+    </div>
+    <button id="dialog-close" class="icon-button" type="button" aria-label="詳細を閉じる">×</button>
+  </div>
+  <div id="dialog-content" class="dialog-content"></div>
+</dialog>
+
+<footer class="decision-footer">
+  <div><a class="footer-brand" href="./">トクえらび</a><p>旅の行き先・日付・予約先を、お得から選ぶ。</p></div>
+  <small>表示は確認済み特典に基づきます。実価格・在庫は未連携です。</small>
+</footer>
+
+<script src="decision-ui.js?v=20260930-v2" defer></script>
+</body>
+</html>
