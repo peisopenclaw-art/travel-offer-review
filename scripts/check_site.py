@@ -48,7 +48,7 @@ for path in HTML:
 
 index = (ROOT / "index.html").read_text(encoding="utf-8")
 for required in ["トクえらび", "どこへ行く？", "decision-ui.css", "decision-ui.js"]:
-    if required not in offers:
+    if required not in index:
         errors.append(f"index.html missing decision UI marker: {required}")
 
 offers = (ROOT / "offers.html").read_text(encoding="utf-8")
