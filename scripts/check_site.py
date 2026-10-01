@@ -59,9 +59,9 @@ for required in ["旅行オファー比較", "一次情報", "広告"]:
 affiliate_href = "https://px.a8.net/svt/ejp?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6"
 affiliate_pixel = "https://www13.a8.net/0.gif?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6"
 if offers.count(affiliate_href) != 2:
-    errors.append(f"index.html affiliate href count must be 2, got {offers.count(affiliate_href)}")
+    errors.append(f"offers.html affiliate href count must be 2, got {offers.count(affiliate_href)}")
 if offers.count(affiliate_pixel) != 2:
-    errors.append(f"index.html affiliate pixel count must be 2, got {offers.count(affiliate_pixel)}")
+    errors.append(f"offers.html affiliate pixel count must be 2, got {offers.count(affiliate_pixel)}")
 official_affiliate_material = f'''<a href="{affiliate_href}" rel="nofollow">【ヤフートラベル】</a>\n              <img border="0" width="1" height="1" src="{affiliate_pixel}" alt="">'''
 official_affiliate_material_feature = f'''<a href="{affiliate_href}" rel="nofollow">【ヤフートラベル】</a>\n              <img border="0" width="1" height="1" src="{affiliate_pixel}" alt="">'''
 if offers.count('<a href="' + affiliate_href + '" rel="nofollow">【ヤフートラベル】</a>') != 2:
