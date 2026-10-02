@@ -298,10 +298,30 @@ jobs:
                   results = []
                   for width, height in VIEWPORTS:
                       results.append(await capture_width(browser, width, height))
+
+                  reflow = {}
+                  page = await browser.new_page(viewport={"width": 320, "height": 812}, locale="ja-JP", timezone_id="Asia/Tokyo")
+                  await page.goto(URL, wait_until="networkidle")
+                  reflow["width320"] = {
+                      "scrollWidth": await page.evaluate("document.documentElement.scrollWidth"),
+                      "clientWidth": await page.evaluate("document.documentElement.clientWidth"),
+                  }
+                  await page.close()
+
+                  page = await browser.new_page(viewport={"width": 375, "height": 812}, locale="ja-JP", timezone_id="Asia/Tokyo")
+                  await page.goto(URL, wait_until="networkidle")
+                  await page.add_style_tag(content="html { font-size: 200% !important; }")
+                  await page.wait_for_timeout(100)
+                  reflow["text200"] = {
+                      "scrollWidth": await page.evaluate("document.documentElement.scrollWidth"),
+                      "clientWidth": await page.evaluate("document.documentElement.clientWidth"),
+                  }
+                  await page.close()
                   await browser.close()
 
               (OUT / "qa.json").write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
               (OUT / "entry-routes.json").write_text(json.dumps(entry_routes, ensure_ascii=False, indent=2), encoding="utf-8")
+              (OUT / "reflow.json").write_text(json.dumps(reflow, ensure_ascii=False, indent=2), encoding="utf-8")
 
               failures = []
               for route in entry_routes:
@@ -371,6 +391,10 @@ jobs:
                   for m in r["stage_metrics"]:
                       if m["overflow"]:
                           failures.append(f"{v} stage {m['stage']}: horizontal overflow {m['scrollWidth']}>{m['clientWidth']}")
+              if reflow["width320"]["scrollWidth"] > reflow["width320"]["clientWidth"]:
+                  failures.append(f"320px reflow overflow {reflow['width320']}")
+              if reflow["text200"]["scrollWidth"] > reflow["text200"]["clientWidth"]:
+                  failures.append(f"200% text resize overflow {reflow['text200']}")
               if failures:
                   raise SystemExit("\n".join(failures))
               print("decision UI mechanical QA: PASS")
