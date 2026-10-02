@@ -979,3 +979,14 @@ body[data-decision-step="3"] .trip-console{
   transform:translateY(1px) scale(.985);
   box-shadow:0 4px 12px rgba(16,59,115,.18);
 }
+
+
+/* Final visual QA repair: avoid sticky overlap in full-page and real first-view composition. */
+.decision-header{
+  position:relative;
+  top:auto;
+}
+.decision-footer p,
+.decision-footer small{
+  font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif!important;
+}
