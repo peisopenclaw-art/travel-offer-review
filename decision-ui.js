@@ -76,7 +76,7 @@
       state.adults = adults;
       touched = true;
     }
-    if (Number.isFinite(price) && price >= 0) {
+    if (params.has("price") && Number.isFinite(price) && price >= 0) {
       state.assumedPrice = Math.round(price);
       touched = true;
     }
@@ -296,8 +296,8 @@
   function renderRegionSummary() {
     var region = regionById(state.destination);
     if (!region) {
-      els.regionTitle.textContent = "地域を選んでください";
-      els.regionCopy.textContent = "行き先が未定なら、地図から気になる地域を選べます。";
+      els.regionTitle.textContent = "気になる地域は？";
+      els.regionCopy.textContent = "地図をタップして、次に日付を選びましょう。";
       els.regionMetrics.hidden = true;
       els.regionCaveat.hidden = true;
       return;
@@ -307,7 +307,7 @@
     els.regionTitle.textContent = region.name;
     els.regionCopy.textContent = data.regional_comparison_ready
       ? "地域別の確認済み施策を比較しています。"
-      : "今の確認済みデータでは全国施策が中心のため、地域間の優劣はまだ付けません。";
+      : "全国向けの宿泊特典が見つかりました。日付を選んで、予約先を見てみましょう。";
     els.regionOfferCount.textContent = offers.length + "施策";
     var rateOffers = offers.filter(function (offer) {
       return offer.benefit && Number.isFinite(offer.benefit.rate_percent);
@@ -319,6 +319,12 @@
     els.regionCaveat.textContent = "「15％以上」等が基礎10％を含む場合は足し算しません。施設・プラン等を確認するまで「使える」と確定しません。";
     els.regionCaveat.hidden = offers.length < 2;
     els.calendarRegion.textContent = region.name;
+    var preview = $(".region-preview");
+    if (preview) {
+      preview.textContent = "";
+      preview.classList.add("has-photo");
+      preview.style.backgroundImage = 'url("https://upload.wikimedia.org/wikipedia/commons/e/e3/FujiLakeShore.jpg")';
+    }
   }
 
   function renderCalendar() {
@@ -330,6 +336,9 @@
     var startDay = first.getUTCDay();
 
     els.calendarMonth.textContent = formatMonth(state.month);
+    var prev = $("#month-prev"), nextButton = $("#month-next");
+    if (prev) prev.disabled = state.month === "2026-10";
+    if (nextButton) nextButton.disabled = state.month === "2026-12";
     els.calendarGrid.innerHTML = "";
 
     for (var blank = 0; blank < startDay; blank += 1) {
@@ -520,6 +529,24 @@
   }
 
   function bindEvents() {
+    $("#trip-form").addEventListener("submit", function (event) {
+      event.preventDefault();
+      els.searchConditions.click();
+    });
+    ["prev", "next"].forEach(function (direction) {
+      var button = $("#month-" + direction);
+      if (!button) return;
+      button.addEventListener("click", function () {
+        var months = ["2026-10", "2026-11", "2026-12"];
+        var index = months.indexOf(state.month) + (direction === "next" ? 1 : -1);
+        if (index < 0 || index >= months.length) return;
+        state.month = months[index];
+        state.travelDate = "";
+        persistState();
+        renderAll();
+        announce(formatMonth(state.month) + "に変更しました");
+      });
+    });
     els.destination.addEventListener("change", function () {
       state.destination = this.value;
       state.step = 1;
@@ -567,6 +594,7 @@
         persistState();
         renderAll();
         announce(destinationName() + "を選びました");
+        if (this.classList.contains("destination-card")) goToStep(state.travelDate ? 3 : 2);
       });
     });
 

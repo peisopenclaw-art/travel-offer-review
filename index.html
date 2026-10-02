@@ -14,44 +14,41 @@
   <link rel="canonical" href="https://travel.tokuerabi.com/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260929-shippori-v1">
-  <link rel="stylesheet" href="decision-ui.css?v=20261002-visual-first-v1">
+  <link rel="stylesheet" href="decision-ui.css?v=20261003-photo-journey-v1">
 </head>
-<body class="decision-page">
+<body class="decision-page" data-design="photo-journey-v1">
 <a class="skip-link" href="#decision-main">本文へ移動</a>
 
 <header class="site-header decision-header">
   <a class="brand" href="./" aria-label="トクえらび ホーム">
     <svg class="brand-mark" viewBox="0 0 54 34" aria-hidden="true"><path d="M2 29 18 5l8 12L34 2l18 27H2Z"/><path d="m18 5 8 12-7 12H2L18 5Z" opacity=".58"/></svg>
-    <span class="brand-name">トクえらび</span>
+    <span class="brand-name">トクえらび<span class="brand-sub">旅のお得を、見つけよう。</span></span>
   </a>
   <nav class="decision-header-nav" aria-label="主要メニュー">
-    <a class="header-text-link" href="#map-title">地図</a>
-    <a class="header-text-link" href="offers.html">今のお得</a>
+    <a class="header-text-link" href="#map-title">行き先から探す</a>
+    <a class="header-text-link" href="offers.html">今のお得を見る <span aria-hidden="true">→</span></a>
   </nav>
 </header>
 
 <main id="decision-main" class="decision-main">
-  <section class="decision-intro" aria-labelledby="decision-title">
-    <div class="intro-copy-block">
-      <p class="step-kicker">旅行条件を入れるだけ</p>
-      <h1 id="decision-title">どこへ行く？</h1>
-      <p class="intro-copy">お得な場所から、旅を決める。</p>
-    </div>
-    <a class="month-spotlight" href="kyushu-recovery-discount.html" aria-label="今月の注目 九州ふっこう応援割の詳細を見る">
-      <span class="spotlight-label">今月の注目</span>
-      <strong>九州7県</strong>
-      <span class="spotlight-rate">最大60%</span>
-      <span class="spotlight-cap">上限 2万円 / 人</span>
-      <span class="spotlight-arrow" aria-hidden="true">→</span>
-    </a>
-  </section>
+  <div class="journey-hero">
+    <img class="journey-hero-image" src="https://upload.wikimedia.org/wikipedia/commons/e/e3/FujiLakeShore.jpg" alt="湖の向こうに広がる富士山" fetchpriority="high">
+    <section class="decision-intro" aria-labelledby="decision-title">
+      <div class="intro-copy-block">
+        <p class="step-kicker">日本の旅を、もっと自由に。</p>
+        <h1 id="decision-title"><span>いい旅を、</span><span>もっとお得に。</span></h1>
+        <p class="intro-copy">行き先も、日付も。<br class="mobile-break">お得を見ながら決めよう。</p>
+      </div>
+      <span class="hero-place">本栖湖・富士山</span>
+    </section>
+  </div>
 
   <section class="trip-console" aria-label="旅行条件">
     <form id="trip-form" autocomplete="off">
       <label class="field">
-        <span>行き先</span>
+        <span><i aria-hidden="true">⌖</i> 行き先</span>
         <select id="destination" name="destination">
           <option value="">どこでも</option>
           <option value="hokkaido">北海道</option>
@@ -66,7 +63,7 @@
       </label>
 
       <label class="field">
-        <span>いつ</span>
+        <span><i aria-hidden="true">▦</i> 旅行する月</span>
         <select id="travel-month" name="travel-month">
           <option value="2026-10">2026年10月</option>
           <option value="2026-11">2026年11月</option>
@@ -97,35 +94,63 @@
       </button>
     </form>
     <div class="data-level-note">
-      <span><strong>確認済み情報</strong>だけを表示</span>
+      <span>行き先・日付は、未定のままでOK</span>
       <button id="share-state" class="share-state" type="button">条件を共有</button>
     </div>
   </section>
 
   <nav class="decision-steps" aria-label="比較ステップ">
     <button class="step-tab is-active" type="button" data-step="1" aria-current="step">
-      <span class="step-number">1</span><strong>どこがお得？</strong>
+      <span class="step-number" aria-hidden="true">⌖</span><strong>行き先</strong>
     </button>
     <span class="step-connector" aria-hidden="true"></span>
     <button class="step-tab" type="button" data-step="2" disabled>
-      <span class="step-number">2</span><strong>いつがお得？</strong>
+      <span class="step-number" aria-hidden="true">▦</span><strong>日付</strong>
     </button>
     <span class="step-connector" aria-hidden="true"></span>
     <button class="step-tab" type="button" data-step="3" disabled>
-      <span class="step-number">3</span><strong>どこで予約？</strong>
+      <span class="step-number" aria-hidden="true">↗</span><strong>予約先</strong>
     </button>
   </nav>
 
   <div id="status-message" class="sr-only" aria-live="polite"></div>
 
   <section class="decision-stage is-active" data-panel="1" aria-labelledby="map-title">
+    <section class="destination-strip" aria-labelledby="popular-destination-title">
+      <div class="destination-strip-head">
+        <div><p class="section-eyebrow">FIND YOUR NEXT TRIP</p><h2 id="popular-destination-title">どこへ行く？</h2></div>
+        <a class="quiet-link" href="offers.html">今のお得をすべて見る <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="travel-inspiration">
+        <a class="featured-journey" href="kyushu-recovery-discount.html">
+          <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/The%20five%20mountains%20of%20Aso.jpg" alt="熊本・阿蘇の山々" loading="lazy">
+          <div class="featured-journey-copy">
+            <span class="journey-tag">今月の注目 · 九州7県</span>
+            <h3>いま、九州へ。</h3>
+            <div class="featured-benefit"><span>宿泊割引</span><strong>最大 <b>60</b><span>%</span></strong><small>熊本・鹿児島の場合</small></div>
+            <p>宿泊単体：上限2万円／人</p>
+            <span class="journey-card-action">条件と予約先を見る <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+        <button class="destination-card" type="button" data-region="kyushu" aria-pressed="false">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG" alt="沖縄の青い海" loading="lazy">
+          <span class="destination-caption"><small>海を眺める旅</small><strong>九州・沖縄</strong><span class="destination-action">日付を選ぶ <span aria-hidden="true">→</span></span></span>
+        </button>
+        <button class="destination-card" type="button" data-region="chubu" aria-pressed="false">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/FujiLakeShore.jpg" alt="富士山と本栖湖" loading="lazy">
+          <span class="destination-caption"><small>自然にほどける旅</small><strong>富士山周辺</strong><span class="destination-action">日付を選ぶ <span aria-hidden="true">→</span></span></span>
+        </button>
+      </div>
+      <p class="photo-caption">写真は旅行先のイメージです。阿蘇：STA3816 / CC BY-SA 3.0。九州の応援割は沖縄対象外。</p>
+    </section>
+
     <div class="stage-heading">
       <div>
-        <p class="stage-index">STEP 1</p>
-        <h2 id="map-title">どこがお得？</h2>
+        <p class="stage-index">EXPLORE JAPAN</p>
+        <h2 id="map-title">地図から、旅を探す。</h2>
       </div>
       <div class="metric-key" aria-label="表示する数値の意味">
-        <span><b class="metric-symbol rate">%</b> 割引率</span>
+        <span><b class="metric-symbol rate">%</b> 割引・還元率</span>
         <span><b class="metric-symbol cap">¥</b> 上限額</span>
         <small>同じ施策とは限りません</small>
       </div>
@@ -138,17 +163,17 @@
             <strong>日本地図</strong>
             <span>気になる地域をタップ</span>
           </div>
-          <p id="regional-readiness">未確認の地域差は色で作りません</p>
+          <p id="regional-readiness">地域を選ぶと、日付へ進めます</p>
         </div>
 
         <div id="region-map" class="region-map" role="listbox" aria-label="旅行先の地域を選択">
           <img class="japan-map-visual" src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Regions_and_Prefectures_of_Japan_-_blank.svg" alt="" aria-hidden="true">
 
-          <button class="region-button region-hokkaido" type="button" data-region="hokkaido" role="option" aria-selected="false" data-tooltip="北海道｜地域別比較は準備中">
-            <strong>北海道</strong><span>比較準備中</span>
+          <button class="region-button region-hokkaido" type="button" data-region="hokkaido" role="option" aria-selected="false" data-tooltip="北海道｜全国向け特典を見る">
+            <strong>北海道</strong><span>全国向け特典</span>
           </button>
-          <button class="region-button region-tohoku" type="button" data-region="tohoku" role="option" aria-selected="false" data-tooltip="東北｜地域別比較は準備中">
-            <strong>東北</strong><span>比較準備中</span>
+          <button class="region-button region-tohoku" type="button" data-region="tohoku" role="option" aria-selected="false" data-tooltip="東北｜全国向け特典を見る">
+            <strong>東北</strong><span>全国向け特典</span>
           </button>
           <button class="region-button region-kanto" type="button" data-region="kanto" role="option" aria-selected="false" data-tooltip="関東｜全国向け特典を確認">
             <strong>関東</strong><span>全国特典</span>
@@ -167,9 +192,9 @@
           </button>
           <button class="region-button region-kyushu is-hot-region" type="button" data-region="kyushu" role="option" aria-selected="false" data-tooltip="九州7県｜最大50〜60%・宿泊単体 上限2万円/人">
             <span class="hot-badge">注目</span>
-            <strong>九州7県</strong>
+            <strong>九州・沖縄</strong>
             <span class="map-rate">50〜60%</span>
-            <span class="map-cap">上限 2万円/人</span>
+            <span class="map-cap">九州7県・沖縄対象外</span>
           </button>
         </div>
 
@@ -181,9 +206,9 @@
       </div>
 
       <aside class="decision-summary" aria-labelledby="region-summary-title">
-        <p class="summary-kicker">選んだ地域</p>
-        <h3 id="region-summary-title">地図をタップ</h3>
-        <p id="region-summary-copy">文字を読まなくても、色と数字で「今どこが強いか」を探せます。</p>
+        <p class="summary-kicker">YOUR NEXT TRIP</p><div class="region-preview" aria-hidden="true">⌖</div>
+        <h3 id="region-summary-title">気になる地域は？</h3>
+        <p id="region-summary-copy">地図をタップして、次に日付を選びましょう。</p>
         <div id="region-metrics" class="summary-metrics" hidden>
           <div>
             <span>確認済み</span>
@@ -201,34 +226,17 @@
       </aside>
     </div>
 
-    <section class="destination-strip" aria-labelledby="popular-destination-title">
-      <div class="destination-strip-head">
-        <div>
-          <span>地図が苦手なら</span>
-          <h3 id="popular-destination-title">写真から選ぶ</h3>
-        </div>
-      </div>
-      <div class="destination-cards">
-        <button class="destination-card" type="button" data-region="kyushu" aria-pressed="false">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG" alt="">
-          <span><strong>九州・沖縄</strong><small>旅行先を見る</small></span>
-        </button>
-        <button class="destination-card" type="button" data-region="chubu" aria-pressed="false">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/c/cb/Mt._Fuji_and_Shinkansen.jpg" alt="">
-          <span><strong>富士山周辺</strong><small>中部を見る</small></span>
-        </button>
-      </div>
-    </section>
+
   </section>
 
   <section class="decision-stage" data-panel="2" aria-labelledby="calendar-title" hidden>
     <div class="stage-heading">
       <div>
-        <p class="stage-index">STEP 2</p>
-        <h2 id="calendar-title">いつがお得？</h2>
+        <p class="stage-index">CHOOSE YOUR DATE</p>
+        <h2 id="calendar-title">いつ、出かける？</h2>
       </div>
       <div class="metric-key">
-        <span><b class="metric-symbol rate">%</b> 割引率</span>
+        <span><b class="metric-symbol rate">%</b> 割引・還元率</span>
         <span><b class="metric-symbol cap">¥</b> 上限額</span>
       </div>
     </div>
@@ -240,11 +248,11 @@
             <strong id="calendar-month-label">2026年10月</strong>
             <span id="calendar-region-label">地域未選択</span>
           </div>
-          <span class="neutral-badge">日付別のお得度はデータ連携中</span>
+          <div class="month-navigation"><button id="month-prev" type="button" aria-label="前の月">‹</button><button id="month-next" type="button" aria-label="次の月">›</button></div>
         </div>
         <div class="calendar-data-note">
           <span class="note-icon" aria-hidden="true">!</span>
-          <p><strong>ここは「旅行日」の比較。</strong> 予約受付日と混ぜず、宿泊日ごとの条件が確認できた施策だけ色を付けます。</p>
+          <p>宿泊日を選んでください。日別の最安価格は未連携です。</p>
         </div>
         <div class="weekday-row" aria-hidden="true">
           <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
@@ -256,7 +264,7 @@
         <p class="summary-kicker">今使える予約特典</p>
         <h3>予約の候補</h3>
         <div id="booking-hints"></div>
-        <p class="timing-note">キャンペーン名より「何％・上限いくら」を先に見せます。</p>
+        <p class="timing-note">対象の宿・プランで使えるかは、予約先で確認できます。</p>
         <button id="to-compare" class="primary-action" type="button" disabled>
           予約先を比べる <span aria-hidden="true">→</span>
         </button>
@@ -267,10 +275,10 @@
   <section class="decision-stage" data-panel="3" aria-labelledby="compare-title" hidden>
     <div class="stage-heading">
       <div>
-        <p class="stage-index">STEP 3</p>
-        <h2 id="compare-title">どこで予約？</h2>
+        <p class="stage-index">FIND YOUR BEST OFFER</p>
+        <h2 id="compare-title">予約先のお得を比べる。</h2>
       </div>
-      <p class="compare-stage-copy">OTA名より先に、あなたにとってのお得さを見る。</p>
+      <p class="compare-stage-copy">確認できた特典から、予約先を選べます。</p>
     </div>
 
     <div class="compare-toolbar">
@@ -326,11 +334,11 @@
 <footer class="decision-footer">
   <div>
     <a class="footer-brand" href="./">トクえらび</a>
-    <p>説明を読ませない。見れば分かる。触れば決まる。</p>
+    <p>旅のお得を、見つけよう。</p><nav aria-label="掲載方針"><a href="about.html">このサイトについて</a><a href="privacy.html">プライバシー</a></nav>
   </div>
   <small>表示は確認済み特典に基づきます。実価格・在庫は未連携です。</small>
 </footer>
 
-<script src="decision-ui.js?v=20260930-v2" defer></script>
+<script src="decision-ui.js?v=20261003-photo-journey-v1" defer></script>
 </body>
 </html>

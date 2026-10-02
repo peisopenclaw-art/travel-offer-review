@@ -336,7 +336,7 @@ jobs:
                   if r["http_status"] != 200:
                       failures.append(f"{v}: http {r['http_status']}")
                   normalized_h1 = "".join(r["h1"].split())
-                  if normalized_h1 != "どこへ行く？":
+                  if normalized_h1 != "いい旅を、もっとお得に。":
                       failures.append(f"{v}: identity h1 mismatch {r['h1']}")
                   if "旅行のお得を決める" not in r["title"]:
                       failures.append(f"{v}: identity title mismatch {r['title']}")
