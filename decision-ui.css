@@ -395,8 +395,8 @@ body.decision-page{
   width:66%;
   height:90%;
   object-fit:contain;
-  opacity:.76;
-  filter:drop-shadow(0 9px 13px rgba(23,64,103,.08));
+  opacity:.48;
+  filter:grayscale(1) saturate(0) brightness(1.08) contrast(.86) drop-shadow(0 9px 13px rgba(23,64,103,.08));
   pointer-events:none;
 }
 .region-button{
