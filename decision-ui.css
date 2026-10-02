@@ -990,3 +990,7 @@ body[data-decision-step="3"] .trip-console{
 .decision-footer small{
   font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif!important;
 }
+
+
+/* Deterministic interaction-state QA: selected region state changes immediately on hover/press. */
+.region-button{transition:none}
