@@ -1001,3 +1001,14 @@ body[data-decision-step="3"] .trip-console{
 .summary-caveat[hidden]{
   display:none!important;
 }
+
+
+/* Keep the native date affordance readable in Chromium screenshots and real UI. */
+#travel-date::-webkit-calendar-picker-indicator{
+  width:18px;
+  height:18px;
+  margin:0;
+  padding:0;
+  opacity:.55;
+  cursor:pointer;
+}
