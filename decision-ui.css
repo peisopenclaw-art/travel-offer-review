@@ -946,3 +946,23 @@ body[data-decision-step="3"] .decision-steps{margin-top:8px}
   .comparison-table td:last-child{grid-column:auto}
   .dialog-fact{grid-template-columns:1fr;gap:3px}
 }
+
+
+/* 2026-10-02 visual QA repair: keep all Japanese glyphs on the loaded Noto face. */
+.decision-page h1,
+.decision-page h2,
+.decision-page h3,
+.decision-page .footer-brand,
+.decision-page .summary-metrics strong,
+.decision-page .booking-benefit-main .hint-rate,
+.decision-page .benefit-cell strong,
+.decision-page .spotlight-rate,
+.decision-page .map-rate{
+  font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif!important;
+}
+
+/* Once a destination is chosen, the next decision becomes the visual focus. */
+body[data-decision-step="2"] .trip-console,
+body[data-decision-step="3"] .trip-console{
+  display:none;
+}
