@@ -309,7 +309,12 @@
       ? "地域別の確認済み施策を比較しています。"
       : "今の確認済みデータでは全国施策が中心のため、地域間の優劣はまだ付けません。";
     els.regionOfferCount.textContent = offers.length + "施策";
-    els.regionRate.textContent = offers.map(benefitLabel).join(" / ");
+    var rateOffers = offers.filter(function (offer) {
+      return offer.benefit && Number.isFinite(offer.benefit.rate_percent);
+    }).sort(function (a, b) {
+      return b.benefit.rate_percent - a.benefit.rate_percent;
+    });
+    els.regionRate.textContent = rateOffers.length ? "最大 " + benefitLabel(rateOffers[0]) : "確認中";
     els.regionMetrics.hidden = false;
     els.regionCaveat.textContent = "「15％以上」等が基礎10％を含む場合は足し算しません。施設・プラン等を確認するまで「使える」と確定しません。";
     els.regionCaveat.hidden = offers.length < 2;
@@ -367,6 +372,9 @@
       var order = { active: 0, scheduled: 1, ended: 2 };
       var statusDiff = order[offerStatus(a).key] - order[offerStatus(b).key];
       if (statusDiff) return statusDiff;
+      var rateA = a.benefit && Number.isFinite(a.benefit.rate_percent) ? a.benefit.rate_percent : -1;
+      var rateB = b.benefit && Number.isFinite(b.benefit.rate_percent) ? b.benefit.rate_percent : -1;
+      if (rateA !== rateB) return rateB - rateA;
       return Date.parse(a.booking_start) - Date.parse(b.booking_start);
     });
     if (!relevant.length) {
@@ -388,6 +396,9 @@
     var offers = offersForRegion().slice().sort(function (a, b) {
       var diff = statusOrder[offerStatus(a).key] - statusOrder[offerStatus(b).key];
       if (diff) return diff;
+      var rateA = a.benefit && Number.isFinite(a.benefit.rate_percent) ? a.benefit.rate_percent : -1;
+      var rateB = b.benefit && Number.isFinite(b.benefit.rate_percent) ? b.benefit.rate_percent : -1;
+      if (rateA !== rateB) return rateB - rateA;
       return a.name.localeCompare(b.name, "ja");
     });
 
