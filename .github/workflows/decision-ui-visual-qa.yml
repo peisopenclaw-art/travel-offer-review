@@ -156,6 +156,10 @@ jobs:
               await page.keyboard.press("Tab")
               await page.keyboard.press("Shift+Tab")
               focus_visible = await control.evaluate("el => el.matches(':focus-visible')")
+              # The previous region click can leave the pointer over the selected control,
+              # especially at narrow widths. Move away before sampling the true base state.
+              await page.mouse.move(1, 1)
+              await page.wait_for_timeout(60)
               base_state = await control.evaluate("""el => {
                 const s = getComputedStyle(el);
                 return {background:s.backgroundColor, transform:s.transform, boxShadow:s.boxShadow};
