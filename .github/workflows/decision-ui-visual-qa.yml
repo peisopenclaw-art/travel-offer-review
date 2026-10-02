@@ -115,6 +115,8 @@ jobs:
               title = await page.title()
               h1 = (await page.locator("h1").inner_text()).strip()
               data_notice = (await page.locator(".decision-footer").inner_text()).strip()
+              initial_path = OUT / f"decision-home-{width}.png"
+              await page.screenshot(path=str(initial_path), full_page=True)
               image_failures = await page.locator(".intro-visual img, .japan-map-visual, .destination-card img").evaluate_all("""els => els.flatMap(el => {
                 if (el.complete && el.naturalWidth > 0 && el.naturalHeight > 0) return [];
                 return [{src:el.currentSrc || el.src, complete:el.complete, naturalWidth:el.naturalWidth, naturalHeight:el.naturalHeight}];
@@ -278,6 +280,7 @@ jobs:
                   "calendar_heading_clear": calendar_heading_clear,
                   "compare_heading_clear": compare_heading_clear,
                   "screenshots": {
+                      "home": str(initial_path),
                       "map": str(map_path),
                       "calendar": str(calendar_path),
                       "compare": str(comparison_path),
