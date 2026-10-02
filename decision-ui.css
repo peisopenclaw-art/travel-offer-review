@@ -236,3 +236,5 @@ body[data-decision-step="2"] .trip-console,body[data-decision-step="3"] .trip-co
 @media(max-width:800px){.region-preview.has-photo{display:none}}
 
 .ui-icon{display:inline-block;width:1em;height:1em;vertical-align:-.12em;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.step-number .ui-icon{width:17px;height:17px}.region-preview .ui-icon{width:28px;height:28px}
+
+@media(min-width:351px) and (max-width:800px){.comparison-table .benefit-cell{grid-column:1;grid-row:1}.comparison-table .estimate-cell{grid-column:2;grid-row:1}.comparison-table .eligibility-cell{grid-column:1/-1;grid-row:2}.comparison-table .provider-cell{grid-column:1/-1;grid-row:3}.comparison-table td[data-label="予約期間"]{grid-column:1/-1;grid-row:4}.comparison-table td:last-child{grid-column:1/-1;grid-row:5}}
