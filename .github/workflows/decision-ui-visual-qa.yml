@@ -107,6 +107,7 @@ jobs:
                 return {
                   noto: document.fonts.check('16px "Noto Sans JP"', '旅行'),
                   inter: document.fonts.check('16px "Inter"', '123'),
+                  headingFamily: getComputedStyle(document.querySelector("#map-title")).fontFamily,
                   h1Family: getComputedStyle(document.querySelector('#decision-title')).fontFamily,
                   footerFamily: getComputedStyle(document.querySelector('.decision-footer')).fontFamily
                 };
@@ -117,7 +118,7 @@ jobs:
               data_notice = (await page.locator(".decision-footer").inner_text()).strip()
               initial_path = OUT / f"decision-home-{width}.png"
               await page.screenshot(path=str(initial_path), full_page=True)
-              image_failures = await page.locator(".intro-visual img, .japan-map-visual, .destination-card img").evaluate_all("""els => els.flatMap(el => {
+              image_failures = await page.locator(".journey-hero-image, .featured-journey img, .japan-map-visual, .destination-card img").evaluate_all("""els => els.flatMap(el => {
                 if (el.complete && el.naturalWidth > 0 && el.naturalHeight > 0) return [];
                 return [{src:el.currentSrc || el.src, complete:el.complete, naturalWidth:el.naturalWidth, naturalHeight:el.naturalHeight}];
               })""")
@@ -355,7 +356,7 @@ jobs:
                       failures.append(f"{v}: estimator contract {r['estimator_contract']}")
                   if r["font_status"] != "loaded" or not r["font_checks"]["noto"] or not r["font_checks"]["inter"]:
                       failures.append(f"{v}: web font {r['font_checks']}")
-                  if "Noto Sans JP" not in r["font_checks"]["h1Family"] or "Noto Sans JP" not in r["font_checks"]["footerFamily"]:
+                  if "Noto Sans JP" not in r["font_checks"]["headingFamily"] or "Noto Sans JP" not in r["font_checks"]["h1Family"] or "Noto Sans JP" not in r["font_checks"]["footerFamily"]:
                       failures.append(f"{v}: computed font family {r['font_checks']}")
                   if r["image_failures"]:
                       failures.append(f"{v}: broken visual images {r['image_failures']}")
