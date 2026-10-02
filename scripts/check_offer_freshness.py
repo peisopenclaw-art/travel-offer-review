@@ -5,7 +5,7 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-INDEX = ROOT / "index.html"
+OFFERS = ROOT / "offers.html"
 JST = timezone(timedelta(hours=9))
 
 
@@ -21,7 +21,7 @@ def parse_now():
 
 def main():
     now = parse_now()
-    text = INDEX.read_text(encoding="utf-8")
+    text = OFFERS.read_text(encoding="utf-8")
     raw_deadlines = re.findall(r'data-booking-end="([^"]+)"', text)
 
     if not raw_deadlines:
