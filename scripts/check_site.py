@@ -53,7 +53,7 @@ for required in ["トクえらび", "どこへ行く？", "decision-ui.css", "de
         errors.append(f"index.html missing decision UI marker: {required}")
 
 offers = (ROOT / "offers.html").read_text(encoding="utf-8")
-for required in ["旅行オファー比較", "一次情報", "広告"]:
+for required in ["トクえらび", "一次情報", "広告"]:
     if required not in offers:
         errors.append(f"offers.html missing required text: {required}")
 
