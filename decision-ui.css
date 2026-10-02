@@ -994,3 +994,10 @@ body[data-decision-step="3"] .trip-console{
 
 /* Deterministic interaction-state QA: selected region state changes immediately on hover/press. */
 .region-button{transition:none}
+
+
+/* Hidden state must win over layout declarations. */
+.summary-metrics[hidden],
+.summary-caveat[hidden]{
+  display:none!important;
+}
