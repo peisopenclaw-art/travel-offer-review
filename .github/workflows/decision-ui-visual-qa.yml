@@ -154,6 +154,8 @@ jobs:
               await page.locator('.step-tab[data-step="1"]').click()
               await page.locator('[data-region="kanto"]').click()
 
+              # Let the explicit smooth scroll finish before coordinate-based state checks.
+              await page.wait_for_timeout(700)
               control = page.locator('[data-region="kanto"]')
               await control.focus()
               await page.keyboard.press("Tab")
@@ -168,6 +170,7 @@ jobs:
                 return {background:s.backgroundColor, transform:s.transform, boxShadow:s.boxShadow};
               }""")
               await control.hover()
+              await page.wait_for_timeout(700)
               hover_state = await control.evaluate("""el => {
                 const s = getComputedStyle(el);
                 return {background:s.backgroundColor, transform:s.transform, boxShadow:s.boxShadow};
