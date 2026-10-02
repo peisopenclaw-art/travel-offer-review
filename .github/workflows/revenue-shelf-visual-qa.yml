@@ -114,6 +114,15 @@ jobs:
                         return (r.width < 24 || r.height < 24) ? [{text:(el.textContent||'').trim(), width:r.width, height:r.height}] : [];
                       })""")
 
+                      heading_clip_failures = await page.locator(".secondary-offers h3 .semantic-phrase").evaluate_all("""els => els.flatMap(el => {
+                        const r = el.getBoundingClientRect();
+                        const host = el.closest('.offer-body')?.getBoundingClientRect();
+                        if (!host) return [{text:(el.textContent||'').trim(), reason:'missing host'}];
+                        return (r.left < host.left - 0.5 || r.right > host.right + 0.5)
+                          ? [{text:(el.textContent||'').trim(), left:r.left, right:r.right, hostLeft:host.left, hostRight:host.right}]
+                          : [];
+                      })""")
+
                       await page.evaluate(f"updateOfferStatuses(Date.parse('{REVIEW_TIME}'))")
                       await page.mouse.move(1, 1)
                       await page.evaluate("document.activeElement && document.activeElement.blur()")
@@ -143,6 +152,7 @@ jobs:
                         "page_errors":page_errors,
                         "console_errors":console_errors,
                         "target_failures":target_failures,
+                        "heading_clip_failures":heading_clip_failures,
                         "focus_visible":focus_visible,
                         "hover_state":hover_state,
                         "active_state":active_state,
@@ -188,6 +198,7 @@ jobs:
                   if len(r["a8"]) != 3 or any(x["href"] != A8_HREF or x["pixel"] != A8_PIXEL for x in r["a8"]): failures.append(f"{v}: A8 material changed {r['a8']}")
                   if r["page_errors"] or r["console_errors"]: failures.append(f"{v}: browser errors")
                   if r["target_failures"]: failures.append(f"{v}: target failures {r['target_failures']}")
+                  if r["heading_clip_failures"]: failures.append(f"{v}: heading clip {r['heading_clip_failures']}")
                   if not r["focus_visible"]: failures.append(f"{v}: focus-visible")
                   if not r["active_state"] or r["active_state"] == r["hover_state"]: failures.append(f"{v}: active state")
                   if r["a8_anchor_navigation_requests"]: failures.append(f"{v}: A8 navigation occurred")
