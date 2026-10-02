@@ -966,3 +966,16 @@ body[data-decision-step="2"] .trip-console,
 body[data-decision-step="3"] .trip-console{
   display:none;
 }
+
+
+/* QA repair: selected region must still expose distinct hover / active states. */
+.region-button[aria-selected="true"]:hover{
+  background:#0a3267;
+  transform:translateY(-3px);
+  box-shadow:0 14px 30px rgba(16,59,115,.28);
+}
+.region-button[aria-selected="true"]:active{
+  background:#071f45;
+  transform:translateY(1px) scale(.985);
+  box-shadow:0 4px 12px rgba(16,59,115,.18);
+}
