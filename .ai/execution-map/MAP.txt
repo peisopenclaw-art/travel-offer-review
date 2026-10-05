@@ -2,18 +2,18 @@ PROJECT: travel-offer-review
 CURRENT: 3 — local implementation verified
 
 [STEPS]
-1. Independent map/date/provider design and compact carousel — done
-2. Sunny palette, month-first discovery, and corresponding campaign pop — done
-3. Desktop/mobile interaction, data boundaries, contrast, and build verification — done
+1. Independent search axes and sunny campaign design — done
+2. Review round 3: compact form, six months, regional summaries and handoffs — done
+3. Responsive rendering, interactions, date boundaries and static build — done
 
 [CURRENT DETAIL]
-Goal: Resolve the second round's 9 browser comments and overall theme/search requests while retaining independent search axes.
-Facts: Local branch codex/flexible-travel-search-design, continuing the prior verified design. Root and decision.html stay synchronized. Month/date/provider searches preserve explicit conditions. campaign-highlights.json separately carries the official Kumamoto 60% headline and October 1–December 25 stay period, checked on the Kyushu official site on 2026-10-05. Sample periods remain fictional and visibly labeled. The shared guides use the new palette; ad markup and booking destinations remain unchanged.
-Evidence: scripts/qa_flexible_search.cjs — 50 checks PASS, including all 6 axis orders, 1440/768/390/375/320 widths, month-first display, calendar boundaries, ranking/scope/caps, best place/day pops, fixed-plan search, fixed-coupon yen display, unknown-period rejection, state/retry, and carousel checks. artifacts/flexible-search/qa.json and screenshots retained. Site/offer-contract/freshness/build checks and JS syntax PASS. Separate rendered primary-link contrast check PASS at 4.85:1. IAB desktop and 390px renders inspected.
-Plan difference: Date discovery now starts with a vertical month list. Empty place/date form values mean an automatic campaign choice, and search opens its corresponding Featured Campaigns pop. Advertised rates are the selection criterion; no cheapest-price or eligibility claim is made.
-Next: User reviews the local design. Public preview publication/production release require authorization and retain PR #44's existing release gates.
-Human input: none for implementation; no publish, push, PR update, merge or production deployment performed.
-Design rationale and data boundaries: docs/sunny-travel-design.md.
+Goal: Apply all 15 review comments; preserve the independent map/date/provider axes and the automatic campaign search.
+Facts: The search bar uses icon/value rows and horizontally aligned adults/children. Preview banner and map/date headings are removed; percentage/cap icons remain. Six months cover October 2026–March 2027, with labeled samples providing January–March data. Selected filters have a highlighted border. Map and date summaries use the same ranked campaign cards. The selected region survives the map-to-calendar and calendar-to-map handoffs. Calendar month arrows flank the month label; desktop panels share height; cells include cap and known-period campaign count. A source-backed campaign pop has one official detail link. The old share label is now an explicit URL-copy action in the desktop filter bar, avoiding another row.
+Evidence: scripts/qa_flexible_search.cjs — 52 checks PASS, including all six axis orders, 1440/768/390/375/320 widths, compact desktop form geometry, equal calendar/summary heights, region handoff and return, six-month year boundary and calendar URL/reload, single official detail destination, and existing loading/retry/carousel/automatic-search checks. IAB desktop and 390px rendering inspected; artifacts/flexible-search screenshots and qa.json retained. Site/offer-contract/freshness/build checks and JS syntax PASS.
+Plan difference: Calendar view state is now included in copied URLs. January–March remain sample-only; the real recovery campaign's December 25 end date and provider eligibility data were preserved.
+Next: User reviews the updated local preview. Publication and production release still require authorization and the project's release gates.
+Human input: none for local implementation. No push, PR update, merge, external publication or production deployment performed.
+Design/data notes: docs/sunny-travel-design.md.
 [END CURRENT DETAIL]
 
 [RETAINED RESOURCE]

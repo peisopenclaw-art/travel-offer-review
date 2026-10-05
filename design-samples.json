@@ -14,9 +14,9 @@
       "booking_start": null,
       "booking_end": null,
       "sample_stay_start": "2026-10-01",
-      "sample_stay_end": "2026-12-31",
+      "sample_stay_end": "2027-03-31",
       "stay_window": {
-        "label": "2026-10-01 〜 2026-12-31（サンプル）"
+        "label": "2026-10-01 〜 2027-03-31（サンプル）"
       },
       "benefit": {
         "kind": "coupon_rate",
@@ -47,6 +47,21 @@
           "start": "2026-12-01",
           "end": "2026-12-15",
           "rate_percent": 40
+        },
+        {
+          "start": "2027-01-01",
+          "end": "2027-01-31",
+          "rate_percent": 30
+        },
+        {
+          "start": "2027-02-01",
+          "end": "2027-02-28",
+          "rate_percent": 25
+        },
+        {
+          "start": "2027-03-01",
+          "end": "2027-03-31",
+          "rate_percent": 35
         }
       ]
     },
@@ -95,9 +110,9 @@
       "booking_start": null,
       "booking_end": null,
       "sample_stay_start": "2026-11-01",
-      "sample_stay_end": "2026-12-31",
+      "sample_stay_end": "2027-03-31",
       "stay_window": {
-        "label": "2026-11-01 〜 2026-12-31（サンプル）"
+        "label": "2026-11-01 〜 2027-03-31（サンプル）"
       },
       "benefit": {
         "kind": "coupon_rate",
@@ -125,9 +140,9 @@
       "booking_start": null,
       "booking_end": null,
       "sample_stay_start": "2026-10-01",
-      "sample_stay_end": "2026-12-31",
+      "sample_stay_end": "2027-03-31",
       "stay_window": {
-        "label": "2026-10-01 〜 2026-12-31（サンプル）"
+        "label": "2026-10-01 〜 2027-03-31（サンプル）"
       },
       "benefit": {
         "kind": "coupon_fixed",
@@ -157,9 +172,9 @@
       "booking_start": null,
       "booking_end": null,
       "sample_stay_start": "2026-10-01",
-      "sample_stay_end": "2026-12-31",
+      "sample_stay_end": "2027-03-31",
       "stay_window": {
-        "label": "2026-10-01 〜 2026-12-31（サンプル）"
+        "label": "2026-10-01 〜 2027-03-31（サンプル）"
       },
       "benefit": {
         "kind": "coupon_rate",
@@ -189,9 +204,9 @@
       "booking_start": null,
       "booking_end": null,
       "sample_stay_start": "2026-10-01",
-      "sample_stay_end": "2026-12-31",
+      "sample_stay_end": "2027-03-31",
       "stay_window": {
-        "label": "2026-10-01 〜 2026-12-31（サンプル）"
+        "label": "2026-10-01 〜 2027-03-31（サンプル）"
       },
       "benefit": {
         "kind": "coupon_fixed",
@@ -221,9 +236,9 @@
       "booking_start": null,
       "booking_end": null,
       "sample_stay_start": "2026-10-01",
-      "sample_stay_end": "2026-12-31",
+      "sample_stay_end": "2027-03-31",
       "stay_window": {
-        "label": "2026-10-01 〜 2026-12-31（サンプル）"
+        "label": "2026-10-01 〜 2027-03-31（サンプル）"
       },
       "benefit": {
         "kind": "coupon_rate",
@@ -254,9 +269,9 @@
       "booking_start": null,
       "booking_end": null,
       "sample_stay_start": "2026-10-01",
-      "sample_stay_end": "2026-12-31",
+      "sample_stay_end": "2027-03-31",
       "stay_window": {
-        "label": "2026-10-01 〜 2026-12-31（サンプル）"
+        "label": "2026-10-01 〜 2027-03-31（サンプル）"
       },
       "benefit": {
         "kind": "coupon_rate",

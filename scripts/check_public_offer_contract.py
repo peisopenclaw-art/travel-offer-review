@@ -137,8 +137,8 @@ for guard in ['benefit.currency === "JPY"', 'benefit.calculation_base === "eligi
         fail(f"safe estimator missing required calculation guard: {guard}")
 if "ポイント型のため割引額に換算しません" not in ui:
     fail("UI must explicitly refuse reward-point-to-discount conversion")
-if "navigator.share" not in ui or "navigator.clipboard" not in ui:
-    fail("shareable URL control must support native share or clipboard fallback")
+if "navigator.clipboard" not in ui or "window.prompt" not in ui:
+    fail("URL copy control must support clipboard and a manual copy fallback")
 
 if errors:
     print("\n".join(errors))

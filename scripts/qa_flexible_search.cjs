@@ -53,15 +53,17 @@ async function main() {
     for(const width of [1440,768,390,375,320]) {
       await page.setViewportSize({width,height:900}); await load('?month=2026-12&view=date');
       assert.equal(await page.locator('#calendar-workspace').isVisible(),false);
-      assert.equal(await page.locator('.month-offer-row').count(),3);
+      assert.equal(await page.locator('.month-offer-row').count(),6);
       assert.ok((await page.locator('[data-month="2026-12"]').innerText()).includes('最大60％'));
       await page.locator('[data-month="2026-12"]').click(); await metrics(width,'date-calendar');
+      const controls=await page.evaluate(()=>{const a=document.querySelector('#month-prev').getBoundingClientRect(),b=document.querySelector('#calendar-month-label').getBoundingClientRect(),c=document.querySelector('#month-next').getBoundingClientRect();return {ordered:a.x<b.x&&b.x<c.x,centerGap:Math.abs(a.y+a.height/2-c.y-c.height/2),clipped:[...document.querySelectorAll('.day-cap')].some(e=>e.scrollWidth>e.clientWidth+1)}});
+      assert.ok(controls.ordered && controls.centerGap<2 && !controls.clipped,JSON.stringify(controls));
       assert.ok((await page.locator('[data-date="2026-12-25"]').getAttribute('class')).includes('heat-high'));
       assert.ok((await page.locator('[data-date="2026-12-26"]').getAttribute('class')).includes('heat-medium'));
       assert.ok((await page.locator('[data-date="2026-12-26"]').innerText()).includes('20％例'));
-      const hints = await page.locator('.hint-rate').allTextContents(); assert.deepEqual(hints,['最大60％','40％（例）','30％以上']);
-      assert.ok((await page.locator('.booking-hint').first().innerText()).includes('20,000円／人'));
-      assert.ok((await page.locator('.booking-hint').first().innerText()).includes('熊本県'));
+      const hints = await page.locator('#booking-hints .hint-rate').allTextContents(); assert.deepEqual(hints,['最大60％','40％（例）','30％以上']);
+      assert.ok((await page.locator('#booking-hints .booking-hint').first().innerText()).includes('20,000円／人'));
+      assert.ok((await page.locator('#booking-hints .booking-hint').first().innerText()).includes('熊本県'));
       if(width===1440 || width===390) await page.screenshot({path:path.join(output,'calendar-'+width+'.png'),fullPage:true});
       await page.locator('#months-back').click(); assert.equal(await page.locator('#month-offers').isVisible(),true);
       results.push({check:'monthly-calendar-boundary-and-ranked-hints',width,passed:true});
@@ -101,6 +103,42 @@ async function main() {
     assert.equal(await page.locator('#dialog-title').innerText(),'家族旅行の宿泊クーポン');
     assert.equal(await page.locator('#sample-family.is-recommended').count(),1);
     await page.locator('#dialog-close').click(); results.push({check:'fixed-coupon-calendar-and-featured-popup',passed:true});
+    // Compact review requests: regional handoff, new-year months, and shared panel heights.
+    await load('?view=map&destination=kyushu&children=1');
+    assert.equal(await page.locator('.design-note').count(),0);
+    assert.equal(await page.locator('#map-title,#calendar-title,.calendar-data-note').count(),0);
+    assert.ok((await page.locator('#map-booking-hints').innerText()).includes('最大60％'));
+    assert.ok((await page.locator('#map-booking-hints').innerText()).includes('熊本県'));
+    await page.locator('#to-calendar').click();
+    assert.equal(await page.locator('#tab-date').getAttribute('aria-selected'),'true');
+    assert.equal(await page.locator('#calendar-workspace').isVisible(),true);
+    assert.equal(await page.locator('#destination').inputValue(),'kyushu');
+    assert.equal(await page.locator('#calendar-region-label').innerText(),'九州・沖縄');
+    await page.reload(); await page.locator('#decision-main[aria-busy="false"]').waitFor();
+    assert.equal(await page.locator('#calendar-workspace').isVisible(),true);
+    const geometry=await page.evaluate(()=>({calendar:document.querySelector('.calendar-panel').getBoundingClientRect().height,hints:document.querySelector('.timing-panel').getBoundingClientRect().height,form:document.querySelector('#trip-form').getBoundingClientRect().height,adults:document.querySelector('#adult-count').getBoundingClientRect().y,children:document.querySelector('#child-count').getBoundingClientRect().y}));
+    assert.ok(Math.abs(geometry.calendar-geometry.hints)<=2,JSON.stringify(geometry));
+    assert.ok(geometry.form<=66,JSON.stringify(geometry)); assert.ok(Math.abs(geometry.adults-geometry.children)<2,JSON.stringify(geometry));
+    assert.ok((await page.locator('[data-date="2026-10-08"] .day-cap').innerText()).includes('2万円'));
+    assert.ok((await page.locator('[data-date="2026-10-08"] .day-count').innerText()).includes('件'));
+    await page.locator('#booking-hints [data-campaign="kyushu-recovery"]').click();
+    assert.equal(await page.locator('#dialog-content a').count(),1);
+    assert.equal(await page.locator('#dialog-content a').getAttribute('href'),'https://fightkyushu.welcomekyushu.jp/');
+    assert.ok((await page.locator('#dialog-content a').innerText()).includes('キャンペーンの詳細を見る'));
+    await page.locator('#dialog-close').click();
+    await page.locator('#calendar-region-label').click(); assert.equal(await page.locator('#tab-map').getAttribute('aria-selected'),'true');
+    assert.equal(await page.locator('#destination').inputValue(),'kyushu');
+    results.push({check:'compact-form-region-calendar-handoff-and-single-official-link',passed:true});
+    await load('?view=date&month=2027-02');
+    assert.ok((await page.locator('[data-month="2027-02"]').innerText()).includes('2027'));
+    await page.locator('[data-month="2027-02"]').click();
+    assert.equal(await page.locator('.calendar-day').count(),28);
+    await page.locator('[data-date="2027-02-28"]').click(); assert.equal(await page.locator('#travel-date').inputValue(),'2027-02-28');
+    await page.locator('#month-next').click(); assert.equal(await page.locator('#calendar-month-label').innerText(),'2027年3月');
+    assert.equal(await page.locator('#month-next').isDisabled(),true);
+    await page.reload(); await page.locator('#decision-main[aria-busy="false"]').waitFor();assert.equal(await page.locator('#calendar-month-label').innerText(),'2027年3月');
+    await load('?view=date&date=2027-02-29');assert.equal(await page.locator('#travel-date').inputValue(),'');
+    results.push({check:'six-month-year-boundary-and-valid-dates',passed:true});
     for(const order of orders) {
       await load('?month=2026-12&view=map');
       for(const view of order) {
