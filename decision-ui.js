@@ -523,7 +523,7 @@
 
   function renderEstimateNote() {
     if (!Number.isFinite(state.assumedPrice) || state.assumedPrice <= 0) {
-      els.estimateNote.textContent = "旅行全体の予算ではなく、クーポン計算の対象になる宿泊料金だけを入れます。現在のポイント型施策は割引額へ換算しません。";
+      els.estimateNote.textContent = "旅行全体の予算ではなく、クーポン計算の対象になる予約代金だけを入れます。現在のポイント型施策は割引額へ換算しません。";
       return;
     }
     var calculable = offersForRegion().some(function (offer) {
@@ -531,7 +531,7 @@
       return kind === "coupon_rate" || kind === "coupon_fixed";
     });
     els.estimateNote.textContent = calculable
-      ? formatYen(state.assumedPrice) + "を対象宿泊料金として、条件が揃った単独クーポンだけ推定します。"
+      ? formatYen(state.assumedPrice) + "を対象代金として、条件が揃った単独クーポンだけ推定します。"
       : formatYen(state.assumedPrice) + "を入力しました。現在の確認済み施策はポイント型のため割引額に換算しません。";
   }
 
