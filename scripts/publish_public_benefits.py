@@ -8,11 +8,32 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import time
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 from check_public_benefits import validate
 
 ROOT=Path(__file__).resolve().parents[1]
 def run(args):
     return subprocess.run(args,cwd=ROOT,check=True,capture_output=True,text=True).stdout.strip()
+
+def verify_public(body):
+    expected=hashlib.sha256(body).digest()
+    deadline=time.monotonic()+60
+    while True:
+        try:
+            request=Request('https://travel.tokuerabi.com/decision-data.json',headers={'Cache-Control':'no-cache','User-Agent':'PublicBenefitPublisher/1.0'})
+            with urlopen(request,timeout=10) as response:published=response.read(8*1024*1024+1)
+            if hashlib.sha256(published).digest()==expected:
+                return
+        except HTTPError as error:
+            if error.code not in {404,502,503,504}:
+                raise
+        except (URLError, TimeoutError):
+            pass
+        if time.monotonic()>=deadline:
+            raise RuntimeError('public snapshot readback did not match within 60 seconds')
+        time.sleep(2)
 
 def main():
     ap=argparse.ArgumentParser()
@@ -36,11 +57,7 @@ def main():
     assert (ROOT/'dist/decision-data.json').read_bytes()==body
     if not args.build_only:
         run(['npx','--no-install','wrangler','deploy'])
-        from urllib.request import Request,urlopen
-        request=Request('https://travel.tokuerabi.com/decision-data.json',headers={'Cache-Control':'no-cache','User-Agent':'PublicBenefitPublisher/1.0'})
-        with urlopen(request,timeout=30) as response:published=response.read()
-        if hashlib.sha256(published).digest()!=hashlib.sha256(body).digest():
-            raise RuntimeError('public snapshot readback does not match the published data')
+        verify_public(body)
     print(json.dumps({'published':not args.build_only,'commit':args.accepted_commit,'records':count,'as_of':data['as_of']}))
 
 if __name__=='__main__':main()
