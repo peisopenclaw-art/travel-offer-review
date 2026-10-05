@@ -592,3 +592,7 @@ body.decision-page{background:#f0faff}
 
 .benefit-controls .benefit-amount input{width:150px}.benefit-controls>small{font-size:12px;line-height:1.6;color:#486354;flex-basis:100%}
 .campaign-pick:has(.campaign-visual){display:block}.campaign-pick .campaign-visual{display:none}.campaign-description{line-height:1.8}.campaign-pick h3{word-break:auto-phrase;text-wrap:pretty}
+
+.month-label>strong{white-space:nowrap}
+@media(max-width:480px){.month-label>strong{font-size:27px;letter-spacing:-.05em}.month-label>strong>small{font-size:12px;margin-left:2px}}
+.price-estimate-note{font-size:12px;line-height:1.7;color:#486354;margin:12px 0}
