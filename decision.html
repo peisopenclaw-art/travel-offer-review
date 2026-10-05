@@ -36,17 +36,17 @@
   <h1 class="sr-only" id="decision-title">宿泊割引クーポン・キャンペーンを探す</h1>
   <section class="campaign-carousel" aria-label="季節のキャンペーン" aria-roledescription="カルーセル">
     <div class="carousel-slides">
-      <a class="campaign-slide is-active" href="sample-campaign.html?campaign=sample-seaside" data-slide="0" aria-label="海辺のリゾート特集のサンプルを見る">
+      <a class="campaign-slide is-active" href="sample-campaign.html?campaign=sample-seaside" data-slide="0" aria-label="海辺のリゾート特集の旅行特典を見る">
         <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG" alt="白い砂浜とエメラルド色の海" fetchpriority="high">
-        <div class="banner-copy"><span class="banner-tag">リゾート特集 <small>サンプル</small></span><h2>海辺で過ごす、<br>ちょっと贅沢な休日。</h2><p>宿泊クーポンで、次のバカンスへ。</p><span class="banner-cta">特集を見る →</span></div>
+        <div class="banner-copy"><span class="banner-tag">リゾート特集 <small>旅行先のイメージ</small></span><h2>海辺で過ごす、<br>ちょっと贅沢な休日。</h2><p>宿泊クーポンで、次のバカンスへ。</p><span class="banner-cta">特集を見る →</span></div>
       </a>
-      <a class="campaign-slide" href="sample-campaign.html?campaign=sample-autumn" data-slide="1" aria-label="秋の自然旅のサンプルを見る" hidden tabindex="-1">
+      <a class="campaign-slide" href="sample-campaign.html?campaign=sample-autumn" data-slide="1" aria-label="秋の自然旅の旅行特典を見る" hidden tabindex="-1">
         <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/The%20five%20mountains%20of%20Aso.jpg" alt="空と山々が広がる阿蘇の風景">
-        <div class="banner-copy"><span class="banner-tag">秋の自然旅 <small>サンプル</small></span><h2>深呼吸したくなる、<br>秋の旅へ。</h2><p>山を眺める宿で、のんびり過ごそう。</p><span class="banner-cta">特集を見る →</span></div>
+        <div class="banner-copy"><span class="banner-tag">秋の自然旅 <small>旅行先のイメージ</small></span><h2>深呼吸したくなる、<br>秋の旅へ。</h2><p>山を眺める宿で、のんびり過ごそう。</p><span class="banner-cta">特集を見る →</span></div>
       </a>
-      <a class="campaign-slide" href="sample-campaign.html?campaign=sample-winter" data-slide="2" aria-label="冬のご褒美ステイのサンプルを見る" hidden tabindex="-1">
+      <a class="campaign-slide" href="sample-campaign.html?campaign=sample-winter" data-slide="2" aria-label="冬のご褒美ステイの旅行特典を見る" hidden tabindex="-1">
         <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/FujiLakeShore.jpg" alt="湖畔の向こうに見える雪化粧の富士山">
-        <div class="banner-copy"><span class="banner-tag">冬のご褒美ステイ <small>サンプル</small></span><h2>景色までご褒美に。<br>冬のホテル時間。</h2><p>少し先の休日も、お得を見ながら。</p><span class="banner-cta">特集を見る →</span></div>
+        <div class="banner-copy"><span class="banner-tag">冬のご褒美ステイ <small>旅行先のイメージ</small></span><h2>景色までご褒美に。<br>冬のホテル時間。</h2><p>少し先の休日も、お得を見ながら。</p><span class="banner-cta">特集を見る →</span></div>
       </a>
     </div>
     <div class="carousel-controls"><button type="button" id="slide-prev" aria-label="前のキャンペーン">‹</button><div class="carousel-dots" role="group" aria-label="表示するキャンペーン"><button type="button" data-slide-to="0" aria-label="海辺のリゾート特集" aria-pressed="true"></button><button type="button" data-slide-to="1" aria-label="秋の自然旅" aria-pressed="false"></button><button type="button" data-slide-to="2" aria-label="冬のご褒美ステイ" aria-pressed="false"></button></div><button type="button" id="slide-next" aria-label="次のキャンペーン">›</button><button type="button" id="slide-pause" aria-label="自動スライドを停止" aria-pressed="false">Ⅱ</button></div>
@@ -97,6 +97,13 @@
     </form>
   </section>
 
+  <div class="benefit-controls" aria-label="商品と泊数の条件">
+    <label>旅行商品<select id="product-type"><option value="all">すべての商品</option><option value="stay">宿泊</option><option value="air_dp">航空券＋宿</option><option value="rail_dp">JR＋宿</option><option value="air_sale">航空券</option><option value="rail_discount">鉄道</option><option value="unknown">商品区分を確認</option></select></label>
+    <label>部屋数<input id="room-num" type="number" min="1" max="10" value="1" inputmode="numeric"></label>
+    <label>泊数<input id="nights" type="number" min="1" max="30" value="1" inputmode="numeric"></label>
+  </div>
+  <div id="benefit-data-status" class="benefit-data-status" role="status"></div>
+
   <nav id="search-tabs" class="decision-steps" aria-label="探し方" role="tablist">
     <button id="tab-map" class="step-tab is-active" type="button" data-step="1" role="tab" aria-selected="true" aria-controls="panel-map"><span aria-hidden="true">⌖</span><strong>地図で探す</strong></button>
     <button id="tab-date" class="step-tab" type="button" data-step="2" role="tab" aria-selected="false" aria-controls="panel-date" tabindex="-1"><span aria-hidden="true">▦</span><strong>日付で探す</strong></button>
@@ -105,6 +112,7 @@
   </nav>
   <div class="filter-console"><div id="active-filters" class="active-filters" aria-label="選択中の条件"></div><button id="share-state" class="share-state" type="button">検索条件のリンクをコピー</button></div>
 
+  <details class="coverage-details"><summary>掲載元と確認状況</summary><div id="source-coverage" class="source-coverage"></div></details>
   <div id="status-message" class="sr-only" aria-live="polite"></div>
 
   <section class="decision-stage is-active" id="panel-map" role="tabpanel" data-panel="1" aria-labelledby="tab-map">
@@ -266,9 +274,10 @@
     <a class="footer-brand" href="./">トクえらび</a>
     <p>宿泊割引クーポン・キャンペーンまとめサイト</p><nav aria-label="掲載方針"><a href="about.html">このサイトについて</a><a href="privacy.html">プライバシー</a></nav>
   </div>
-  <small>サンプル表示を含みます。実際の特典は公式条件をご確認ください。</small>
+  <small>掲載特典の利用条件・配布状態は公式ページでご確認ください。</small>
 </footer>
 
+<script src="benefit-rules.js" defer></script>
 <script src="decision-ui.js?v=20261005-geography-search-v5" defer></script>
 </body>
 </html>

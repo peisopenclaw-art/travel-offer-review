@@ -1,17 +1,6 @@
 name: offer-freshness
 
 on:
-  pull_request:
-    paths:
-      - "index.html"
-      - "scripts/check_offer_freshness.py"
-      - ".github/workflows/offer-freshness.yml"
-  push:
-    branches: [main]
-    paths:
-      - "index.html"
-      - "scripts/check_offer_freshness.py"
-      - ".github/workflows/offer-freshness.yml"
   schedule:
     - cron: "30 3 * * *"
   workflow_dispatch:

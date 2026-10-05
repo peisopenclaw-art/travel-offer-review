@@ -1,211 +1,368 @@
 {
-  "schema_version": "public-offer-v1",
-  "data_version": "2026-09-30T19:25:00+09:00",
-  "as_of": "2026-09-30T19:25:00+09:00",
-  "data_level": 1,
-  "price_inventory_available": false,
-  "regional_comparison_ready": false,
-  "travel_date_comparison_ready": false,
-  "comparison_rules": {
-    "booking_window_is_not_stay_window": true,
-    "do_not_sum_rates_between_offers": true,
-    "minimum_rate_is_not_exact_rate": true,
-    "all_match_requirements_must_pass_before_eligible": true,
-    "price_sort_enabled": false
-  },
+  "schema_version": "public-offer-v2",
+  "data_origin": "postgresql-public-snapshot",
+  "rule_version": "benefit-rules-v2.1",
+  "as_of": null,
+  "expires_at": null,
+  "offer_count": 0,
+  "record_count": 0,
   "regions": [
     {
       "id": "hokkaido",
       "name": "北海道",
-      "map_label": "北海道"
+      "parent": "",
+      "level": "region"
+    },
+    {
+      "id": "hokkaido-pref",
+      "name": "北海道",
+      "parent": "hokkaido",
+      "level": "prefecture"
     },
     {
       "id": "tohoku",
       "name": "東北",
-      "map_label": "東北"
+      "parent": "",
+      "level": "region"
+    },
+    {
+      "id": "aomori",
+      "name": "青森県",
+      "parent": "tohoku",
+      "level": "prefecture"
+    },
+    {
+      "id": "iwate",
+      "name": "岩手県",
+      "parent": "tohoku",
+      "level": "prefecture"
+    },
+    {
+      "id": "miyagi",
+      "name": "宮城県",
+      "parent": "tohoku",
+      "level": "prefecture"
+    },
+    {
+      "id": "akita",
+      "name": "秋田県",
+      "parent": "tohoku",
+      "level": "prefecture"
+    },
+    {
+      "id": "yamagata",
+      "name": "山形県",
+      "parent": "tohoku",
+      "level": "prefecture"
+    },
+    {
+      "id": "fukushima",
+      "name": "福島県",
+      "parent": "tohoku",
+      "level": "prefecture"
     },
     {
       "id": "kanto",
       "name": "関東",
-      "map_label": "関東"
+      "parent": "",
+      "level": "region"
+    },
+    {
+      "id": "ibaraki",
+      "name": "茨城県",
+      "parent": "kanto",
+      "level": "prefecture"
+    },
+    {
+      "id": "tochigi",
+      "name": "栃木県",
+      "parent": "kanto",
+      "level": "prefecture"
+    },
+    {
+      "id": "gunma",
+      "name": "群馬県",
+      "parent": "kanto",
+      "level": "prefecture"
+    },
+    {
+      "id": "saitama",
+      "name": "埼玉県",
+      "parent": "kanto",
+      "level": "prefecture"
+    },
+    {
+      "id": "chiba",
+      "name": "千葉県",
+      "parent": "kanto",
+      "level": "prefecture"
+    },
+    {
+      "id": "tokyo",
+      "name": "東京都",
+      "parent": "kanto",
+      "level": "prefecture"
+    },
+    {
+      "id": "kanagawa",
+      "name": "神奈川県",
+      "parent": "kanto",
+      "level": "prefecture"
     },
     {
       "id": "chubu",
       "name": "中部",
-      "map_label": "中部"
+      "parent": "",
+      "level": "region"
+    },
+    {
+      "id": "niigata",
+      "name": "新潟県",
+      "parent": "chubu",
+      "level": "prefecture"
+    },
+    {
+      "id": "toyama",
+      "name": "富山県",
+      "parent": "chubu",
+      "level": "prefecture"
+    },
+    {
+      "id": "ishikawa",
+      "name": "石川県",
+      "parent": "chubu",
+      "level": "prefecture"
+    },
+    {
+      "id": "fukui",
+      "name": "福井県",
+      "parent": "chubu",
+      "level": "prefecture"
+    },
+    {
+      "id": "yamanashi",
+      "name": "山梨県",
+      "parent": "chubu",
+      "level": "prefecture"
+    },
+    {
+      "id": "nagano",
+      "name": "長野県",
+      "parent": "chubu",
+      "level": "prefecture"
+    },
+    {
+      "id": "gifu",
+      "name": "岐阜県",
+      "parent": "chubu",
+      "level": "prefecture"
+    },
+    {
+      "id": "shizuoka",
+      "name": "静岡県",
+      "parent": "chubu",
+      "level": "prefecture"
+    },
+    {
+      "id": "aichi",
+      "name": "愛知県",
+      "parent": "chubu",
+      "level": "prefecture"
     },
     {
       "id": "kinki",
       "name": "近畿",
-      "map_label": "近畿"
+      "parent": "",
+      "level": "region"
+    },
+    {
+      "id": "mie",
+      "name": "三重県",
+      "parent": "kinki",
+      "level": "prefecture"
+    },
+    {
+      "id": "shiga",
+      "name": "滋賀県",
+      "parent": "kinki",
+      "level": "prefecture"
+    },
+    {
+      "id": "kyoto",
+      "name": "京都府",
+      "parent": "kinki",
+      "level": "prefecture"
+    },
+    {
+      "id": "osaka",
+      "name": "大阪府",
+      "parent": "kinki",
+      "level": "prefecture"
+    },
+    {
+      "id": "hyogo",
+      "name": "兵庫県",
+      "parent": "kinki",
+      "level": "prefecture"
+    },
+    {
+      "id": "nara",
+      "name": "奈良県",
+      "parent": "kinki",
+      "level": "prefecture"
+    },
+    {
+      "id": "wakayama",
+      "name": "和歌山県",
+      "parent": "kinki",
+      "level": "prefecture"
     },
     {
       "id": "chugoku",
       "name": "中国",
-      "map_label": "中国"
+      "parent": "",
+      "level": "region"
+    },
+    {
+      "id": "tottori",
+      "name": "鳥取県",
+      "parent": "chugoku",
+      "level": "prefecture"
+    },
+    {
+      "id": "shimane",
+      "name": "島根県",
+      "parent": "chugoku",
+      "level": "prefecture"
+    },
+    {
+      "id": "okayama",
+      "name": "岡山県",
+      "parent": "chugoku",
+      "level": "prefecture"
+    },
+    {
+      "id": "hiroshima",
+      "name": "広島県",
+      "parent": "chugoku",
+      "level": "prefecture"
+    },
+    {
+      "id": "yamaguchi",
+      "name": "山口県",
+      "parent": "chugoku",
+      "level": "prefecture"
     },
     {
       "id": "shikoku",
       "name": "四国",
-      "map_label": "四国"
+      "parent": "",
+      "level": "region"
+    },
+    {
+      "id": "tokushima",
+      "name": "徳島県",
+      "parent": "shikoku",
+      "level": "prefecture"
+    },
+    {
+      "id": "kagawa",
+      "name": "香川県",
+      "parent": "shikoku",
+      "level": "prefecture"
+    },
+    {
+      "id": "ehime",
+      "name": "愛媛県",
+      "parent": "shikoku",
+      "level": "prefecture"
+    },
+    {
+      "id": "kochi",
+      "name": "高知県",
+      "parent": "shikoku",
+      "level": "prefecture"
     },
     {
       "id": "kyushu",
       "name": "九州・沖縄",
-      "map_label": "九州・沖縄"
+      "parent": "",
+      "level": "region"
+    },
+    {
+      "id": "fukuoka",
+      "name": "福岡県",
+      "parent": "kyushu",
+      "level": "prefecture"
+    },
+    {
+      "id": "saga",
+      "name": "佐賀県",
+      "parent": "kyushu",
+      "level": "prefecture"
+    },
+    {
+      "id": "nagasaki",
+      "name": "長崎県",
+      "parent": "kyushu",
+      "level": "prefecture"
+    },
+    {
+      "id": "kumamoto",
+      "name": "熊本県",
+      "parent": "kyushu",
+      "level": "prefecture"
+    },
+    {
+      "id": "oita",
+      "name": "大分県",
+      "parent": "kyushu",
+      "level": "prefecture"
+    },
+    {
+      "id": "miyazaki",
+      "name": "宮崎県",
+      "parent": "kyushu",
+      "level": "prefecture"
+    },
+    {
+      "id": "kagoshima",
+      "name": "鹿児島県",
+      "parent": "kyushu",
+      "level": "prefecture"
+    },
+    {
+      "id": "okinawa",
+      "name": "沖縄県",
+      "parent": "kyushu",
+      "level": "prefecture"
+    },
+    {
+      "id": "sendai",
+      "name": "仙台市",
+      "parent": "miyagi",
+      "level": "city"
+    },
+    {
+      "id": "matsushima",
+      "name": "松島町",
+      "parent": "miyagi",
+      "level": "city"
+    },
+    {
+      "id": "kumamoto-city",
+      "name": "熊本市",
+      "parent": "kumamoto",
+      "level": "city"
+    },
+    {
+      "id": "naha",
+      "name": "那覇市",
+      "parent": "okinawa",
+      "level": "city"
     }
   ],
-  "offers": [
-    {
-      "id": "yahoo-always-10",
-      "provider": "Yahoo!トラベル",
-      "product": "宿泊",
-      "name": "いつでも誰でも10％お得",
-      "scope": "全国",
-      "booking_start": "2023-09-25T12:00:00+09:00",
-      "booking_end": null,
-      "stay_window": {
-        "mode": "checkout_from",
-        "label": "2023年9月26日チェックアウト以降",
-        "checkout_from": "2023-09-26",
-        "campaign_level_date_decidable": true
-      },
-      "property_scope": {
-        "mode": "mostly_all_with_exclusions",
-        "label": "原則対象。ただし一部対象外施設あり"
-      },
-      "benefit": {
-        "kind": "paypay_total_rate",
-        "display_label": "10％",
-        "rate_percent": 10,
-        "rate_semantics": "total_if_eligible",
-        "cap_label": "最低利用料金・割引上限なし",
-        "realization": "instant_or_later",
-        "includes_offer_ids": []
-      },
-      "stacking": {
-        "mode": "base_benefit",
-        "selection_group": "yahoo-stay-total-benefit",
-        "note": "特別セールの「15％以上」等は、この10％を含む総率として扱い、別加算しません。"
-      },
-      "match_requirements": [
-        "property_exclusion_check",
-        "online_card_payment"
-      ],
-      "match_state_label": "施設・支払方法の確認が必要",
-      "summary": "オンラインカード決済で対象施設ならPayPayポイント合計10％。一部対象外施設があります。",
-      "condition_note": "対象外施設ラベルとオンラインカード決済を確認してから適用確定します。予約時にポイントを今すぐ利用した場合、同じポイントを後日付与として二重計上しません。",
-      "source": {
-        "official_url": "https://travel.yahoo.co.jp/feature/campaign_pointup/",
-        "source_updated_at": "2026-05-18T12:00:00+09:00",
-        "checked_at": "2026-09-30T15:25:00+09:00"
-      },
-      "booking": {
-        "provider_url": "https://travel.yahoo.co.jp/",
-        "monetization": "official_non_affiliate_prototype"
-      }
-    },
-    {
-      "id": "yahoo-popular-15",
-      "provider": "Yahoo!トラベル",
-      "product": "宿泊",
-      "name": "超得セール！人気宿スペシャル",
-      "scope": "全国",
-      "booking_start": "2026-10-01T12:00:00+09:00",
-      "booking_end": "2026-10-09T11:59:00+09:00",
-      "stay_window": {
-        "mode": "provider_plan_availability",
-        "label": "対象プランの予約可能期間に準ずる",
-        "campaign_level_date_decidable": false
-      },
-      "property_scope": {
-        "mode": "limited_property_plan",
-        "label": "対象施設・プラン限定"
-      },
-      "benefit": {
-        "kind": "paypay_total_rate",
-        "display_label": "15％以上",
-        "rate_percent": 15,
-        "rate_semantics": "minimum_total",
-        "cap_label": "上限額はキャンペーン表では明示なし",
-        "realization": "instant_or_later",
-        "includes_offer_ids": [
-          "yahoo-always-10"
-        ]
-      },
-      "stacking": {
-        "mode": "exclusive_best_campaign",
-        "selection_group": "yahoo-stay-special-campaign",
-        "note": "「15％以上」は「いつでも誰でも10％お得」と宿泊施設提供ポイントを含む総率です。対象セール同士は重複適用せず、予約時に最もお得なキャンペーンが適用されます。"
-      },
-      "match_requirements": [
-        "property_plan_check",
-        "stay_date_plan_check",
-        "online_card_payment"
-      ],
-      "match_state_label": "対象施設・プランの確認が必要",
-      "summary": "対象施設・プラン限定。オンラインカード決済でPayPayポイント等の総率が15％以上。",
-      "condition_note": "宿泊日は対象プランの予約可能期間に準ずるため、旅行日だけでは適用確定しません。",
-      "source": {
-        "official_url": "https://travel.yahoo.co.jp/notice/special/post_7/",
-        "source_updated_at": "2026-09-29T00:00:00+09:00",
-        "checked_at": "2026-09-30T15:25:00+09:00"
-      },
-      "booking": {
-        "provider_url": "https://travel.yahoo.co.jp/",
-        "monetization": "official_non_affiliate_prototype"
-      }
-    },
-    {
-      "id": "yahoo-luxury-30",
-      "provider": "Yahoo!トラベル",
-      "product": "宿泊",
-      "name": "ラグジュアリールームセール",
-      "scope": "全国",
-      "booking_start": "2026-10-01T12:00:00+09:00",
-      "booking_end": "2026-10-09T11:59:00+09:00",
-      "stay_window": {
-        "mode": "provider_plan_availability",
-        "label": "対象プランの予約可能期間に準ずる",
-        "campaign_level_date_decidable": false
-      },
-      "property_scope": {
-        "mode": "limited_property_plan",
-        "label": "対象施設・部屋限定"
-      },
-      "benefit": {
-        "kind": "paypay_total_rate",
-        "display_label": "30％以上",
-        "rate_percent": 30,
-        "rate_semantics": "minimum_total",
-        "cap_label": "上限額はキャンペーン表では明示なし",
-        "realization": "instant_or_later",
-        "includes_offer_ids": [
-          "yahoo-always-10"
-        ]
-      },
-      "stacking": {
-        "mode": "exclusive_best_campaign",
-        "selection_group": "yahoo-stay-special-campaign",
-        "note": "対象キャンペーン同士は重複適用せず、予約時に最もお得なキャンペーンが適用されます。「30％以上」は「いつでも誰でも10％お得」と宿泊施設提供ポイントを含む総率です。"
-      },
-      "match_requirements": [
-        "property_plan_check",
-        "stay_date_plan_check",
-        "online_card_payment"
-      ],
-      "match_state_label": "対象施設・部屋の確認が必要",
-      "summary": "対象施設・部屋限定。オンラインカード決済でPayPayポイント等の総率が30％以上。",
-      "condition_note": "宿泊日は対象プランの予約可能期間に準ずるため、旅行日だけでは適用確定しません。対象施設・部屋と支払方法を確認します。",
-      "source": {
-        "official_url": "https://travel.yahoo.co.jp/notice/special/post_7/",
-        "source_updated_at": "2026-09-29T00:00:00+09:00",
-        "checked_at": "2026-09-30T19:25:00+09:00"
-      },
-      "booking": {
-        "provider_url": "https://travel.yahoo.co.jp/",
-        "monetization": "official_non_affiliate_prototype"
-      }
-    }
-  ]
+  "offers": [],
+  "highlights": [],
+  "coverage": []
 }

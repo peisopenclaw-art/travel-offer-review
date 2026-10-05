@@ -9,6 +9,8 @@ on:
       - "decision.html"
       - "decision-ui.css"
       - "decision-ui.js"
+      - "benefit-rules.js"
+      - "scripts/check_public_benefits.py"
       - "decision-data.json"
       - "design-samples.json"
       - "campaign-highlights.json"
@@ -18,7 +20,7 @@ on:
       - "jtb-logo.svg"
       - "sample-campaign.html"
       - "campaign-detail.js"
-      - "scripts/qa_flexible_search.cjs"
+      - "scripts/qa_public_benefits.cjs"
       - "docs/public-offer-contract-v1.md"
       - "scripts/check_public_offer_contract.py"
       - "scripts/check_site.py"
@@ -56,7 +58,7 @@ jobs:
             if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi
             sleep 1
           done
-          node scripts/qa_flexible_search.cjs
+          node scripts/qa_public_benefits.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

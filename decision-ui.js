@@ -1,12 +1,15 @@
 (function () {
   "use strict";
 
-  var MONTHS = ["2026-10", "2026-11", "2026-12", "2027-01", "2027-02", "2027-03"];
+  var currentMonth = new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'}).slice(0,7);
+  var currentParts=currentMonth.split('-').map(Number);
+  var MONTHS=Array.from({length:6},function(_,i){return new Date(Date.UTC(currentParts[0],currentParts[1]-1+i,1)).toISOString().slice(0,7);});
   var STORAGE_KEY = "tokuerabi-flexible-search-v2";
   var state = {
     destination: "",
     availability: "active",
-    month: "2026-10",
+    month: currentMonth,
+    product: "all", room_num: 1, nights: 1,
     adults: 2,
     children: 0,
     provider: "",
@@ -14,7 +17,7 @@
     assumedPrice: null,
     step: 1
   };
-  var data = null, geography = [];
+  var data = null, geography = [], shownOffers = 24, lastFilterKey = "";
   var calendarOpen = false, bestResult = null;
   var slideIndex = 0, slideTimer = null, carouselPaused = false;
 
@@ -46,7 +49,10 @@
       if (validDate(saved.travelDate)) state.travelDate = saved.travelDate;
       if (Number.isFinite(saved.assumedPrice) && saved.assumedPrice >= 0) state.assumedPrice = saved.assumedPrice;
       if (Number.isInteger(saved.children) && saved.children >= 0 && saved.children <= 6) state.children = saved.children;
-      if (["Yahoo!トラベル", "楽天トラベル", "じゃらん", "JTB", "一休.com", ""].indexOf(saved.provider) >= 0) state.provider = saved.provider;
+      if (["Yahoo!トラベル", "楽天トラベル", "じゃらん", "JTB", "一休.com", "HIS", "日本旅行", "近畿日本ツーリスト", "JAL", "ANA", "びゅうトラベル", "JR東海ツアーズ", ""].indexOf(saved.provider) >= 0) state.provider = saved.provider;
+      if (['all','stay','air_dp','rail_dp','air_sale','rail_discount','unknown'].indexOf(saved.product)>=0) state.product=saved.product;
+      if(Number.isInteger(saved.room_num)&&saved.room_num>=1&&saved.room_num<=10)state.room_num=saved.room_num;
+      if(Number.isInteger(saved.nights)&&saved.nights>=1&&saved.nights<=30)state.nights=saved.nights;
       if ([1, 2, 3, 4].indexOf(saved.step) >= 0) state.step = saved.step;
     } catch (error) {
       // Storage may be disabled; keep the in-memory conditions.
@@ -65,7 +71,7 @@
     if (!params.size) return;
     // A shared URL fully describes conditions; do not inherit another session's filters.
     state.destination = ""; state.travelDate = ""; state.provider = ""; state.availability = "active";
-    state.adults = 2; state.children = 0; state.assumedPrice = null; state.month = "2026-10"; state.step = 1;
+    state.adults = 2; state.children = 0; state.assumedPrice = null; state.month = currentMonth; state.step = 1;
     var destination = params.get("destination"), month = params.get("month"), date = params.get("date");
     if (/^[a-z][a-z-]{0,30}$/.test(destination || "")) state.destination = destination;
     if (["active","upcoming","all"].indexOf(params.get("availability")) >= 0) state.availability=params.get("availability");
@@ -74,7 +80,10 @@
     var adults = Number(params.get("adults")), children = Number(params.get("children"));
     if (Number.isInteger(adults) && adults >= 1 && adults <= 9) state.adults = adults;
     if (Number.isInteger(children) && children >= 0 && children <= 6) state.children = children;
-    if (["Yahoo!トラベル", "楽天トラベル", "じゃらん", "JTB", "一休.com"].indexOf(params.get("provider")) >= 0) state.provider = params.get("provider");
+    if (["Yahoo!トラベル", "楽天トラベル", "じゃらん", "JTB", "一休.com", "HIS", "日本旅行", "近畿日本ツーリスト", "JAL", "ANA", "びゅうトラベル", "JR東海ツアーズ"].indexOf(params.get("provider")) >= 0) state.provider = params.get("provider");
+    state.product=['all','stay','air_dp','rail_dp','air_sale','rail_discount','unknown'].includes(params.get('product'))?params.get('product'):'all';
+    state.room_num=/^[1-9]$|^10$/.test(params.get('rooms')||'')?Number(params.get('rooms')):1;
+    state.nights=/^[1-9]$|^[12][0-9]$|^30$/.test(params.get('nights')||'')?Number(params.get('nights')):1;
     calendarOpen = params.get("calendar") === "1";
     var views = { map: 1, date: 2, provider: 3, campaign: 4 };
     if (views[params.get("view")]) state.step = views[params.get("view")];
@@ -92,6 +101,9 @@
     url.searchParams.set("view", ["", "map", "date", "provider", "campaign"][state.step]);
     if (calendarOpen) url.searchParams.set("calendar", "1");
     if (state.provider) url.searchParams.set("provider", state.provider);
+    if(state.product!=='all')url.searchParams.set('product',state.product);
+    if(state.room_num!==1)url.searchParams.set('rooms',state.room_num);
+    if(state.nights!==1)url.searchParams.set('nights',state.nights);
     if (state.children) url.searchParams.set("children", String(state.children));
     if (state.travelDate) url.searchParams.set("date", state.travelDate);
     if (state.adults !== 2) url.searchParams.set("adults", String(state.adults));
@@ -300,6 +312,10 @@
 
   function syncControls() {
     els.destination.value = state.destination;
+    $('#product-type').value=state.product;$('#room-num').value=state.room_num;$('#nights').value=state.nights;
+    els.travelDate.min=MONTHS[0]+'-01';
+    var finalMonth=MONTHS[MONTHS.length-1].split('-').map(Number);
+    els.travelDate.max=new Date(Date.UTC(finalMonth[0],finalMonth[1],0)).toISOString().slice(0,10);
     els.travelDate.value = state.travelDate;
     els.travelDate.setAttribute("aria-label", state.travelDate ? "宿泊日" : "宿泊日 一番お得な日");
     els.travelDate.classList.toggle("is-empty", !state.travelDate);
@@ -360,7 +376,7 @@
 
     els.calendarMonth.textContent = formatMonth(state.month);
     var prev = $("#month-prev"), nextButton = $("#month-next");
-    if (prev) prev.disabled = state.month === "2026-10";
+    if (prev) prev.disabled = state.month === MONTHS[0];
     if (nextButton) nextButton.disabled = state.month === MONTHS[MONTHS.length - 1];
     var focusedDate = document.activeElement && document.activeElement.dataset.date;
     els.calendarGrid.innerHTML = "";
@@ -421,7 +437,7 @@
     var monthly=campaignCandidates('',state.month,false);
     $('#month-campaigns').hidden=!calendarOpen;
     $('#month-campaigns-title').textContent=formatMonth(state.month)+'のキャンペーン · '+monthly.length+'件';
-    $('#month-campaign-list').innerHTML=monthly.length ? monthly.map(function(offer,index){return campaignSummary(offer,index,'',state.month);}).join('') : '<p class="empty-state">この月の対象キャンペーンはありません。</p>';
+    $('#month-campaign-list').innerHTML=monthly.length ? monthly.slice(0,12).map(function(offer,index){return campaignSummary(offer,index,'',state.month);}).join('') : '<p class="empty-state">この月の対象キャンペーンはありません。</p>';
   }
 
   function stayStart(offer) { return offer.stay_start || offer.sample_stay_start || ""; }
@@ -494,8 +510,8 @@
 
   function renderComparison() {
     var offers = offersForRegion().sort(function(a,b) { return campaignRate(b,state.travelDate,state.month)-campaignRate(a,state.travelDate,state.month); });
-    els.tripSummary.textContent = offers.length + "件の特典（サンプルを含む）";
-    els.comparisonBody.innerHTML = offers.length ? offers.map(offerCard).join("") : '<div class="empty-state"><h3>この条件の特典はありません</h3><p>条件を外すか、別の月を選んで探してみてください。</p><button class="secondary-action" type="button" data-clear-all>絞り込みをクリア</button></div>';
+    els.tripSummary.textContent = offers.length + "件の特典・" + destinationName() + "・" + (state.travelDate || formatMonth(state.month));
+    els.comparisonBody.innerHTML = offers.length ? offers.slice(0,shownOffers).map(offerCard).join("") + (offers.length>shownOffers ? '<button type="button" class="more-offers secondary-action" id="more-offers">次の24件を表示（残り'+(offers.length-shownOffers)+'件）</button>' : '') : '<div class="empty-state"><h3>この条件の特典はありません</h3><p>条件を外すか、別の月を選んで探してみてください。</p><button class="secondary-action" type="button" data-clear-all>絞り込みをクリア</button></div>';
   }
 
 
@@ -576,6 +592,8 @@
   }
 
   function renderAll() {
+    var filterKey=JSON.stringify(state);
+    if(filterKey!==lastFilterKey){shownOffers=24;lastFilterKey=filterKey;}
     renderGeography();
     syncControls();
     renderStage();
@@ -596,8 +614,9 @@
     var filters = ['<strong class="filters-label">' + (filtered ? "絞り込み中" : "検索条件") + '</strong>'];
     if (state.destination) filters.push('<button type="button" data-clear="destination">⌖ ' + escapeHtml(destinationName()) + ' ×<span class="sr-only">地域の条件を解除</span></button>');
     if (state.travelDate) filters.push('<button type="button" data-clear="travelDate">▦ ' + escapeHtml(formatDate(state.travelDate)) + ' ×<span class="sr-only">日付の条件を解除</span></button>');
+    if(state.product!=='all')filters.push('<span class="party-summary">'+escapeHtml($('#product-type option:checked').textContent)+'</span>');
     if (state.provider) filters.push('<button type="button" data-clear="provider">' + escapeHtml(state.provider) + ' ×<span class="sr-only">旅行会社の条件を解除</span></button>');
-    if (state.availability!=="active") filters.push('<button type="button" data-reset-availability>' + (state.availability==="all" ? "開催中・開始予定" : "開始予定") + ' ×</button>');
+    if (state.availability!=="active") filters.push('<button type="button" data-reset-availability>' + (state.availability==="all" ? "すべての受付状態" : "開始予定") + ' ×</button>');
     filters.push('<span class="party-summary">大人' + state.adults + '人・子供' + state.children + '人</span>');
     if (filtered) filters.push('<button type="button" class="clear-all" data-clear-all>絞り込みをクリア</button>');
     $("#active-filters").innerHTML = filters.join("");
@@ -605,7 +624,7 @@
 
   function renderProviders() {
     var focusedProvider = document.activeElement && document.activeElement.closest("#provider-filters") ? document.activeElement.dataset.provider : null;
-    var providers = ["", "Yahoo!トラベル", "楽天トラベル", "じゃらん", "JTB", "一休.com"];
+    var providers = ['', '楽天トラベル','じゃらん','JTB','Yahoo!トラベル','一休.com','HIS','日本旅行','近畿日本ツーリスト','JAL','ANA','びゅうトラベル','JR東海ツアーズ'];
     $("#provider-filters").innerHTML = providers.map(function (provider) {
       return '<button type="button" data-provider="' + escapeHtml(provider) + '" aria-pressed="' + (provider === state.provider) + '"><span class="provider-monogram" aria-hidden="true">' + escapeHtml(provider ? provider.slice(0, 1) : '全') + '</span><strong>' + escapeHtml(provider || "すべて") + '</strong></button>';
     }).join("");
@@ -621,11 +640,11 @@
   }
 
   function renderCampaigns() {
-    $all(".campaign-slide").forEach(function (slide, index) { slide.href = sampleCampaignUrl(["sample-seaside", "sample-autumn", "sample-winter"][index]); });
+    $all(".campaign-slide").forEach(function (slide, index) { slide.href = "?view=provider&product=" + ["stay","air_dp","rail_dp"][index]; });
     var result = $('#best-search-result');
     result.hidden = !bestResult;
     if (bestResult) result.textContent = bestResult.empty ? 'この条件で宿泊対象期間が分かるキャンペーンがありません。条件を変えて探せます。' : '✦ 掲載割引・還元率で選んだキャンペーン：' + campaignById(bestResult.id).name + (bestResult.automaticDate ? ' · ' + formatDate(bestResult.date) : '') + '（宿泊価格の最安順ではありません）';
-    var picks = data.highlights.concat(data.offers.filter(function(offer) { return offer.sample && offer.image; }));
+    var picks = data.data_origin==='postgresql-public-snapshot' ? campaignCandidates(state.travelDate,state.month,false).slice(0,8) : data.highlights.concat(data.offers.filter(function(offer) { return offer.sample && offer.image; }));
     if (bestResult && bestResult.id && !picks.some(function(offer) { return offer.id === bestResult.id; })) picks.unshift(campaignById(bestResult.id));
     $('#campaign-picks').innerHTML = picks.map(function (offer) {
       var selected = bestResult && bestResult.id === offer.id;
@@ -682,6 +701,8 @@
     });
     $("#date-picker").addEventListener("click",function(){try {els.travelDate.showPicker();}catch(error){els.travelDate.focus();}});
     $("#jump-calendar").addEventListener("click",function(){$("#calendar-workspace").scrollIntoView({behavior:"smooth",block:"start"});$("#months-back").focus({preventScroll:true});});
+    ['product-type','room-num','nights'].forEach(function(id){$('#'+id).addEventListener('change',function(){state[id==='product-type'?'product':id==='room-num'?'room_num':'nights']=id==='product-type'?this.value:Math.max(1,Math.min(id==='room-num'?10:30,Math.floor(Number(this.value)||1)));bestResult=null;persistState();renderAll();});});
+    document.addEventListener('click',function(event){if(event.target.id==='more-offers'){shownOffers+=24;renderComparison();}});
     els.destination.addEventListener("change", function () {
       bestResult = null;
       state.destination = this.value;
@@ -824,13 +845,14 @@
     cacheElements();
     loadStoredState();
     loadUrlState();
+    if(document.body.dataset.defaultView==='provider' && !new URLSearchParams(location.search).has('view'))state.step=3;
     persistState();
     syncControls();
     var loadingControls = $all("#trip-form input, #trip-form select, #trip-form button, .step-tab, .region-button, #to-calendar, #to-compare, #share-state");
     loadingControls.forEach(function (control) { control.disabled = true; });
     $("#decision-main").setAttribute("aria-busy", "true");
     els.statusMessage.className = "data-loading";
-    els.statusMessage.textContent = "宿泊特典を読み込み中…";
+    els.statusMessage.textContent = "旅行特典を読み込み中…";
     var controller = new AbortController();
     var timeout = window.setTimeout(function () { controller.abort(); }, 10000);
     try {
@@ -841,9 +863,9 @@
       var sampleResponse = responses[1];
       if (!sampleResponse.ok) throw new Error("sample data http " + sampleResponse.status);
       var sampleData = await sampleResponse.json();
-      data.offers = data.offers.concat(sampleData.offers);
+      if(data.data_origin !== "postgresql-public-snapshot") data.offers = data.offers.concat(sampleData.offers);
       if (!responses[2].ok) throw new Error("campaign data unavailable");
-      data.highlights = (await responses[2].json()).campaigns;
+      data.highlights = data.data_origin === 'postgresql-public-snapshot' ? [] : (await responses[2].json()).campaigns;
       if (!responses[3].ok) throw new Error("geography unavailable");
       geography=(await responses[3].json()).nodes;
       if (state.destination && !geoNode(state.destination)) state.destination="";
@@ -859,10 +881,123 @@
     }
     loadingControls.forEach(function (control) { control.disabled = false; });
     els.statusMessage.className = "sr-only";
-    els.statusMessage.textContent = "宿泊特典を読み込みました";
+    els.statusMessage.textContent = "旅行特典を読み込みました";
     bindEvents();
     renderAll();
   }
+
+  // The exported DB facts and the loopback API use the same rule version.
+  function benefitVerdict(offer,date,month) {
+    if (!offer.eligibility_facts || !window.TravelBenefits) return {status:'unknown',reasons:['public_facts_missing']};
+    var q={adults:state.adults,children:state.children,room_num:state.room_num,nights:state.nights,booking_amount:state.assumedPrice};
+    if(state.product!=='all')q.product_type=state.product;
+    if(date)q.travel_date=date;else q.travel_month=month||state.month;
+    var result=TravelBenefits.evaluate(offer.eligibility_facts,q);
+    if((offer.match_requirements||[]).includes('region_scope_unknown') && result.status==='eligible') {result.status='unknown';result.reasons.push('region_scope_unknown');}
+    if(data.expires_at && Date.now()>Date.parse(data.expires_at) && result.status==='eligible') {result.status='unknown';result.reasons.push('fresh_confirmation_required');}
+    return result;
+  }
+  function productMatches(offer) {
+    return state.product==='all' || (offer.applicable_product_types||[]).includes(state.product) || offer.product_type===state.product || offer.product_type==='unknown';
+  }
+  var sourceGeoMatches=geoMatches;
+  geoMatches=function(offer,selected) {
+    var id=selected===undefined?state.destination:selected;
+    if(id && (offer.excluded_geo_ids||[]).some(function(ex){return geoAncestors(id).includes(ex);}))return false;
+    if(offer.eligibility_facts && !(offer.geo_ids||[]).length)return true;
+    return sourceGeoMatches(offer,selected);
+  };
+  var sourceAvailabilityMatches=availabilityMatches;
+  availabilityMatches=function(offer){
+    if(!offer.eligibility_facts)return sourceAvailabilityMatches(offer);
+    var phase=availabilityOf(offer);
+    return state.availability==='all' || phase===state.availability;
+  };
+  var sourceAvailabilityOf=availabilityOf;
+  availabilityOf=function(offer){if(!offer.eligibility_facts)return sourceAvailabilityOf(offer);var phase=offerStatus(offer).key;return phase==='upcoming'?'upcoming':phase==='ended'?'ended':'active';};
+  var sourceOfferStatus=offerStatus;
+  offerStatus=function(offer){
+    if(!offer.eligibility_facts)return sourceOfferStatus(offer);
+    var f=offer.eligibility_facts;
+    if(['ended','cancelled'].includes(f.offer_lifecycle_status) || f.booking_end_at && Date.now()>Date.parse(f.booking_end_at) || f.distribution_end_at && Date.now()>Date.parse(f.distribution_end_at))return {key:'ended',label:'受付終了'};
+    if(f.availability_status==='sold_out')return {key:'unavailable',label:'配布終了・売切'};
+    if(['paused','reopen_wait'].includes(f.availability_status))return {key:'unavailable',label:'配布停止・再開待ち'};
+    if(f.booking_start_at && Date.now()<Date.parse(f.booking_start_at) || f.distribution_start_at && Date.now()<Date.parse(f.distribution_start_at))return {key:'upcoming',label:'受付開始予定'};
+    if(!f.booking_start_at&&!f.booking_end_at&&!f.distribution_start_at&&!f.distribution_end_at)return {key:'unknown',label:'受付期間は未確認'};
+    return {key:'active',label:f.availability_status==='available'?'受付中・残数は予約先で確認':'受付期間内・配布状態を確認'};
+  };
+  var sourceDecisionState=offerDecisionState;
+  offerDecisionState=function(offer){
+    if(!offer.eligibility_facts)return sourceDecisionState(offer);
+    var result=benefitVerdict(offer,state.travelDate,state.month);
+    return {key:result.status,label:result.status==='eligible'?'入力条件では候補':result.status==='ineligible'?'この条件は対象外':'追加条件を確認'};
+  };
+  var sourceRegionOffers=offersForRegion;
+  offersForRegion=function(date){return sourceRegionOffers(date).filter(productMatches);};
+  var sourceCandidates=campaignCandidates;
+  campaignCandidates=function(date,month,knownOnly){
+    return sourceCandidates(date,month,false).filter(function(offer){
+      if(!productMatches(offer))return false;
+      if(!offer.eligibility_facts)return !knownOnly;
+      var result=benefitVerdict(offer,date,month);
+      if(knownOnly)return result.status==='eligible' && offer.benefit.kind==='coupon_rate' && !String(offer.benefit.display_label).startsWith('最大');
+      // Upcoming/ended offers remain inspectable, with their explicit status.
+      return !result.reasons.some(function(r){return /^(before_travel|after_travel|travel_month_|product_type_mismatch)/.test(r);});
+    });
+  };
+  var sourceRate=campaignRate, sourceRateLabel=rateLabel;
+  campaignRate=function(offer,date,month){
+    if(!offer.eligibility_facts)return sourceRate(offer,date,month);
+    return offer.benefit.kind==='coupon_rate' && benefitVerdict(offer,date,month).status==='eligible'?offer.benefit.rate_percent||0:0;
+  };
+  rateLabel=function(offer,rate){return offer.eligibility_facts?benefitLabel(offer):sourceRateLabel(offer,rate);};
+  var sourceEstimate=estimateDiscount;
+  estimateDiscount=function(offer){
+    if(!offer.eligibility_facts)return sourceEstimate(offer);
+    var b=offer.benefit;
+    if(benefitVerdict(offer,state.travelDate,state.month).status!=='eligible' || !Number.isFinite(state.assumedPrice) || b.currency!=='JPY' || b.calculation_unit!=='per_booking' || !['booking_total','eligible_stay_amount'].includes(b.calculation_base))return {key:'not-calculable',label:'未算出（条件を確認）'};
+    if(b.kind==='coupon_rate' && (b.rounding!=='floor'||b.max_discount_amount==null))return {key:'not-calculable',label:'未算出（上限・計算条件を確認）'};
+    return estimateDiscountForBenefit(b,state.assumedPrice);
+  };
+  var sourceCapLabel=benefitCapLabel;
+  benefitCapLabel=function(offer){
+    if(!offer.eligibility_facts)return sourceCapLabel(offer);
+    var b=offer.benefit;return (b.max_discount_amount==null?'上限未確認':'上限'+formatYen(b.max_discount_amount))+' / '+(b.minimum_spend==null?'最低利用額未確認':formatYen(Number(b.minimum_spend))+'以上');
+  };
+  var sourceOpenOffer=openOffer;
+  openOffer=function(id){
+    sourceOpenOffer(id);
+    var offer=campaignById(id);if(!offer||!offer.eligibility_facts)return;
+    var facts=offer.conditions||[], result=benefitVerdict(offer,state.travelDate,state.month);
+    var reasonLabels={booking_amount_required:'最低利用額を満たす対象料金の入力が必要',membership_required:'会員条件の確認が必要',availability_confirmation_required:'現在の配布状態は未確認',fresh_confirmation_required:'確認から48時間を超えています',booking_window_unknown:'予約対象期間は未確認',travel_range_unknown:'旅行対象期間は未確認',travel_start_unknown:'旅行開始日の条件は未確認',travel_end_unknown:'旅行終了日の条件は未確認',region_scope_unknown:'対象地域の確認が必要',maximum_benefit_requires_specific_coupon:'最大値の施策です。個別クーポンの確認が必要',below_minimum_spend:'最低利用額を満たしていません',offer_not_available:'配布終了・停止中です',offer_not_active:'受付は終了しています'};
+    var text='<section class="structured-terms"><h3>個別の利用条件</h3>';
+    if(facts.length)text+='<ul>'+facts.map(function(c){return '<li>'+escapeHtml(c.note||'個別条件を公式ページで確認')+'</li>';}).join('')+'</ul>';
+    else text+='<p>掲載元の全細則は確認できていません。公式ページでご確認ください。</p>';
+    if(offer.quota_total!=null)text+='<p>配布予定：'+Number(offer.quota_total).toLocaleString('ja-JP')+'枚・残数は未確認</p>';
+    if(offer.per_user_limit!=null)text+='<p>1人あたり'+offer.per_user_limit+'回まで</p>';
+    if(offer.coupon_code)text+='<p>クーポンコード：<code>'+escapeHtml(offer.coupon_code)+'</code></p>';
+    if(result.reasons.length)text+='<ul class="pending-terms">'+result.reasons.map(function(reason){return '<li>'+escapeHtml(reasonLabels[reason]||(/^condition_group/.test(reason)?'施設・会員・子供区分などの個別条件を確認':'旅行日・人数などの条件を確認'))+'</li>';}).join('')+'</ul>';
+    text+='<p class="source-checked">公式情報の確認：'+escapeHtml(formatDateTime(offer.source.checked_at))+'</p></section>';
+    els.dialogContent.insertAdjacentHTML('beforeend',text);
+    els.dialogContent.querySelectorAll('a').forEach(function(a){if(!/^https:\/\//.test(a.getAttribute('href')||''))a.remove();});
+  };
+  var sourceRenderAll=renderAll;
+  renderAll=function(){
+    sourceRenderAll();
+    if(!data)return;
+    var status=$('#benefit-data-status');
+    status.textContent=data.data_origin==='postgresql-public-snapshot'?'特典情報 '+data.offer_count.toLocaleString('ja-JP')+'件 · 最終更新 '+formatDateTime(data.as_of)+' · 対象条件は公式ページで確認':'';
+    status.classList.toggle('is-stale',!!data.expires_at&&Date.now()>Date.parse(data.expires_at));
+    if(status.classList.contains('is-stale'))status.textContent+=' · 更新確認待ち';
+    var coverage=$('#source-coverage');
+    coverage.innerHTML=(data.coverage||[]).map(function(c){return '<div><strong>'+escapeHtml(c.provider)+'</strong><span>'+escapeHtml(c.state)+(c.offer_count?'（'+c.offer_count+'件）':'')+'</span></div>';}).join('');
+    $all('.calendar-day').forEach(function(button){
+      if(button.querySelector('.day-count').textContent==='0件'){
+        var pending=campaignCandidates(button.dataset.date,null,false).length;
+        if(pending){button.querySelector('.day-count').textContent=pending+'件確認';button.setAttribute('aria-label',button.getAttribute('aria-label')+'、条件確認が必要な掲載'+pending+'件');}
+      }
+    });
+  };
 
   document.addEventListener("DOMContentLoaded", boot);
 }());

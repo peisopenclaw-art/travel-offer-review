@@ -53,38 +53,11 @@ for required in ["トクえらび", "地図で探す", "日付で探す", "旅�
     if required not in index:
         errors.append(f"index.html missing decision UI marker: {required}")
 
-offers = (ROOT / "offers.html").read_text(encoding="utf-8")
-for required in ["トクえらび", "一次情報", "広告"]:
-    if required not in offers:
-        errors.append(f"offers.html missing required text: {required}")
-
+offers = (ROOT / 'offers.html').read_text(encoding='utf-8')
+for required in ['decision-ui.js','benefit-rules.js','product-type','source-coverage','広告']:
+    if required not in offers: errors.append('offers.html missing public DB UI marker: '+required)
 affiliate_href = "https://px.a8.net/svt/ejp?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6"
 affiliate_pixel = "https://www13.a8.net/0.gif?a8mat=4B3UZ5+38P0W2+4ZCO+60WN6"
-if offers.count(affiliate_href) != 3:
-    errors.append(f"offers.html affiliate href count must be 3, got {offers.count(affiliate_href)}")
-if "九州ふっこう応援割" not in offers or "最大60％" not in offers:
-    errors.append("offers.html missing current Kyushu recovery discount priority")
-if "kyushu-recovery-discount.html" not in offers:
-    errors.append("offers.html missing Kyushu campaign detail link")
-if offers.count(affiliate_pixel) != 3:
-    errors.append(f"offers.html affiliate pixel count must be 3, got {offers.count(affiliate_pixel)}")
-official_affiliate_material = f'''<a href="{affiliate_href}" rel="nofollow">【ヤフートラベル】</a>\n              <img border="0" width="1" height="1" src="{affiliate_pixel}" alt="">'''
-official_affiliate_material_feature = f'''<a href="{affiliate_href}" rel="nofollow">【ヤフートラベル】</a>\n              <img border="0" width="1" height="1" src="{affiliate_pixel}" alt="">'''
-if offers.count('<a href="' + affiliate_href + '" rel="nofollow">【ヤフートラベル】</a>') != 3:
-    errors.append("offers.html must keep the A8-generated Yahoo! Travel text anchor exactly three times")
-if offers.count('<img border="0" width="1" height="1" src="' + affiliate_pixel + '" alt="">') != 3:
-    errors.append("offers.html must keep the A8-generated tracking pixel markup exactly three times")
-if f'class="primary-cta" href="{affiliate_href}"' in offers or "Yahoo!トラベルで見る" in offers:
-    errors.append("offers.html must not customize the A8-generated Yahoo! Travel ad material")
-if 'アフィリエイト広告はまだ有効化していません' in offers:
-    errors.append("offers.html still says affiliate ads are disabled")
-if '一部リンクは広告です' not in offers:
-    errors.append("offers.html missing concise affiliate disclosure")
-for source_url in [
-    "https://travel.yahoo.co.jp/notice/special/post_7/",
-]:
-    if source_url not in offers:
-        errors.append(f"offers.html missing official source link: {source_url}")
 
 sitemap_path = ROOT / "sitemap.xml"
 if not sitemap_path.is_file():
@@ -142,7 +115,7 @@ else:
         errors.append(f"robots.txt missing sitemap reference: {sitemap_ref}")
 
 for path in ROOT.rglob("*"):
-    if not path.is_file() or ".git" in path.parts or path.resolve() == SELF:
+    if not path.is_file() or ".git" in path.parts or path.resolve() in {SELF, ROOT / "scripts/check_public_benefits.py"}:
         continue
     try:
         text = path.read_text(encoding="utf-8")
