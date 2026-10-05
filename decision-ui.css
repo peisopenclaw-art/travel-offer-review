@@ -1,5 +1,5 @@
 /* Travel campaign search: independent map, date, and provider views. */
-:root{--decision-navy:#07594f;--decision-navy-2:#034239;--decision-pink:#b5472b;--decision-pink-soft:#fff3eb;--decision-orange:#b5472b;--decision-line:#dce5e1;--decision-ink:#1c302b;--decision-muted:#596b65;--decision-max:1240px;--decision-paper:#fff;--decision-bg:#f7f9f7;--decision-shadow:0 12px 30px #153d2b12}
+:root{--decision-navy:#087aa4;--decision-navy-2:#046282;--decision-pink:#d84631;--decision-pink-soft:#fff0e5;--decision-orange:#d84631;--decision-line:#d5e7ee;--decision-ink:#173c51;--decision-muted:#536c79;--decision-max:1240px;--decision-paper:#fff;--decision-bg:#f3fbff;--decision-shadow:0 12px 30px #087aa414}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body.decision-page{--font-body:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;--font-heading:var(--font-body);--font-display:var(--font-body);margin:0;background:var(--decision-bg);color:var(--decision-ink);font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;font-size:16px;line-height:1.65}
@@ -10,7 +10,7 @@ body.decision-page{--font-body:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-s
 .decision-page img{display:block;max-width:100%}
 .decision-page [hidden]{display:none!important}
 .decision-page h1,.decision-page h2,.decision-page h3{word-break:normal;line-break:strict;text-wrap:pretty}
-.decision-page :is(button,a,input,select,summary):focus-visible{outline:3px solid #07594f;outline-offset:4px;box-shadow:0 0 0 2px white}
+.decision-page :is(button,a,input,select,summary):focus-visible{outline:3px solid #087aa4;outline-offset:4px;box-shadow:0 0 0 2px white}
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 .skip-link{position:absolute;z-index:100;top:-100px;left:16px;padding:12px;background:var(--decision-navy);color:white!important}
 .skip-link:focus{top:8px}
@@ -128,16 +128,16 @@ body[data-decision-step="2"] .trip-console,body[data-decision-step="3"] .trip-co
 .region-button[aria-selected="true"]{border:2px solid var(--decision-navy);background:#e9f3ed}
 .region-button[aria-selected="true"]:hover{background:#d6e9dd;box-shadow:0 3px 12px #23452b25}
 .region-button[aria-selected="true"]:active{background:#b9d6c4;transform:translateY(1px);box-shadow:none}
-.region-button::after{content:attr(data-tooltip);position:absolute;z-index:5;bottom:calc(100% + 8px);left:0;padding:8px 10px;border-radius:4px;width:220px;max-width:260px;background:#1c302b;color:#fff;box-shadow:0 4px 12px #0002;font-size:11px;display:none;text-align:left}
+.region-button::after{content:attr(data-tooltip);position:absolute;z-index:5;bottom:calc(100% + 8px);left:0;padding:8px 10px;border-radius:4px;width:220px;max-width:260px;background:#173c51;color:#fff;box-shadow:0 4px 12px #0002;font-size:11px;display:none;text-align:left}
 .region-button:hover::after,.region-button:focus-visible::after{display:block}
 .region-hokkaido{top:3%;right:6%}.region-tohoku{top:24%;right:6%}.region-kanto{top:47%;right:5%}.region-chubu{top:37%;left:11%}.region-kinki{top:50%;left:5%}.region-chugoku{top:65%;left:1%}.region-shikoku{bottom:3%;left:41%}.region-kyushu{bottom:3%;left:1%}
-.region-button.is-hot-region{min-width:138px;min-height:84px;border-color:#b5472b;background:#fff4ed}
+.region-button.is-hot-region{min-width:138px;min-height:84px;border-color:#d84631;background:#fff4ed}
 .hot-badge{position:absolute;right:6px;top:-10px;padding:2px 6px!important;border-radius:2px;background:var(--decision-pink);color:#fff!important;font-size:9px!important}
 .region-button .map-rate{font-family:"Inter","Noto Sans JP",sans-serif;font-size:24px;color:var(--decision-pink);font-weight:700}
 .region-button .map-cap{font-size:9px}
 .map-legend{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:16px 22px;font-size:10px;color:#546b60}
 .map-legend>span{display:flex;align-items:center;gap:5px}
-.legend-swatch{display:block;width:10px;height:10px;border:1px solid #9db9a8;background:#e0ede5}.legend-swatch.hot{background:#b5472b;border-color:#b5472b}
+.legend-swatch{display:block;width:10px;height:10px;border:1px solid #9db9a8;background:#e0ede5}.legend-swatch.hot{background:#d84631;border-color:#d84631}
 .map-legend a{min-height:24px;margin-left:auto;color:var(--decision-navy);text-underline-offset:3px}
 .decision-summary,.timing-panel{padding:26px;background:#fff;border:1px solid var(--decision-line);border-radius:8px}
 .region-preview{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;color:var(--decision-navy);background:#edf4ee;font-size:36px;margin:12px 0}
@@ -175,7 +175,7 @@ body[data-decision-step="2"] .trip-console,body[data-decision-step="3"] .trip-co
 .hint-rate{font-size:28px;color:var(--decision-pink);line-height:1.4;white-space:nowrap}
 .booking-benefit-main>span{font-size:11px;color:var(--decision-muted)}
 .booking-hint small{font-size:12px;display:block;margin-top:4px;color:#53645b}
-.status-line{display:block;margin-top:5px;font-size:11px;color:#536b5d}.status-line.active{color:#07594f}.status-line.ended{color:#676d68}
+.status-line{display:block;margin-top:5px;font-size:11px;color:#536b5d}.status-line.active{color:#087aa4}.status-line.ended{color:#676d68}
 .timing-note{font-size:11px;color:var(--decision-muted);margin:16px 0 0}
 .compare-stage-copy{font-size:12px;margin:0;color:var(--decision-muted)}
 .compare-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
@@ -240,11 +240,11 @@ body[data-decision-step="2"] .trip-console,body[data-decision-step="3"] .trip-co
 @media(min-width:351px) and (max-width:800px){.comparison-table .benefit-cell{grid-column:1;grid-row:1}.comparison-table .estimate-cell{grid-column:2;grid-row:1}.comparison-table .eligibility-cell{grid-column:1/-1;grid-row:2}.comparison-table .provider-cell{grid-column:1/-1;grid-row:3}.comparison-table td[data-label="予約期間"]{grid-column:1/-1;grid-row:4}.comparison-table td:last-child{grid-column:1/-1;grid-row:5}}
 
 /* Independent search axes and compact seasonal campaigns. */
-body.decision-page{background:#f7f9f8}
+body.decision-page{background:#f0faff}
 .decision-header{min-height:68px;padding-top:8px;padding-bottom:8px}
 .brand-sub{margin-left:18px;font-size:11px}
 .decision-main{padding-top:20px}
-.campaign-carousel{position:relative;border-radius:12px;overflow:hidden;background:#07594f;margin-bottom:16px}
+.campaign-carousel{position:relative;border-radius:12px;overflow:hidden;background:#087aa4;margin-bottom:16px}
 .campaign-slide{position:relative;display:block;height:238px;text-decoration:none;color:#fff!important;isolation:isolate}
 .campaign-slide>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;z-index:-2}
 .campaign-slide::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#042d3bd6 0%,#043b4266 40%,#043b4200 72%);z-index:-1}
@@ -254,14 +254,14 @@ body.decision-page{background:#f7f9f8}
 .banner-copy h2{font-size:32px;color:#fff;line-height:1.38;letter-spacing:.025em;margin:8px 0 6px;font-family:"Noto Sans JP",sans-serif;font-weight:700}
 .banner-copy p{margin:0 0 8px;font-size:12px;color:#f5fffd}
 .banner-cta{display:inline-block;font-size:11px;font-weight:600;text-decoration:underline;text-underline-offset:5px}
-.carousel-controls{position:absolute;right:16px;bottom:14px;display:flex;align-items:center;gap:3px;padding:0 3px;background:#ffffffee;border-radius:24px;color:#07594f;box-shadow:0 2px 12px #00352b1a}
-.carousel-controls button{border:0;background:transparent;color:#07594f;min-width:36px;min-height:36px;font-size:22px;border-radius:50%}
+.carousel-controls{position:absolute;right:16px;bottom:14px;display:flex;align-items:center;gap:3px;padding:0 3px;background:#ffffffee;border-radius:24px;color:#087aa4;box-shadow:0 2px 12px #00352b1a}
+.carousel-controls button{border:0;background:transparent;color:#087aa4;min-width:36px;min-height:36px;font-size:22px;border-radius:50%}
 .carousel-controls button:hover{background:#dcece5}
 .carousel-dots{display:flex;align-items:center}
 .carousel-dots button{position:relative;min-width:28px;font-size:0}
 .carousel-dots button::after{content:"";display:block;width:6px;height:6px;margin:auto;border-radius:50%;background:#a5bdb7}
-.carousel-dots button[aria-pressed="true"]::after{width:19px;border-radius:4px;background:#07594f}
-.carousel-controls #slide-pause{font-size:13px;border-left:1px solid #dce5e1;border-radius:0}
+.carousel-dots button[aria-pressed="true"]::after{width:19px;border-radius:4px;background:#087aa4}
+.carousel-controls #slide-pause{font-size:13px;border-left:1px solid #d5e7ee;border-radius:0}
 .trip-console,body[data-decision-step="2"] .trip-console,body[data-decision-step="3"] .trip-console{margin:0}
 #trip-form{grid-template-columns:1fr .9fr 1fr 1.22fr .9fr;box-shadow:0 2px 8px #173e2510;border-radius:9px}
 .trip-console .field{padding:12px 18px;min-height:92px;gap:3px}
@@ -277,13 +277,13 @@ body.decision-page{background:#f7f9f8}
 .decision-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:10px 0 0;border-bottom:1px solid #ccdcd5;scroll-margin-top:80px}
 .step-tab{justify-content:center;gap:7px;padding:13px 8px;font-size:13px;color:#4f6560;border-bottom:3px solid transparent;border-radius:0;min-height:54px;min-width:0}
 .step-tab>span{font-size:21px;line-height:1}
-.step-tab.is-active{border-bottom-color:#07594f;color:#07594f;background:#eaf3ee}
+.step-tab.is-active{border-bottom-color:#087aa4;color:#087aa4;background:#eaf3ee}
 .step-tab:hover:not(:disabled){border-radius:0;background:#edf4ef}
 .design-note{display:flex;align-items:center;gap:8px;margin:12px 0 8px;color:#64726b;font-size:10px;line-height:1.5}
 .sample-badge,.verified-badge{display:inline-block;align-self:start;border:1px solid #d4ddd7;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:500;line-height:1.5;white-space:nowrap;color:#626a65;background:#f6f8f6}
-.verified-badge{color:#07594f;background:#edf5ef;border-color:#c4dacf}
+.verified-badge{color:#087aa4;background:#edf5ef;border-color:#c4dacf}
 .active-filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:34px;margin:0 0 18px}
-.active-filters button{border:1px solid #cfe0d5;border-radius:20px;background:#fff;color:#07594f;font-size:11px;min-height:32px;padding:4px 12px}
+.active-filters button{border:1px solid #cfe0d5;border-radius:20px;background:#fff;color:#087aa4;font-size:11px;min-height:32px;padding:4px 12px}
 .active-filters .clear-all{border:0;background:none;text-decoration:underline;text-underline-offset:3px;color:#607066;font-size:10px}
 .party-summary{font-size:10px;color:#607066}
 .stage-heading{margin-bottom:14px;gap:14px}
@@ -308,39 +308,39 @@ body.decision-page{background:#f7f9f8}
 .booking-hint .hint-rate{font-size:23px}
 .booking-hint .sample-badge,.booking-hint .verified-badge{margin-top:5px}
 .provider-filters{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:18px}
-.provider-filters button{min-width:0;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #dce5e1;background:#fff;border-radius:8px;padding:12px 8px;min-height:62px;font-size:11px;color:#4d6057}
-.provider-filters button[aria-pressed="true"]{border-color:#07594f;background:#eaf3ee;color:#07594f;box-shadow:inset 0 0 0 1px #07594f}
-.provider-monogram{width:26px;height:26px;display:grid;place-items:center;background:#edf3f0;color:#07594f;border-radius:5px;font-size:15px;font-weight:700;flex-shrink:0}
+.provider-filters button{min-width:0;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #d5e7ee;background:#fff;border-radius:8px;padding:12px 8px;min-height:62px;font-size:11px;color:#4d6057}
+.provider-filters button[aria-pressed="true"]{border-color:#087aa4;background:#eaf3ee;color:#087aa4;box-shadow:inset 0 0 0 1px #087aa4}
+.provider-monogram{width:26px;height:26px;display:grid;place-items:center;background:#edf3f0;color:#087aa4;border-radius:5px;font-size:15px;font-weight:700;flex-shrink:0}
 [data-provider="Yahoo!トラベル"] .provider-monogram{color:#c63228;background:#fff0ef}
 [data-provider="楽天トラベル"] .provider-monogram{color:#b32422;background:#fff0ef}
 [data-provider="じゃらん"] .provider-monogram{color:#a3491b;background:#fff3e8}
 [data-provider="JTB"] .provider-monogram{color:#ae2034;background:#fff1f3}
 [data-provider="一休.com"] .provider-monogram{color:#514329;background:#f4f1e9}
 .offer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.offer-card{background:#fff;border:1px solid #dce5e1;border-radius:10px;padding:20px;display:flex;flex-direction:column;min-width:0}
+.offer-card{background:#fff;border:1px solid #d5e7ee;border-radius:10px;padding:20px;display:flex;flex-direction:column;min-width:0}
 .offer-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.provider-wordmark{font-size:12px;font-weight:700;color:#07594f}
+.provider-wordmark{font-size:12px;font-weight:700;color:#087aa4}
 .offer-card h3{font-size:16px;margin:14px 0 8px;line-height:1.6}
-.offer-benefit{font:700 32px/1.3 "Inter","Noto Sans JP",sans-serif;color:#b5472b;margin:0}
+.offer-benefit{font:700 32px/1.3 "Inter","Noto Sans JP",sans-serif;color:#d84631;margin:0}
 .offer-benefit small{font-size:12px;margin-left:6px;font-weight:500}
-.offer-cap{font-size:10px;color:#69766f;margin:5px 0 14px}
-.offer-meta{display:flex;flex-wrap:wrap;gap:6px 12px;padding:10px 0;border-top:1px solid #edf1ed;border-bottom:1px solid #edf1ed;font-size:10px;color:#64726c}
-.offer-description{font-size:11px;color:#5c6c63;line-height:1.8;margin:12px 0 18px}
-.offer-card .offer-detail-button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:40px;margin-top:auto;background:#f1f7f3;border:0;color:#07594f;padding:8px 12px;font-size:11px;border-radius:5px}
-.card-estimate{font-size:11px;color:#07594f}
+.offer-cap{font-size:10px;color:#536c79;margin:5px 0 14px}
+.offer-meta{display:flex;flex-wrap:wrap;gap:6px 12px;padding:10px 0;border-top:1px solid #e6f2f7;border-bottom:1px solid #e6f2f7;font-size:10px;color:#536c79}
+.offer-description{font-size:11px;color:#536c79;line-height:1.8;margin:12px 0 18px}
+.offer-card .offer-detail-button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:40px;margin-top:auto;background:#eaf7fc;border:0;color:#087aa4;padding:8px 12px;font-size:11px;border-radius:5px}
+.card-estimate{font-size:11px;color:#087aa4}
 .compare-toolbar{margin-bottom:10px}
 .trip-summary{font-size:12px}
 .assumed-price-panel{margin-bottom:16px}
 .campaign-picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.campaign-pick{border:1px solid #dce5e1;background:white;border-radius:10px;overflow:hidden}
+.campaign-pick{border:1px solid #d5e7ee;background:white;border-radius:10px;overflow:hidden}
 .campaign-pick>img{width:100%;height:150px;object-fit:cover}
 .campaign-pick>div{padding:16px}
 .campaign-pick h3{font-size:18px;margin:8px 0}
-.campaign-pick p{font-size:11px;color:#66756c;margin-bottom:12px}
+.campaign-pick p{font-size:11px;color:#536c79;margin-bottom:12px}
 .campaign-pick .offer-detail-button{width:100%;min-height:40px;font-size:11px}
-.empty-state{grid-column:1/-1;padding:28px;background:#fff;border:1px dashed #b7cec0;border-radius:8px;text-align:center;font-size:13px;color:#596b65}
-.empty-state h3{font-size:18px;color:#07594f}
-.sample-detail-note{padding:12px;border:1px solid #dce5e1;background:#f1f6f2;font-size:13px}
+.empty-state{grid-column:1/-1;padding:28px;background:#fff;border:1px dashed #b7cec0;border-radius:8px;text-align:center;font-size:13px;color:#536c79}
+.empty-state h3{font-size:18px;color:#087aa4}
+.sample-detail-note{padding:12px;border:1px solid #d5e7ee;background:#eaf7fc;font-size:13px}
 .load-error{padding:14px;color:#803c27;background:#fff2eb;border:1px solid #efd1c2;border-radius:6px}
 .load-error button{margin-left:10px;border:1px solid #af6a4b;background:#fff;border-radius:5px;min-height:40px}
 .decision-footer{margin-top:0;padding-top:24px;padding-bottom:24px}
@@ -353,13 +353,13 @@ body.decision-page{background:#f7f9f8}
 /* Keep region controls apart even in the compact map. */
 .region-map{height:376px}
 .region-chubu{top:20%;left:11%}.region-kinki{top:38%;left:5%}.region-chugoku{top:56%;left:1%}.region-kyushu{bottom:1%;left:1%}
-.data-loading{font-size:12px;color:#07594f;padding:12px;border:1px solid #dce5e1;border-radius:6px;background:#fff}
+.data-loading{font-size:12px;color:#087aa4;padding:12px;border:1px solid #d5e7ee;border-radius:6px;background:#fff}
 @media(max-width:480px){.region-map{height:360px}.region-chubu{top:23%;left:0}.region-kinki{top:41%;left:0}.region-chugoku{top:59%;left:0}.region-kyushu{bottom:1%;left:0}.region-button.is-hot-region{min-height:70px}}
 @media(max-width:350px){.region-map{height:350px}.region-chugoku{top:58%}}
 .card-condition{font-size:10px;color:#586d62;margin:0 0 12px}
-.campaign-pick a.offer-detail-button{display:flex;align-items:center;justify-content:space-between;text-decoration:none;padding:8px 10px;border:1px solid #d7e4db;border-radius:4px}
+.campaign-pick a.offer-detail-button{display:flex;align-items:center;justify-content:space-between;text-decoration:none;padding:8px 10px;border:1px solid #cce5f1;border-radius:4px}
 .sample-campaign-page{padding-bottom:40px}
-.sample-feature{position:relative;isolation:isolate;border-radius:10px;overflow:hidden;height:260px;color:white;background:#07594f;margin:8px 0 24px}
+.sample-feature{position:relative;isolation:isolate;border-radius:10px;overflow:hidden;height:260px;color:white;background:#087aa4;margin:8px 0 24px}
 .sample-feature>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
 .sample-feature::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#04303bcb,#04303b11);z-index:-1}
 .sample-feature>div{padding:50px 40px}
@@ -368,14 +368,97 @@ body.decision-page{background:#f7f9f8}
 .sample-detail-layout{display:grid;grid-template-columns:1.8fr 1fr;gap:28px;align-items:start}
 .sample-detail-copy h2{font-size:21px;margin:20px 0 10px}
 .sample-detail-copy p{font-size:13px;line-height:1.9}
-.sample-detail-copy dl{background:white;border:1px solid #dce5e1;border-radius:8px;margin:12px 0}
-.sample-detail-copy dl>div{display:grid;grid-template-columns:135px 1fr;padding:14px 18px;gap:16px;border-bottom:1px solid #edf1ed;font-size:12px}
+.sample-detail-copy dl{background:white;border:1px solid #d5e7ee;border-radius:8px;margin:12px 0}
+.sample-detail-copy dl>div{display:grid;grid-template-columns:135px 1fr;padding:14px 18px;gap:16px;border-bottom:1px solid #e6f2f7;font-size:12px}
 .sample-detail-copy dl>div:last-child{border:0}
 .sample-detail-copy dd{margin:0;font-weight:600}
-.sample-detail-benefit{padding:28px;background:white;border:1px solid #dce5e1;border-radius:10px}
+.sample-detail-benefit{padding:28px;background:white;border:1px solid #d5e7ee;border-radius:10px}
 .sample-detail-benefit .offer-benefit{margin-top:18px;font-size:44px}
 .sample-detail-benefit a{text-decoration:none}
 .sample-detail-benefit small{display:block;color:#607268;font-size:10px;margin-top:10px}
 @media(max-width:800px){.sample-detail-layout{grid-template-columns:1fr}.sample-feature{height:220px}.sample-feature>div{padding:35px 25px}.sample-feature h1{font-size:29px}}
 @media(max-width:480px){.sample-feature{height:200px}.sample-feature>div{padding:28px 20px}.sample-feature h1{font-size:25px}.sample-feature p{font-size:12px}.sample-detail-copy dl>div{grid-template-columns:1fr;gap:4px}.sample-detail-benefit{padding:22px}}
 @media(max-width:350px){#tab-campaign{font-size:10.5px;gap:3px}#tab-campaign>span{font-size:16px}}
+
+/* Sunny travel palette, month overview, and explicit discount intensity. */
+.decision-page :is(button,a,input,select,summary):focus-visible{outline-color:#087aa4}
+.decision-header{border-bottom:3px solid #d5f1fc}
+.decision-header .brand-mark{fill:#08a1c4}
+.decision-header-nav .header-text-link:last-child,.search-action{background:#d84631;color:white}
+.search-action:hover{background:#b93122}
+#trip-form{grid-template-columns:1.25fr 1.1fr 1.25fr 1fr}
+.trip-console{border-color:#cce5f1;box-shadow:0 5px 18px #087aa411}
+.data-level-note{justify-content:flex-end;margin-top:4px}
+.decision-steps{background:#fff;border-radius:10px 10px 0 0;overflow:hidden;border-bottom:2px solid #cce5f1}
+.decision-steps .step-tab.is-active{background:#e3f6ff;color:#046282;border-bottom-color:#08a1c4}
+.stage-index,.summary-kicker{color:#046282}
+.design-note{color:#536c79}
+.sample-badge{background:#fff3d2;border-color:#e8cd87;color:#74520c}
+.verified-badge{background:#e9f7fc;border-color:#b5e0f0;color:#046282}
+.primary-action{background:#087aa4}
+.decision-summary,.map-board,.calendar-panel,.timing-panel{border-color:#cce5f1}
+.map-board{background:#eaf7fc}
+.region-button{border-color:#a7d5e8;background:white;box-shadow:0 3px 8px #087aa410}
+.region-button.is-hot-region{background:#fff1d2;border-color:#efb143}
+.decision-footer{background:#113d55}
+.month-offers{display:flex;flex-direction:column;gap:12px}
+.month-offer-row{display:grid;grid-template-columns:100px minmax(0,1fr) 230px 120px;align-items:center;gap:24px;text-align:left;padding:20px 24px;background:white;border:1px solid #cce5f1;border-radius:12px;color:#173c51;box-shadow:0 4px 14px #087aa409;min-height:116px;transition:border-color .15s,box-shadow .15s}
+.month-offer-row:hover{border-color:#08a1c4;box-shadow:0 7px 20px #087aa41c}
+.month-label{display:flex;flex-direction:column;align-items:center;color:#046282;border-right:1px solid #d5e7ee;padding-right:24px}
+.month-label>small{font-size:11px;letter-spacing:.12em}
+.month-label>strong{font-size:34px;line-height:1.2}
+.month-label>strong>small{font-size:14px;margin-left:5px}
+.month-campaign{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.month-campaign>strong{font-size:18px}
+.month-campaign>small{color:#536c79;font-size:11px}
+.month-pick-label{font-size:10px;color:#b93122;background:#fff0e5;border-radius:20px;padding:2px 9px}
+.month-saving{display:flex;flex-direction:column;gap:4px}
+.month-saving>strong{font-size:30px;color:#d84631;line-height:1.3}
+.month-saving>small{font-size:11px;color:#536c79}
+.month-open{font-size:12px;color:#046282;font-weight:700;white-space:nowrap}
+.month-open b{font-size:20px;margin-left:8px}
+.month-list-note{font-size:11px;color:#536c79;margin:2px 0}
+.calendar-heat-key{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px;font-size:10px}
+.calendar-heat-key>span{padding:3px 8px;border-radius:4px}
+.heat-high{background:#ffdc77;color:#67430b}
+.heat-medium{background:#ffe6d7;color:#963e24}
+.heat-low{background:#edf8fc;color:#426d80}
+.calendar-day.heat-high{background:#ffdc77;border-color:#ebbd47;color:#67430b}
+.calendar-day.heat-medium{background:#ffe6d7;border-color:#f2c3a8;color:#963e24}
+.calendar-day.heat-low{background:#edf8fc;border-color:#cce5f1;color:#426d80}
+.calendar-day .day-offers{color:inherit;font-weight:700;font-size:11px}
+.calendar-day.is-selected{background:#087aa4!important;color:#fff!important;border-color:#046282!important;outline:2px solid #087aa4;outline-offset:1px}
+.calendar-day.is-selected .day-offers{color:white}
+.calendar-day:hover{box-shadow:inset 0 0 0 2px #087aa4}
+.month-navigation #months-back{width:auto;padding:0 10px;font-size:11px}
+.hint-sort-note{font-size:10px;color:#536c79;margin:6px 0 10px}
+.booking-hint{display:flex;flex-direction:column;align-items:flex-start;gap:3px;border:1px solid #d5e7ee;border-radius:8px;padding:12px;margin:8px 0;width:100%;background:white;text-align:left;color:#173c51}
+.booking-hint:first-child{background:#fff7e5;border-color:#efc661}
+.booking-benefit-main{justify-content:flex-start;gap:8px;width:100%;align-items:center}
+.hint-rank{display:inline-grid;place-items:center;border-radius:50%;width:22px;height:22px;background:#087aa4;color:#fff;font-size:12px;font-weight:700}
+.booking-hint:first-child .hint-rank{background:#d84631}
+.hint-rate{color:#d84631;font-size:24px}
+.hint-name{font-size:13px}
+.hint-cap{font-size:11px;color:#8e432c;margin:0}
+.hint-scope{font-size:11px;color:#046282}
+.booking-hint>small{font-size:10px;color:#536c79}
+.campaign-card-rate{display:block;font-size:28px;line-height:1.3;color:#d84631}
+.campaign-pick .hint-cap{margin-top:6px}
+.campaign-pick .offer-detail-button{background:#eaf7fc;color:#046282;border:1px solid #cce5f1;border-radius:6px;padding:8px 12px}
+.campaign-pick .quiet-link{display:block;font-size:11px;margin-top:10px;color:#046282}
+.campaign-visual{height:110px;display:grid;place-items:center;background:linear-gradient(130deg,#e2f6ff,#fff3cb);color:#08a1c4;font-size:54px}
+.campaign-pick.is-recommended{border:2px solid #d84631;box-shadow:0 0 0 4px #ffe6d7}
+.best-search-result{padding:14px 18px;background:#fff1d2;border:1px solid #efc661;border-radius:8px;font-size:13px}
+.campaign-pop-benefit{font-size:48px;color:#d84631;font-weight:800;line-height:1.3;margin:14px 0 4px}
+.campaign-condition{font-size:12px;color:#536c79}
+.dialog-content>.primary-action{display:flex;text-decoration:none;margin-top:16px}
+.dialog-content>.dialog-source{display:inline-block;margin-top:12px;font-size:12px}
+.offer-dialog::backdrop{background:#113d5577;backdrop-filter:blur(3px)}
+@media(max-width:1000px){.month-offer-row{grid-template-columns:70px minmax(0,1fr) 190px;gap:16px;padding:18px}.month-open{grid-column:2/-1;text-align:right}.month-label{padding-right:16px}}
+@media(max-width:800px){#trip-form{grid-template-columns:1fr 1fr}.party-field{grid-column:1/-1}.party-field .stepper{max-width:300px}.month-offer-row{grid-template-columns:65px minmax(0,1fr) 165px;gap:14px}.month-campaign>strong{font-size:16px}.month-saving>strong{font-size:26px}.calendar-workspace{gap:16px}}
+@media(max-width:480px){.month-offer-row{grid-template-columns:54px minmax(0,1fr);gap:10px 14px;padding:16px 14px}.month-label{grid-row:1/3;padding-right:10px;align-self:stretch;justify-content:center}.month-label>strong{font-size:30px}.month-campaign>strong{font-size:15px}.month-campaign>small{font-size:10px}.month-saving{grid-column:2;gap:3px}.month-saving>strong{font-size:25px}.month-saving>small{font-size:10px}.month-open{grid-column:2;text-align:left;font-size:11px}.month-offers{gap:10px}.month-list-note{font-size:10px}.calendar-day .day-offers{font-size:8px;white-space:nowrap}.calendar-heat-key{font-size:8px;gap:4px}.calendar-heat-key>span{padding:3px 5px}.calendar-data-note p{font-size:9px}.calendar-toolbar>div:first-child{display:flex;flex-direction:column}.calendar-toolbar{gap:6px}.month-navigation{gap:3px}.month-navigation button{width:28px;min-width:28px;padding:0}.month-navigation #months-back{padding:0 6px;font-size:10px}.party-field .stepper{max-width:none}.hint-sort-note{font-size:9px}.booking-hint{padding:12px}.campaign-pop-benefit{font-size:40px}}
+
+.campaign-picks{grid-template-columns:repeat(2,minmax(0,1fr))}
+.calendar-day.heat-fixed{background:#edf8fc;color:#426d80;border-color:#cce5f1}
+@media(max-width:480px){.campaign-picks{grid-template-columns:1fr}.campaign-pick .campaign-visual{height:100%;min-height:180px}.calendar-day.heat-fixed .day-offers{font-size:7px}}
+.decision-page a.primary-action{color:#fff}

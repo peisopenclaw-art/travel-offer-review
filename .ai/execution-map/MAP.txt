@@ -2,17 +2,18 @@ PROJECT: travel-offer-review
 CURRENT: 3 — local implementation verified
 
 [STEPS]
-1. Preview source and instructions — done
-2. Compact campaign carousel and independent search axes — done
-3. Desktop/mobile interaction and build verification — done
+1. Independent map/date/provider design and compact carousel — done
+2. Sunny palette, month-first discovery, and corresponding campaign pop — done
+3. Desktop/mobile interaction, data boundaries, contrast, and build verification — done
 
 [CURRENT DETAIL]
-Goal: Resolve all 8 browser comments; map/date/provider in any order; labeled samples complete the design.
-Facts: Task branch codex/flexible-travel-search-design starts from PR #44 head 9bbbe961. Existing monitoring repository work was preserved. Root and decision.html share the redesigned interface. Fictional offers are separated in design-samples.json; no booking links or eligibility claims. Banner links open a dedicated sample campaign page and preserve existing search conditions.
-Evidence: scripts/qa_flexible_search.cjs — 34 checks PASS, including all 6 axis orders and 1440/768/390/375/320 widths; artifacts/flexible-search/qa.json and screenshots. check_site.py, check_public_offer_contract.py, build_cloudflare.py PASS.
-Plan difference: Sequential journey replaced by independent tabs. No automatic advance or prerequisite selection. Added real page navigation for the banner rather than only a detail dialog.
+Goal: Resolve the second round's 9 browser comments and overall theme/search requests while retaining independent search axes.
+Facts: Local branch codex/flexible-travel-search-design, continuing the prior verified design. Root and decision.html stay synchronized. Month/date/provider searches preserve explicit conditions. campaign-highlights.json separately carries the official Kumamoto 60% headline and October 1–December 25 stay period, checked on the Kyushu official site on 2026-10-05. Sample periods remain fictional and visibly labeled. The shared guides use the new palette; ad markup and booking destinations remain unchanged.
+Evidence: scripts/qa_flexible_search.cjs — 50 checks PASS, including all 6 axis orders, 1440/768/390/375/320 widths, month-first display, calendar boundaries, ranking/scope/caps, best place/day pops, fixed-plan search, fixed-coupon yen display, unknown-period rejection, state/retry, and carousel checks. artifacts/flexible-search/qa.json and screenshots retained. Site/offer-contract/freshness/build checks and JS syntax PASS. Separate rendered primary-link contrast check PASS at 4.85:1. IAB desktop and 390px renders inspected.
+Plan difference: Date discovery now starts with a vertical month list. Empty place/date form values mean an automatic campaign choice, and search opens its corresponding Featured Campaigns pop. Advertised rates are the selection criterion; no cheapest-price or eligibility claim is made.
 Next: User reviews the local design. Public preview publication/production release require authorization and retain PR #44's existing release gates.
 Human input: none for implementation; no publish, push, PR update, merge or production deployment performed.
+Design rationale and data boundaries: docs/sunny-travel-design.md.
 [END CURRENT DETAIL]
 
 [RETAINED RESOURCE]

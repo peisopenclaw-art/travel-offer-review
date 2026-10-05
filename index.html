@@ -15,8 +15,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260929-shippori-v1">
-  <link rel="stylesheet" href="decision-ui.css?v=20261003-flexible-search-v2">
+  <link rel="stylesheet" href="styles.css?v=20261005-sunny-travel-v3">
+  <link rel="stylesheet" href="decision-ui.css?v=20261005-sunny-travel-v3">
 </head>
 <body class="decision-page" data-design="flexible-search-v2">
 <a class="skip-link" href="#decision-main">本文へ移動</a>
@@ -57,7 +57,7 @@
       <label class="field">
         <span><i aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></i> 行き先</span>
         <select id="destination" name="destination">
-          <option value="">どこでも</option>
+          <option value="">一番お得な場所</option>
           <option value="hokkaido">北海道</option>
           <option value="tohoku">東北</option>
           <option value="kanto">関東</option>
@@ -69,22 +69,13 @@
         </select>
       </label>
 
-      <label class="field">
-        <span><i aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 11h16m-11 4h1m4 0h1m-6 3h1m4 0h1"/></svg></i> 旅行する月</span>
-        <select id="travel-month" name="travel-month">
-          <option value="2026-10">2026年10月</option>
-          <option value="2026-11">2026年11月</option>
-          <option value="2026-12">2026年12月</option>
-        </select>
-      </label>
-
       <label class="field date-field">
         <span>宿泊日</span>
         <div class="date-input-wrap">
           <input id="travel-date" name="travel-date" type="date" min="2026-10-01" max="2026-12-31" aria-describedby="travel-date-hint">
-          <span class="date-placeholder" aria-hidden="true">まだ未定</span>
+          <span class="date-placeholder" aria-hidden="true">一番お得な日</span>
         </div>
-        <small id="travel-date-hint">未定のままでOK</small>
+        <small id="travel-date-hint">日付を指定する場合は選択</small>
       </label>
 
       <fieldset class="field party-field">
@@ -106,7 +97,6 @@
       </button>
     </form>
     <div class="data-level-note">
-      <span>条件は未定でもOK。好きな探し方から。</span>
       <button id="share-state" class="share-state" type="button">条件を共有</button>
     </div>
   </section>
@@ -212,7 +202,7 @@
     <div class="stage-heading">
       <div>
         <p class="stage-index">DATE SEARCH</p>
-        <h2 id="calendar-title">出かけたい日に、お得はある？</h2>
+        <h2 id="calendar-title">お得な月から、旅を見つけよう。</h2>
       </div>
       <div class="metric-key">
         <span><b class="metric-symbol rate">%</b> 割引・還元率</span>
@@ -220,19 +210,21 @@
       </div>
     </div>
 
-    <div class="calendar-workspace">
+    <div id="month-offers" class="month-offers" aria-label="月別のお得一覧"></div>
+    <div id="calendar-workspace" class="calendar-workspace" hidden>
       <div class="calendar-panel">
         <div class="calendar-toolbar">
           <div>
             <strong id="calendar-month-label">2026年10月</strong>
             <span id="calendar-region-label">地域未選択</span>
           </div>
-          <div class="month-navigation"><button id="month-prev" type="button" aria-label="前の月">‹</button><button id="month-next" type="button" aria-label="次の月">›</button></div>
+          <div class="month-navigation"><button id="months-back" type="button">月一覧</button><button id="month-prev" type="button" aria-label="前の月">‹</button><button id="month-next" type="button" aria-label="次の月">›</button></div>
         </div>
         <div class="calendar-data-note">
           <span class="note-icon" aria-hidden="true">!</span>
-          <p>日付から特典を探せます。件数はサンプルを含み、宿泊価格ではありません。</p>
+          <p>宿泊対象期間が分かる特典の最大割引・還元率。サンプルは「例」、定額は円で表示。</p>
         </div>
+        <div class="calendar-heat-key"><span class="heat-high">高い割引率</span><span class="heat-medium">中程度</span><span class="heat-low">控えめ</span><span>色と％で比較</span></div>
         <div class="weekday-row" aria-hidden="true">
           <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
         </div>
@@ -240,10 +232,8 @@
       </div>
 
       <aside class="timing-panel">
-        <p class="summary-kicker">今使える予約特典</p>
-        <h3>予約の候補</h3>
+        <p class="summary-kicker">✦ この期間のお得</p><p class="hint-sort-note">割引・還元率の高い順／定額は別枠</p>
         <div id="booking-hints"></div>
-        <p class="timing-note">対象の宿・プランで使えるかは、予約先で確認できます。</p>
         <button id="to-compare" class="primary-action" type="button">
           予約先を比べる <span aria-hidden="true">→</span>
         </button>
@@ -286,6 +276,7 @@
   </section>
   <section id="panel-campaign" class="decision-stage" data-panel="4" role="tabpanel" aria-labelledby="tab-campaign" hidden>
     <div class="stage-heading"><div><p class="stage-index">CAMPAIGN PICKS</p><h2>注目のキャンペーン</h2></div><a class="quiet-link" href="offers.html">掲載中のお得を見る →</a></div>
+    <p id="best-search-result" class="best-search-result" hidden></p>
     <div id="campaign-picks" class="campaign-picks"></div>
     <p class="photo-caption">写真は旅行先のイメージです。阿蘇：STA3816 / CC BY-SA 3.0。サンプルの名称・金額・期間はデザイン確認用です。</p>
   </section>
@@ -310,6 +301,6 @@
   <small>サンプル表示を含みます。実際の特典は公式条件をご確認ください。</small>
 </footer>
 
-<script src="decision-ui.js?v=20261003-flexible-search-v2" defer></script>
+<script src="decision-ui.js?v=20261005-sunny-travel-v3" defer></script>
 </body>
 </html>

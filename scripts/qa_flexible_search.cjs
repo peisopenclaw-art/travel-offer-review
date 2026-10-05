@@ -49,12 +49,64 @@ async function main() {
         }
       }
     }
+    // Month-first discovery, period boundaries, and corresponding campaign popups.
+    for(const width of [1440,768,390,375,320]) {
+      await page.setViewportSize({width,height:900}); await load('?month=2026-12&view=date');
+      assert.equal(await page.locator('#calendar-workspace').isVisible(),false);
+      assert.equal(await page.locator('.month-offer-row').count(),3);
+      assert.ok((await page.locator('[data-month="2026-12"]').innerText()).includes('最大60％'));
+      await page.locator('[data-month="2026-12"]').click(); await metrics(width,'date-calendar');
+      assert.ok((await page.locator('[data-date="2026-12-25"]').getAttribute('class')).includes('heat-high'));
+      assert.ok((await page.locator('[data-date="2026-12-26"]').getAttribute('class')).includes('heat-medium'));
+      assert.ok((await page.locator('[data-date="2026-12-26"]').innerText()).includes('20％例'));
+      const hints = await page.locator('.hint-rate').allTextContents(); assert.deepEqual(hints,['最大60％','40％（例）','30％以上']);
+      assert.ok((await page.locator('.booking-hint').first().innerText()).includes('20,000円／人'));
+      assert.ok((await page.locator('.booking-hint').first().innerText()).includes('熊本県'));
+      if(width===1440 || width===390) await page.screenshot({path:path.join(output,'calendar-'+width+'.png'),fullPage:true});
+      await page.locator('#months-back').click(); assert.equal(await page.locator('#month-offers').isVisible(),true);
+      results.push({check:'monthly-calendar-boundary-and-ranked-hints',width,passed:true});
+    }
+    await page.setViewportSize({width:1440,height:900});
+    await load('?view=map'); assert.equal(await page.locator('#travel-month').count(),0);
+    assert.equal(await page.locator('#destination option:checked').innerText(),'一番お得な場所');
+    assert.equal(await page.locator('#travel-date').inputValue(),'');
+    await page.locator('#search-conditions').click(); await page.locator('#offer-dialog[open]').waitFor();
+    assert.equal(await page.locator('#tab-campaign').getAttribute('aria-selected'),'true');
+    assert.equal(await page.locator('#dialog-title').innerText(),'九州ふっこう応援割');
+    assert.ok(await page.locator('#kyushu-recovery.is-recommended').count());
+    await page.screenshot({path:path.join(output,'best-campaign-1440.png'),fullPage:true});
+    await page.locator('#dialog-close').click();
+    results.push({check:'best-place-and-day-corresponding-popup',passed:true});
+    await load('?view=map&destination=kyushu'); await page.locator('#search-conditions').click();
+    assert.equal(await page.locator('#dialog-title').innerText(),'九州ふっこう応援割');
+    assert.ok((await page.locator('#dialog-content').innerText()).includes('おすすめ宿泊日'));
+    await page.locator('#dialog-close').click(); results.push({check:'specific-place-best-day',passed:true});
+    await load('?view=map&date=2026-12-30'); await page.locator('#search-conditions').click();
+    assert.equal(await page.locator('#dialog-title').innerText(),'海辺のリゾート特集');
+    assert.equal(await page.locator('.campaign-pop-benefit').innerText(),'20％（例）');
+    assert.equal(await page.locator('#travel-date').inputValue(),'2026-12-30');
+    await page.locator('#dialog-close').click(); results.push({check:'specific-day-best-place-outside-kyushu-window',passed:true});
+    await load('?view=map&date=2026-12-11&destination=kyushu'); await page.locator('#search-conditions').click();
+    assert.equal(await page.locator('#tab-provider').getAttribute('aria-selected'),'true');
+    assert.equal(await page.locator('#offer-dialog[open]').count(),0); results.push({check:'fixed-plans-search',passed:true});
+    await load('?view=date&provider=Yahoo!トラベル');
+    assert.ok((await page.locator('#month-offers').innerText()).includes('対象期間のデータなし'));
+    await page.locator('#search-conditions').click();
+    assert.equal(await page.locator('#offer-dialog[open]').count(),0);
+    assert.ok((await page.locator('#best-search-result').innerText()).includes('宿泊対象期間が分かるキャンペーンがありません'));
+    results.push({check:'unknown-stay-window-no-false-best-match',passed:true});
+    await load('?view=date&provider=JTB&destination=chubu'); await page.locator('[data-month="2026-12"]').click();
+    assert.equal(await page.locator('[data-date="2026-12-12"] .day-offers').innerText(),'3千円例');
+    await page.locator('#search-conditions').click();
+    assert.equal(await page.locator('#dialog-title').innerText(),'家族旅行の宿泊クーポン');
+    assert.equal(await page.locator('#sample-family.is-recommended').count(),1);
+    await page.locator('#dialog-close').click(); results.push({check:'fixed-coupon-calendar-and-featured-popup',passed:true});
     for(const order of orders) {
       await load('?month=2026-12&view=map');
       for(const view of order) {
         await tab(view);
         if(view==='map') await page.locator('.region-button[data-region="kyushu"]').click();
-        if(view==='date') await page.locator('[data-date="2026-12-12"]').click();
+        if(view==='date') { await page.locator('[data-month="2026-12"]').click(); await page.locator('[data-date="2026-12-12"]').click(); }
         if(view==='provider') await page.locator('#provider-filters button[data-provider="楽天トラベル"]').click();
       }
       assert.equal(await page.locator('#destination').inputValue(),'kyushu');

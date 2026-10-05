@@ -11,6 +11,7 @@ PUBLIC_FILES = [
     "decision-ui.js",
     "decision-data.json",
     "design-samples.json",
+    "campaign-highlights.json",
     "sample-campaign.html",
     "campaign-detail.js",
     "yahoo-travel-campaign.html",

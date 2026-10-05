@@ -31,7 +31,24 @@
       },
       "summary": "沖縄のリゾートで、ゆっくり過ごす休日。",
       "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
-      "image": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG",
+      "sample_periods": [
+        {
+          "start": "2026-10-05",
+          "end": "2026-10-20",
+          "rate_percent": 40
+        },
+        {
+          "start": "2026-11-01",
+          "end": "2026-11-15",
+          "rate_percent": 35
+        },
+        {
+          "start": "2026-12-01",
+          "end": "2026-12-15",
+          "rate_percent": 40
+        }
+      ]
     },
     {
       "id": "sample-autumn",

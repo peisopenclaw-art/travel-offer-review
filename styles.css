@@ -1,15 +1,15 @@
 :root{
-  --bg:#f6f8f6;
+  --bg:#f0faff;
   --paper:#ffffff;
-  --ink:#14221f;
-  --muted:#5b6864;
-  --line:#d8e0dc;
-  --green:#006b59;
-  --green-dark:#004b3f;
-  --green-soft:#e6f0ed;
-  --red:#d6372f;
+  --ink:#173c51;
+  --muted:#536c79;
+  --line:#cce5f1;
+  --green:#087aa4;
+  --green-dark:#046282;
+  --green-soft:#e3f6ff;
+  --red:#d84631;
   --max:1240px;
-  --shadow:0 10px 26px rgba(15,49,41,.09);
+  --shadow:0 10px 26px rgba(8,122,164,.09);
   --font-body:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",sans-serif;
   --font-heading:"Zen Kaku Gothic New","BIZ UDPGothic","Hiragino Sans",sans-serif;
   --font-display:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
@@ -355,3 +355,7 @@ h1,h2,h3,
   font-weight:500;
   letter-spacing:.06em;
 }
+
+/* The campaign guides share the sunny travel-search theme. */
+.header-cta,.primary-cta,.a8-ad-material a{background:var(--red)}
+.header-cta:hover,.primary-cta:hover,.primary-cta:focus-visible,.a8-ad-material a:hover,.a8-ad-material a:focus-visible{background:#b93122}
