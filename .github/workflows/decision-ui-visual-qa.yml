@@ -26,6 +26,10 @@ on:
       - "scripts/check_site.py"
       - "scripts/check_offer_freshness.py"
       - "scripts/build_cloudflare.py"
+      - "scripts/public_build_snapshot.py"
+      - "scripts/publish_public_benefits.py"
+      - "tests/test_public_build_snapshot.py"
+      - "tests/test_publication_readback.py"
       - "sitemap.xml"
       - ".github/workflows/decision-ui-visual-qa.yml"
   workflow_dispatch:
