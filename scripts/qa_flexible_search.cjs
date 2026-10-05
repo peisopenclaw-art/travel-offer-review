@@ -1,0 +1,126 @@
+// Isolated local-site acceptance checks. Never click affiliate or booking links.
+const { chromium } = require('playwright');
+const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const origin = process.env.QA_URL || 'http://127.0.0.1:8776/';
+const output = path.resolve(process.env.QA_OUTPUT || 'artifacts/flexible-search');
+const views = ['map', 'date', 'provider', 'campaign'];
+const orders = [['map','date','provider'],['map','provider','date'],['date','map','provider'],['date','provider','map'],['provider','map','date'],['provider','date','map']];
+const results = [];
+async function main() {
+  await fs.mkdir(output, {recursive:true});
+  const browser = await chromium.launch({headless:true,...(process.env.QA_BROWSER_CHANNEL ? {channel:process.env.QA_BROWSER_CHANNEL} : {})});
+  try {
+    const context = await browser.newContext({viewport:{width:1440,height:900},locale:'ja-JP',timezoneId:'Asia/Tokyo'});
+    const page = await context.newPage();
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    async function load(query='?month=2026-10&view=map') {
+      await page.goto(origin+query,{waitUntil:'domcontentloaded'});
+      await page.locator('#decision-main[aria-busy="false"]').waitFor();
+      assert.equal(await page.locator('.load-error').count(),0);
+    }
+    async function tab(view) { await page.locator('#tab-'+view).click(); }
+    async function metrics(width, view) {
+      const value = await page.evaluate(() => {
+        const visible = [...document.querySelectorAll('.decision-stage')].filter(p=>!p.hidden);
+        const clipped = [...document.querySelectorAll('.step-tab')].filter(t=>t.scrollWidth>t.clientWidth+1).map(t=>t.id);
+        const buttons = [...document.querySelectorAll('.region-button')].map(e=>({name:e.textContent,rect:e.getBoundingClientRect().toJSON()}));
+        const overlaps=[];
+        if(!document.querySelector('#panel-map').hidden) for(let i=0;i<buttons.length;i++) for(let j=i+1;j<buttons.length;j++) {
+          const a=buttons[i].rect,b=buttons[j].rect;
+          if(a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y) overlaps.push([buttons[i].name,buttons[j].name]);
+        }
+        return {width:window.innerWidth,overflow:document.documentElement.scrollWidth>window.innerWidth,visible:visible.length,clipped,overlaps};
+      });
+      assert.equal(value.overflow,false,JSON.stringify(value)); assert.equal(value.visible,1); assert.deepEqual(value.clipped,[]); assert.deepEqual(value.overlaps,[]);
+      results.push({check:'responsive',width,view,...value});
+    }
+    for(const width of [1440,768,390,375,320]) {
+      await page.setViewportSize({width,height:900}); await load();
+      await page.evaluate(()=>document.fonts.ready);
+      for(const view of views) {
+        await tab(view); await metrics(width,view);
+        if(width===1440||width===390) {
+          await page.locator('#slide-pause').click(); // capture deterministic first slide; pause state irrelevant to layout
+          await page.locator('[data-slide-to="0"]').click();
+          await page.screenshot({path:path.join(output,view+'-'+width+'.png'),fullPage:true});
+        }
+      }
+    }
+    for(const order of orders) {
+      await load('?month=2026-12&view=map');
+      for(const view of order) {
+        await tab(view);
+        if(view==='map') await page.locator('.region-button[data-region="kyushu"]').click();
+        if(view==='date') await page.locator('[data-date="2026-12-12"]').click();
+        if(view==='provider') await page.locator('#provider-filters button[data-provider="楽天トラベル"]').click();
+      }
+      assert.equal(await page.locator('#destination').inputValue(),'kyushu');
+      assert.equal(await page.locator('#travel-date').inputValue(),'2026-12-12');
+      assert.equal(await page.locator('#provider-filters button[aria-pressed="true"]').getAttribute('data-provider'),'楽天トラベル');
+      assert.equal(await page.locator('.step-tab[aria-selected="true"]').getAttribute('id'),'tab-'+order[2]);
+      assert.equal(await page.locator('.offer-card').count(),1);
+      results.push({check:'order',order,passed:true});
+    }
+    for(let i=0;i<6;i++) await page.locator('#child-plus').click();
+    assert.equal(await page.locator('#child-plus').isDisabled(),true);
+    assert.equal(await page.locator('#child-count').innerText(),'子供6人');
+    await page.reload(); await page.locator('#decision-main[aria-busy="false"]').waitFor();
+    assert.equal(await page.locator('#child-count').innerText(),'子供6人');
+    for(let i=0;i<6;i++) await page.locator('#child-minus').click();
+    assert.equal(await page.locator('#child-minus').isDisabled(),true);
+    await page.locator('#adult-minus').click(); assert.equal(await page.locator('#adult-minus').isDisabled(),true);
+    for(let i=0;i<8;i++) await page.locator('#adult-plus').click();
+    assert.equal(await page.locator('#adult-plus').isDisabled(),true);
+    results.push({check:'party-bounds-and-reload',passed:true});
+    await load('?month=2026-12&destination=chubu&provider=じゃらん&view=provider');
+    assert.equal(await page.locator('#panel-provider .empty-state').count(),1);
+    await page.locator('#panel-provider .empty-state [data-clear-all]').click(); assert.ok(await page.locator('.offer-card').count()>0);
+    await page.locator('#tab-map').focus(); await page.keyboard.press('ArrowRight');
+    assert.equal(await page.locator('.step-tab[aria-selected="true"]').getAttribute('id'),'tab-date');
+    results.push({check:'empty-recovery-and-keyboard-tabs',passed:true});
+    await load('?view=provider&date=2026-12-99'); assert.equal(await page.locator('#travel-date').inputValue(),'');
+    assert.equal(await page.locator('#destination').inputValue(),''); assert.equal(await page.locator('#adult-count').innerText(),'大人2人');
+    results.push({check:'shared-url-isolation-and-invalid-date',passed:true});
+    await load('?view=provider&provider=Yahoo!トラベル');
+    await page.locator('.assumed-price-panel summary').click(); await page.locator('#assumed-price').fill('50000');
+    assert.equal(await page.locator('.card-estimate').count(),3);
+    for(const text of await page.locator('.card-estimate').allTextContents()) assert.ok(text.includes('未算出（ポイント型）'));
+    await page.locator('.offer-card').first().getByRole('button').click();
+    assert.equal(await page.locator('.dialog-links a').nth(1).getAttribute('href'),'https://travel.yahoo.co.jp/');
+    await page.locator('#dialog-close').click();
+    results.push({check:'confirmed-points-and-detail-contract',passed:true});
+    await load('?view=campaign&children=2&date=2026-12-12');
+    await page.locator('#sample-seaside a').click(); await page.locator('#campaign-detail[aria-busy="false"]').waitFor();
+    assert.ok(page.url().includes('sample-campaign.html')); assert.ok(await page.locator('.sample-detail-note').isVisible());
+    assert.equal(await page.locator('.sample-detail-benefit a').count(),1);
+    await page.screenshot({path:path.join(output,'sample-detail-320.png'),fullPage:true});
+    await page.locator('#back-to-search').click(); await page.locator('#decision-main[aria-busy="false"]').waitFor();
+    assert.equal(await page.locator('#child-count').innerText(),'子供2人'); assert.equal(await page.locator('#travel-date').inputValue(),'2026-12-12');
+    results.push({check:'campaign-page-and-return',passed:true});
+    await page.setViewportSize({width:1440,height:900}); await load();
+    await page.mouse.move(1,1);
+    await page.waitForFunction(()=>document.querySelector('.campaign-slide:not([hidden])').dataset.slide==='1',{},{timeout:8500});
+    await page.locator('#slide-pause').click(); await page.locator('#destination').focus(); await page.mouse.move(1,1);
+    const paused = await page.locator('.campaign-slide:not([hidden])').getAttribute('data-slide');
+    await page.waitForTimeout(6200); assert.equal(await page.locator('.campaign-slide:not([hidden])').getAttribute('data-slide'),paused);
+    await page.locator('#slide-next').click(); assert.notEqual(await page.locator('.campaign-slide:not([hidden])').getAttribute('data-slide'),paused);
+    results.push({check:'carousel-auto-pause-manual',passed:true});
+    await page.emulateMedia({reducedMotion:'reduce'}); await load();
+    await page.waitForTimeout(6200); assert.equal(await page.locator('.campaign-slide:not([hidden])').getAttribute('data-slide'),'0');
+    results.push({check:'reduced-motion',passed:true});
+    await page.route('**/design-samples.json',route=>route.fulfill({status:503,body:'Unavailable'}));
+    await page.goto(origin+'?children=2&date=2026-12-12'); await page.locator('.load-error').waitFor();
+    assert.equal(await page.locator('#child-count').innerText(),'子供2人'); assert.equal(await page.locator('#travel-date').inputValue(),'2026-12-12');
+    await page.unroute('**/design-samples.json'); await page.getByRole('button',{name:'再読み込み',exact:true}).click();
+    await page.locator('#decision-main[aria-busy="false"]').waitFor(); assert.equal(await page.locator('.load-error').count(),0);
+    results.push({check:'load-error-preservation-and-retry',passed:true});
+    assert.deepEqual(errors,[]);
+    await fs.writeFile(path.join(output,'qa.json'),JSON.stringify(results,null,2)+'\n');
+    console.log('Flexible search acceptance: PASS ('+results.length+' checks)');
+    await context.close();
+  } finally { await browser.close(); }
+}
+main().catch(error=>{console.error(error);process.exitCode=1;});

@@ -1,4 +1,4 @@
-/* Photo journey: OTA search grammar, with one choice at a time. */
+/* Travel campaign search: independent map, date, and provider views. */
 :root{--decision-navy:#07594f;--decision-navy-2:#034239;--decision-pink:#b5472b;--decision-pink-soft:#fff3eb;--decision-orange:#b5472b;--decision-line:#dce5e1;--decision-ink:#1c302b;--decision-muted:#596b65;--decision-max:1240px;--decision-paper:#fff;--decision-bg:#f7f9f7;--decision-shadow:0 12px 30px #153d2b12}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -238,3 +238,144 @@ body[data-decision-step="2"] .trip-console,body[data-decision-step="3"] .trip-co
 .ui-icon{display:inline-block;width:1em;height:1em;vertical-align:-.12em;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.step-number .ui-icon{width:17px;height:17px}.region-preview .ui-icon{width:28px;height:28px}
 
 @media(min-width:351px) and (max-width:800px){.comparison-table .benefit-cell{grid-column:1;grid-row:1}.comparison-table .estimate-cell{grid-column:2;grid-row:1}.comparison-table .eligibility-cell{grid-column:1/-1;grid-row:2}.comparison-table .provider-cell{grid-column:1/-1;grid-row:3}.comparison-table td[data-label="予約期間"]{grid-column:1/-1;grid-row:4}.comparison-table td:last-child{grid-column:1/-1;grid-row:5}}
+
+/* Independent search axes and compact seasonal campaigns. */
+body.decision-page{background:#f7f9f8}
+.decision-header{min-height:68px;padding-top:8px;padding-bottom:8px}
+.brand-sub{margin-left:18px;font-size:11px}
+.decision-main{padding-top:20px}
+.campaign-carousel{position:relative;border-radius:12px;overflow:hidden;background:#07594f;margin-bottom:16px}
+.campaign-slide{position:relative;display:block;height:238px;text-decoration:none;color:#fff!important;isolation:isolate}
+.campaign-slide>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;z-index:-2}
+.campaign-slide::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#042d3bd6 0%,#043b4266 40%,#043b4200 72%);z-index:-1}
+.banner-copy{padding:25px 38px;max-width:650px}
+.banner-tag{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.08em;font-weight:600}
+.banner-tag small{font-size:9px;letter-spacing:0;border:1px solid #ffffff80;border-radius:3px;padding:1px 5px}
+.banner-copy h2{font-size:32px;color:#fff;line-height:1.38;letter-spacing:.025em;margin:8px 0 6px;font-family:"Noto Sans JP",sans-serif;font-weight:700}
+.banner-copy p{margin:0 0 8px;font-size:12px;color:#f5fffd}
+.banner-cta{display:inline-block;font-size:11px;font-weight:600;text-decoration:underline;text-underline-offset:5px}
+.carousel-controls{position:absolute;right:16px;bottom:14px;display:flex;align-items:center;gap:3px;padding:0 3px;background:#ffffffee;border-radius:24px;color:#07594f;box-shadow:0 2px 12px #00352b1a}
+.carousel-controls button{border:0;background:transparent;color:#07594f;min-width:36px;min-height:36px;font-size:22px;border-radius:50%}
+.carousel-controls button:hover{background:#dcece5}
+.carousel-dots{display:flex;align-items:center}
+.carousel-dots button{position:relative;min-width:28px;font-size:0}
+.carousel-dots button::after{content:"";display:block;width:6px;height:6px;margin:auto;border-radius:50%;background:#a5bdb7}
+.carousel-dots button[aria-pressed="true"]::after{width:19px;border-radius:4px;background:#07594f}
+.carousel-controls #slide-pause{font-size:13px;border-left:1px solid #dce5e1;border-radius:0}
+.trip-console,body[data-decision-step="2"] .trip-console,body[data-decision-step="3"] .trip-console{margin:0}
+#trip-form{grid-template-columns:1fr .9fr 1fr 1.22fr .9fr;box-shadow:0 2px 8px #173e2510;border-radius:9px}
+.trip-console .field{padding:12px 18px;min-height:92px;gap:3px}
+.trip-console .field select,.trip-console .field input{font-size:14px;min-height:38px}
+.party-field legend{top:9px;left:18px;font-size:11px}
+.party-field .stepper{margin:0;grid-template-columns:32px minmax(0,1fr) 32px;gap:3px}
+.party-field .stepper:first-of-type{margin-top:16px}
+.party-field .stepper button{width:30px;height:30px;font-size:19px}
+.party-field .stepper output{font-size:12px}
+.search-action{font-size:13px;min-width:0;min-height:52px;margin:16px 12px;padding:10px}
+.data-level-note{margin-top:0;font-size:10px;min-height:34px}
+.share-state{min-height:34px;font-size:10px!important}
+.decision-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:10px 0 0;border-bottom:1px solid #ccdcd5;scroll-margin-top:80px}
+.step-tab{justify-content:center;gap:7px;padding:13px 8px;font-size:13px;color:#4f6560;border-bottom:3px solid transparent;border-radius:0;min-height:54px;min-width:0}
+.step-tab>span{font-size:21px;line-height:1}
+.step-tab.is-active{border-bottom-color:#07594f;color:#07594f;background:#eaf3ee}
+.step-tab:hover:not(:disabled){border-radius:0;background:#edf4ef}
+.design-note{display:flex;align-items:center;gap:8px;margin:12px 0 8px;color:#64726b;font-size:10px;line-height:1.5}
+.sample-badge,.verified-badge{display:inline-block;align-self:start;border:1px solid #d4ddd7;border-radius:4px;padding:2px 6px;font-size:9px;font-weight:500;line-height:1.5;white-space:nowrap;color:#626a65;background:#f6f8f6}
+.verified-badge{color:#07594f;background:#edf5ef;border-color:#c4dacf}
+.active-filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:34px;margin:0 0 18px}
+.active-filters button{border:1px solid #cfe0d5;border-radius:20px;background:#fff;color:#07594f;font-size:11px;min-height:32px;padding:4px 12px}
+.active-filters .clear-all{border:0;background:none;text-decoration:underline;text-underline-offset:3px;color:#607066;font-size:10px}
+.party-summary{font-size:10px;color:#607066}
+.stage-heading{margin-bottom:14px;gap:14px}
+.stage-index{font-size:9px;letter-spacing:.12em}
+.stage-heading h2{font-size:23px;font-weight:700}
+.map-workspace,.calendar-workspace{gap:18px;grid-template-columns:minmax(0,1.85fr) minmax(270px,.9fr)}
+.map-board-head{padding:14px 18px}
+.region-map{height:356px}
+.map-legend{padding:12px 18px;gap:8px}
+.decision-summary,.timing-panel{padding:22px}
+.decision-summary h3,.timing-panel h3{font-size:21px;margin-top:4px}
+.summary-metrics{margin:16px 0;padding:12px 0}
+.summary-caveat{font-size:10px!important}
+.primary-action{min-height:44px;margin-top:16px}
+.calendar-panel{padding:18px}
+.calendar-day{flex-direction:column;gap:3px;min-height:58px}
+.day-offers{font-size:9px;color:#688376;line-height:1.3}
+.calendar-day.is-selected .day-offers{color:#fff}
+.calendar-data-note{margin-bottom:12px}
+.booking-hint{display:block;width:100%;text-align:left;border:0;background:transparent;padding:12px 0}
+.booking-hint:hover{background:#f2f7f3}
+.booking-hint .hint-rate{font-size:23px}
+.booking-hint .sample-badge,.booking-hint .verified-badge{margin-top:5px}
+.provider-filters{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.provider-filters button{min-width:0;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #dce5e1;background:#fff;border-radius:8px;padding:12px 8px;min-height:62px;font-size:11px;color:#4d6057}
+.provider-filters button[aria-pressed="true"]{border-color:#07594f;background:#eaf3ee;color:#07594f;box-shadow:inset 0 0 0 1px #07594f}
+.provider-monogram{width:26px;height:26px;display:grid;place-items:center;background:#edf3f0;color:#07594f;border-radius:5px;font-size:15px;font-weight:700;flex-shrink:0}
+[data-provider="Yahoo!トラベル"] .provider-monogram{color:#c63228;background:#fff0ef}
+[data-provider="楽天トラベル"] .provider-monogram{color:#b32422;background:#fff0ef}
+[data-provider="じゃらん"] .provider-monogram{color:#a3491b;background:#fff3e8}
+[data-provider="JTB"] .provider-monogram{color:#ae2034;background:#fff1f3}
+[data-provider="一休.com"] .provider-monogram{color:#514329;background:#f4f1e9}
+.offer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.offer-card{background:#fff;border:1px solid #dce5e1;border-radius:10px;padding:20px;display:flex;flex-direction:column;min-width:0}
+.offer-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.provider-wordmark{font-size:12px;font-weight:700;color:#07594f}
+.offer-card h3{font-size:16px;margin:14px 0 8px;line-height:1.6}
+.offer-benefit{font:700 32px/1.3 "Inter","Noto Sans JP",sans-serif;color:#b5472b;margin:0}
+.offer-benefit small{font-size:12px;margin-left:6px;font-weight:500}
+.offer-cap{font-size:10px;color:#69766f;margin:5px 0 14px}
+.offer-meta{display:flex;flex-wrap:wrap;gap:6px 12px;padding:10px 0;border-top:1px solid #edf1ed;border-bottom:1px solid #edf1ed;font-size:10px;color:#64726c}
+.offer-description{font-size:11px;color:#5c6c63;line-height:1.8;margin:12px 0 18px}
+.offer-card .offer-detail-button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:40px;margin-top:auto;background:#f1f7f3;border:0;color:#07594f;padding:8px 12px;font-size:11px;border-radius:5px}
+.card-estimate{font-size:11px;color:#07594f}
+.compare-toolbar{margin-bottom:10px}
+.trip-summary{font-size:12px}
+.assumed-price-panel{margin-bottom:16px}
+.campaign-picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.campaign-pick{border:1px solid #dce5e1;background:white;border-radius:10px;overflow:hidden}
+.campaign-pick>img{width:100%;height:150px;object-fit:cover}
+.campaign-pick>div{padding:16px}
+.campaign-pick h3{font-size:18px;margin:8px 0}
+.campaign-pick p{font-size:11px;color:#66756c;margin-bottom:12px}
+.campaign-pick .offer-detail-button{width:100%;min-height:40px;font-size:11px}
+.empty-state{grid-column:1/-1;padding:28px;background:#fff;border:1px dashed #b7cec0;border-radius:8px;text-align:center;font-size:13px;color:#596b65}
+.empty-state h3{font-size:18px;color:#07594f}
+.sample-detail-note{padding:12px;border:1px solid #dce5e1;background:#f1f6f2;font-size:13px}
+.load-error{padding:14px;color:#803c27;background:#fff2eb;border:1px solid #efd1c2;border-radius:6px}
+.load-error button{margin-left:10px;border:1px solid #af6a4b;background:#fff;border-radius:5px;min-height:40px}
+.decision-footer{margin-top:0;padding-top:24px;padding-bottom:24px}
+.decision-footer p{font-size:10px}
+@media(max-width:1100px){.brand-sub{display:block;margin-left:0;font-size:9px}.decision-header .brand-name{line-height:1.5}.provider-filters button{flex-direction:column;gap:4px;font-size:10px}.map-workspace,.calendar-workspace{grid-template-columns:minmax(0,1.5fr) minmax(250px,.9fr)}}
+@media(max-width:800px){.decision-main{padding-top:12px}.decision-header{min-height:62px}.campaign-slide{height:216px}.banner-copy{padding:23px 26px}.banner-copy h2{font-size:27px}#trip-form{grid-template-columns:1fr 1fr}.trip-console .field{min-height:84px;padding:10px 16px}.party-field legend{left:16px;top:7px}.search-action{grid-column:1/-1;margin:8px 12px;min-height:42px}.map-workspace,.calendar-workspace{grid-template-columns:1fr}.step-tab{font-size:11px;gap:5px;padding:12px 5px}.step-tab>span{font-size:18px}.stage-heading{flex-direction:row;align-items:end}.metric-key{display:none}.offer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.campaign-picks{gap:12px}.campaign-pick>img{height:120px}.campaign-pick>div{padding:12px}.campaign-pick h3{font-size:15px}.provider-filters{grid-template-columns:repeat(3,minmax(0,1fr))}.provider-filters button{flex-direction:row;min-height:54px}.region-map{height:350px}.decision-summary{padding:18px}.summary-metrics{margin:10px 0}.decision-summary .primary-action{margin-top:10px}.calendar-workspace .timing-panel{padding:18px}}
+@media(max-width:480px){.decision-header{padding:8px 14px}.decision-header .brand-name{font-size:19px}.brand-sub{font-size:8px;white-space:normal;max-width:195px}.decision-main{padding:10px 14px 28px}.campaign-carousel{border-radius:8px;margin-bottom:10px}.campaign-slide{height:200px}.campaign-slide>img{object-position:60% center}.campaign-slide::after{background:linear-gradient(90deg,#04303cc9,#043b4220)}.banner-copy{padding:19px 20px}.banner-copy h2{font-size:23px;margin-top:9px}.banner-tag{font-size:9px}.banner-copy p{font-size:10px;max-width:200px}.banner-cta{font-size:10px}.carousel-controls{right:9px;bottom:9px;gap:0;padding:0}.carousel-controls button{min-width:32px;min-height:32px}.carousel-dots button{min-width:24px}.trip-console .field{padding:9px 12px;min-height:90px}.trip-console .field select,.trip-console .field input{font-size:13px}.party-field legend{left:12px;top:5px}.party-field .stepper{grid-template-columns:30px minmax(0,1fr) 30px}.party-field .stepper output{font-size:11px}.party-field .stepper:first-of-type{margin-top:11px}.party-field .stepper button{width:28px;height:28px}.data-level-note{font-size:9px;gap:6px}.share-state{font-size:9px!important;min-width:65px}.decision-steps{grid-template-columns:1fr 1fr;margin-top:6px}.step-tab{font-size:12px;padding:10px 6px;min-height:44px;white-space:nowrap}.step-tab>span{font-size:18px}.design-note{align-items:start;font-size:9px;gap:6px;margin-top:10px}.design-note>.sample-badge{font-size:8px}.active-filters{gap:5px;margin-bottom:14px}.active-filters button{font-size:10px;padding:3px 10px}.stage-heading{align-items:start;gap:6px;flex-direction:column}.stage-heading h2{font-size:21px}.stage-index{font-size:8px}.map-board-head{padding:12px}.region-map{height:360px;margin:0 8px}.region-button{min-width:80px;padding:7px}.region-button.is-hot-region{min-width:108px;min-height:70px}.region-button .map-rate{font-size:20px}.region-button .map-cap{font-size:8px}.map-legend{font-size:9px;padding:10px 12px}.offer-grid{grid-template-columns:1fr;gap:12px}.offer-card{padding:18px}.offer-card h3{margin-top:10px;font-size:16px}.offer-benefit{font-size:31px}.offer-description{font-size:12px}.offer-card .offer-detail-button{font-size:12px;min-height:44px}.provider-filters{gap:7px}.provider-filters button{font-size:10px;gap:5px;padding:8px 5px}.provider-monogram{width:23px;height:23px;font-size:13px}.calendar-day{min-height:50px;gap:3px}.day-offers{font-size:8px}.campaign-picks{grid-template-columns:1fr}.campaign-pick{display:grid;grid-template-columns:110px minmax(0,1fr)}.campaign-pick>img{height:100%;min-height:170px}.campaign-pick>div{padding:12px}.campaign-pick h3{font-size:16px}.campaign-pick p{font-size:10px}.photo-caption{font-size:9px}.decision-footer{padding:20px 14px}.decision-footer p{max-width:300px}}
+@media(max-width:350px){.decision-header .brand-name{font-size:17px}.brand-sub{font-size:7px;max-width:165px}.header-text-link:last-child{font-size:9px;padding:7px}.decision-main{padding-left:10px;padding-right:10px}.party-field .stepper{grid-template-columns:27px minmax(0,1fr) 27px}.party-field .stepper button{width:26px;height:26px}.party-field .stepper output{font-size:10px}.provider-filters button{flex-direction:column;font-size:9px}.banner-copy h2{font-size:22px}.region-map{height:335px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.campaign-slide{animation:none}}
+/* Keep region controls apart even in the compact map. */
+.region-map{height:376px}
+.region-chubu{top:20%;left:11%}.region-kinki{top:38%;left:5%}.region-chugoku{top:56%;left:1%}.region-kyushu{bottom:1%;left:1%}
+.data-loading{font-size:12px;color:#07594f;padding:12px;border:1px solid #dce5e1;border-radius:6px;background:#fff}
+@media(max-width:480px){.region-map{height:360px}.region-chubu{top:23%;left:0}.region-kinki{top:41%;left:0}.region-chugoku{top:59%;left:0}.region-kyushu{bottom:1%;left:0}.region-button.is-hot-region{min-height:70px}}
+@media(max-width:350px){.region-map{height:350px}.region-chugoku{top:58%}}
+.card-condition{font-size:10px;color:#586d62;margin:0 0 12px}
+.campaign-pick a.offer-detail-button{display:flex;align-items:center;justify-content:space-between;text-decoration:none;padding:8px 10px;border:1px solid #d7e4db;border-radius:4px}
+.sample-campaign-page{padding-bottom:40px}
+.sample-feature{position:relative;isolation:isolate;border-radius:10px;overflow:hidden;height:260px;color:white;background:#07594f;margin:8px 0 24px}
+.sample-feature>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.sample-feature::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#04303bcb,#04303b11);z-index:-1}
+.sample-feature>div{padding:50px 40px}
+.sample-feature h1{font-size:36px;color:#fff;margin:12px 0}
+.sample-feature p{font-size:14px;margin:0;color:white}
+.sample-detail-layout{display:grid;grid-template-columns:1.8fr 1fr;gap:28px;align-items:start}
+.sample-detail-copy h2{font-size:21px;margin:20px 0 10px}
+.sample-detail-copy p{font-size:13px;line-height:1.9}
+.sample-detail-copy dl{background:white;border:1px solid #dce5e1;border-radius:8px;margin:12px 0}
+.sample-detail-copy dl>div{display:grid;grid-template-columns:135px 1fr;padding:14px 18px;gap:16px;border-bottom:1px solid #edf1ed;font-size:12px}
+.sample-detail-copy dl>div:last-child{border:0}
+.sample-detail-copy dd{margin:0;font-weight:600}
+.sample-detail-benefit{padding:28px;background:white;border:1px solid #dce5e1;border-radius:10px}
+.sample-detail-benefit .offer-benefit{margin-top:18px;font-size:44px}
+.sample-detail-benefit a{text-decoration:none}
+.sample-detail-benefit small{display:block;color:#607268;font-size:10px;margin-top:10px}
+@media(max-width:800px){.sample-detail-layout{grid-template-columns:1fr}.sample-feature{height:220px}.sample-feature>div{padding:35px 25px}.sample-feature h1{font-size:29px}}
+@media(max-width:480px){.sample-feature{height:200px}.sample-feature>div{padding:28px 20px}.sample-feature h1{font-size:25px}.sample-feature p{font-size:12px}.sample-detail-copy dl>div{grid-template-columns:1fr;gap:4px}.sample-detail-benefit{padding:22px}}
+@media(max-width:350px){#tab-campaign{font-size:10.5px;gap:3px}#tab-campaign>span{font-size:16px}}

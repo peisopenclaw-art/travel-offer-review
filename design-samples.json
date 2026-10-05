@@ -1,0 +1,260 @@
+{
+  "purpose": "Design-only fictional offers. Never eligible or bookable.",
+  "offers": [
+    {
+      "id": "sample-seaside",
+      "sample": true,
+      "provider": "楽天トラベル",
+      "product": "宿泊",
+      "name": "海辺のリゾート特集",
+      "scope": "九州・沖縄",
+      "regions": [
+        "kyushu"
+      ],
+      "booking_start": null,
+      "booking_end": null,
+      "sample_stay_start": "2026-10-01",
+      "sample_stay_end": "2026-12-31",
+      "stay_window": {
+        "label": "2026-10-01 〜 2026-12-31（サンプル）"
+      },
+      "benefit": {
+        "kind": "coupon_rate",
+        "display_label": "20％",
+        "cap_label": "上限8,000円",
+        "currency": "JPY",
+        "calculation_base": "eligible_stay_amount",
+        "minimum_spend": 20000,
+        "rounding": "floor",
+        "max_discount_amount": 8000,
+        "rate_percent": 20
+      },
+      "summary": "沖縄のリゾートで、ゆっくり過ごす休日。",
+      "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Okinawa_Emerald_Beach.JPG"
+    },
+    {
+      "id": "sample-autumn",
+      "sample": true,
+      "provider": "じゃらん",
+      "product": "宿泊",
+      "name": "秋の自然旅クーポン",
+      "scope": "中部",
+      "regions": [
+        "chubu"
+      ],
+      "booking_start": null,
+      "booking_end": null,
+      "sample_stay_start": "2026-10-01",
+      "sample_stay_end": "2026-11-30",
+      "stay_window": {
+        "label": "2026-10-01 〜 2026-11-30（サンプル）"
+      },
+      "benefit": {
+        "kind": "coupon_fixed",
+        "display_label": "5,000円",
+        "cap_label": "宿泊料金から5,000円引き",
+        "currency": "JPY",
+        "calculation_base": "eligible_stay_amount",
+        "minimum_spend": 20000,
+        "rounding": "floor",
+        "max_discount_amount": 5000,
+        "discount_amount": 5000
+      },
+      "summary": "山の景色と楽しむ、秋のひと休み。",
+      "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/The%20five%20mountains%20of%20Aso.jpg"
+    },
+    {
+      "id": "sample-winter",
+      "sample": true,
+      "provider": "一休.com",
+      "product": "宿泊",
+      "name": "冬のご褒美ステイ",
+      "scope": "関東",
+      "regions": [
+        "kanto"
+      ],
+      "booking_start": null,
+      "booking_end": null,
+      "sample_stay_start": "2026-11-01",
+      "sample_stay_end": "2026-12-31",
+      "stay_window": {
+        "label": "2026-11-01 〜 2026-12-31（サンプル）"
+      },
+      "benefit": {
+        "kind": "coupon_rate",
+        "display_label": "15％",
+        "cap_label": "上限10,000円",
+        "currency": "JPY",
+        "calculation_base": "eligible_stay_amount",
+        "minimum_spend": 20000,
+        "rounding": "floor",
+        "max_discount_amount": 10000,
+        "rate_percent": 15
+      },
+      "summary": "眺めのよいホテルで、少し贅沢な滞在を。",
+      "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/e/e3/FujiLakeShore.jpg"
+    },
+    {
+      "id": "sample-family",
+      "sample": true,
+      "provider": "JTB",
+      "product": "宿泊",
+      "name": "家族旅行の宿泊クーポン",
+      "scope": "全国",
+      "regions": [],
+      "booking_start": null,
+      "booking_end": null,
+      "sample_stay_start": "2026-10-01",
+      "sample_stay_end": "2026-12-31",
+      "stay_window": {
+        "label": "2026-10-01 〜 2026-12-31（サンプル）"
+      },
+      "benefit": {
+        "kind": "coupon_fixed",
+        "display_label": "3,000円",
+        "cap_label": "宿泊料金から3,000円引き",
+        "currency": "JPY",
+        "calculation_base": "eligible_stay_amount",
+        "minimum_spend": 20000,
+        "rounding": "floor",
+        "max_discount_amount": 3000,
+        "discount_amount": 3000
+      },
+      "summary": "子供と一緒に楽しむ、次のお出かけ。",
+      "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
+      "image": null
+    },
+    {
+      "id": "sample-hokkaido",
+      "sample": true,
+      "provider": "楽天トラベル",
+      "product": "宿泊",
+      "name": "北海道のゆったりステイ",
+      "scope": "北海道",
+      "regions": [
+        "hokkaido"
+      ],
+      "booking_start": null,
+      "booking_end": null,
+      "sample_stay_start": "2026-10-01",
+      "sample_stay_end": "2026-12-31",
+      "stay_window": {
+        "label": "2026-10-01 〜 2026-12-31（サンプル）"
+      },
+      "benefit": {
+        "kind": "coupon_rate",
+        "display_label": "10％",
+        "cap_label": "上限5,000円",
+        "currency": "JPY",
+        "calculation_base": "eligible_stay_amount",
+        "minimum_spend": 20000,
+        "rounding": "floor",
+        "max_discount_amount": 5000,
+        "rate_percent": 10
+      },
+      "summary": "北海道の宿泊特典の表示例です。",
+      "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
+      "image": null
+    },
+    {
+      "id": "sample-tohoku",
+      "sample": true,
+      "provider": "じゃらん",
+      "product": "宿泊",
+      "name": "東北の週末旅",
+      "scope": "東北",
+      "regions": [
+        "tohoku"
+      ],
+      "booking_start": null,
+      "booking_end": null,
+      "sample_stay_start": "2026-10-01",
+      "sample_stay_end": "2026-12-31",
+      "stay_window": {
+        "label": "2026-10-01 〜 2026-12-31（サンプル）"
+      },
+      "benefit": {
+        "kind": "coupon_fixed",
+        "display_label": "2,000円",
+        "cap_label": "宿泊料金から2,000円引き",
+        "currency": "JPY",
+        "calculation_base": "eligible_stay_amount",
+        "minimum_spend": 20000,
+        "rounding": "floor",
+        "max_discount_amount": 2000,
+        "discount_amount": 2000
+      },
+      "summary": "東北の宿泊特典の表示例です。",
+      "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
+      "image": null
+    },
+    {
+      "id": "sample-kinki",
+      "sample": true,
+      "provider": "JTB",
+      "product": "宿泊",
+      "name": "関西のお出かけクーポン",
+      "scope": "近畿",
+      "regions": [
+        "kinki"
+      ],
+      "booking_start": null,
+      "booking_end": null,
+      "sample_stay_start": "2026-10-01",
+      "sample_stay_end": "2026-12-31",
+      "stay_window": {
+        "label": "2026-10-01 〜 2026-12-31（サンプル）"
+      },
+      "benefit": {
+        "kind": "coupon_rate",
+        "display_label": "10％",
+        "cap_label": "上限5,000円",
+        "currency": "JPY",
+        "calculation_base": "eligible_stay_amount",
+        "minimum_spend": 20000,
+        "rounding": "floor",
+        "max_discount_amount": 5000,
+        "rate_percent": 10
+      },
+      "summary": "近畿の宿泊特典の表示例です。",
+      "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
+      "image": null
+    },
+    {
+      "id": "sample-chugoku",
+      "sample": true,
+      "provider": "一休.com",
+      "product": "宿泊",
+      "name": "中国・四国のホテル特集",
+      "scope": "中国",
+      "regions": [
+        "chugoku",
+        "shikoku"
+      ],
+      "booking_start": null,
+      "booking_end": null,
+      "sample_stay_start": "2026-10-01",
+      "sample_stay_end": "2026-12-31",
+      "stay_window": {
+        "label": "2026-10-01 〜 2026-12-31（サンプル）"
+      },
+      "benefit": {
+        "kind": "coupon_rate",
+        "display_label": "12％",
+        "cap_label": "上限6,000円",
+        "currency": "JPY",
+        "calculation_base": "eligible_stay_amount",
+        "minimum_spend": 20000,
+        "rounding": "floor",
+        "max_discount_amount": 6000,
+        "rate_percent": 12
+      },
+      "summary": "中国・四国の宿泊特典の表示例です。",
+      "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
+      "image": null
+    }
+  ]
+}

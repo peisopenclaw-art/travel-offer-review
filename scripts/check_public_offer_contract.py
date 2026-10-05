@@ -110,8 +110,20 @@ if "offerDecisionState" not in ui:
     fail("decision-ui.js must expose additional-condition decision state")
 if "includes_offer_ids" not in ui:
     fail("decision-ui.js must surface included-benefit semantics")
-if "function entryStep" not in ui or "function loadUrlState" not in ui or "function buildStateUrl" not in ui:
-    fail("decision-ui.js must support the four entry states and shareable URL state")
+if "function goToStep" not in ui or "function loadUrlState" not in ui or "function buildStateUrl" not in ui:
+    fail("decision-ui.js must support independent search views and shareable URL state")
+view_block = ui.split("function goToStep", 1)[1].split("function renderAll", 1)[0]
+if "!state.destination" in view_block or "!state.travelDate" in view_block:
+    fail("search views must not require destination or date selection")
+samples = json.loads((ROOT / "design-samples.json").read_text(encoding="utf-8")).get("offers", [])
+for sample in samples:
+    if sample.get("sample") is not True:
+        fail("design sample must explicitly set sample: true")
+    if sample.get("booking") or sample.get("source"):
+        fail("fictional offers must not provide official or booking links")
+    if sample.get("id") in known_ids:
+        fail("sample IDs must be separate from confirmed offer IDs")
+
 if "function estimateDiscountForBenefit" not in ui or "function estimateDiscount" not in ui:
     fail("decision-ui.js must implement the guarded Level 2 estimator")
 estimate_block = ui.split("function estimateDiscount", 1)[1].split("function formatDateTime", 1)[0] if "function estimateDiscount" in ui and "function formatDateTime" in ui else ""

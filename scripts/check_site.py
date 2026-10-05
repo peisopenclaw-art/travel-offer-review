@@ -6,9 +6,10 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 SELF = Path(__file__).resolve()
-HTML = [ROOT / "index.html", ROOT / "offers.html", ROOT / "decision.html", ROOT / "about.html", ROOT / "privacy.html", ROOT / "yahoo-travel-campaign.html", ROOT / "kyushu-recovery-discount.html"]
+HTML = [ROOT / "index.html", ROOT / "offers.html", ROOT / "decision.html", ROOT / "about.html", ROOT / "privacy.html", ROOT / "yahoo-travel-campaign.html", ROOT / "kyushu-recovery-discount.html", ROOT / "sample-campaign.html"]
 PUBLIC_ORIGIN = "https://travel.tokuerabi.com"
 CANONICALS = {
+    "sample-campaign.html": f"{PUBLIC_ORIGIN}/sample-campaign.html",
     "index.html": f"{PUBLIC_ORIGIN}/",
     "offers.html": f"{PUBLIC_ORIGIN}/offers.html",
     "decision.html": f"{PUBLIC_ORIGIN}/decision.html",
@@ -48,7 +49,7 @@ for path in HTML:
             errors.append(f"{path.name}: missing {prop}")
 
 index = (ROOT / "index.html").read_text(encoding="utf-8")
-for required in ["トクえらび", "どこへ行く？", "decision-ui.css", "decision-ui.js"]:
+for required in ["トクえらび", "地図で探す", "日付で探す", "旅行会社で探す", "注目のキャンペーン", "宿泊割引クーポン・キャンペーンまとめサイト", "decision-ui.css", "decision-ui.js"]:
     if required not in index:
         errors.append(f"index.html missing decision UI marker: {required}")
 
