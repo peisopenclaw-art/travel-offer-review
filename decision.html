@@ -234,16 +234,7 @@
       <button id="effective-sort" class="secondary-action" type="button" disabled hidden title="実価格・在庫連携後に有効になります">実質支払額で並べる</button>
     </div>
 
-    <details class="assumed-price-panel" aria-labelledby="assumed-price-title">
-      <summary><span id="assumed-price-title">宿泊料金が分かるなら、割引額を試算</span><small>任意</small></summary>
-      <div class="assumed-price-content">
-        <div>
-          <label class="sr-only" for="assumed-price">対象宿泊料金</label>
-          <div class="price-input-wrap"><span>¥</span><input id="assumed-price-unused" type="number" min="0" step="1000" inputmode="numeric" placeholder="例 50000"></div>
-        </div>
-        <p id="estimate-note">計算できるクーポンだけ推定します。ポイント型は現金割引に換算しません。</p>
-      </div>
-    </details>
+    <p id="estimate-note" class="price-estimate-note">対象代金は上の検索条件に入力できます。ポイントは現金割引に換算しません。</p>
 
     <div id="comparison-body" class="offer-grid" aria-label="宿泊特典の候補"></div>
 
