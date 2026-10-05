@@ -168,13 +168,13 @@
       $('#geo-detail').innerHTML='<div class="geo-breadcrumb"><button type="button" data-geo="">全国</button><span aria-hidden="true">›</span>'+breadcrumbs+'</div><div class="geo-detail-heading"><strong>'+escapeHtml(selected.name)+'を拡大中</strong><button type="button" data-geo="'+escapeHtml(selected.parent)+'">'+(selected.parent ? 'ひとつ戻る' : '全国地図へ')+'</button></div><p class="geo-current">'+escapeHtml(selected.name)+'全体で検索中</p><div class="geo-options">'+children.map(function(node){return '<button type="button" data-geo="'+node.id+'"><strong>'+escapeHtml(node.name)+'</strong><small>'+(node.level==='prefecture'?'県全体でも検索できます':'この市町のクーポン')+'</small></button>';}).join('')+'</div>';
     }
     $all('[data-availability]').forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.availability===state.availability));});
-    $('#regional-readiness').textContent=state.availability==='all' ? '開催中・開始予定を表示' : state.availability==='upcoming' ? '予約開始前の割引を表示' : '予約受付が始まった割引を表示';
+    $('#regional-readiness').textContent=state.availability==='all' ? '終了分も含む掲載情報を表示' : state.availability==='upcoming' ? '予約開始前の割引を表示' : '予約受付が始まった割引を表示';
     $all('.region-button').forEach(function(button){
       button.setAttribute('aria-selected',String(button.dataset.region===root));
-      var offers=data.highlights.concat(data.offers).filter(function(offer){return geoMatches(offer,button.dataset.region) && availabilityMatches(offer);});
+      var offers=data.highlights.concat(data.offers).filter(function(offer){return geoMatches(offer,button.dataset.region) && availabilityMatches(offer) && productMatches(offer);});
       var caption=button.querySelector('span:not(.hot-badge):not(.map-rate):not(.map-cap)');
       if(caption)caption.textContent=offers.length+'件の特典';
-      if(button.dataset.region==='kyushu') {var rate=offers.reduce(function(max,offer){return Math.max(max,campaignRate(offer,state.travelDate));},0);button.querySelector('.map-rate').textContent=rate ? '最大'+rate+'％' : '特典なし';button.querySelector('.map-cap').textContent=state.availability==='upcoming' ? '開始予定・サンプルを含む' : '対象地域は詳細で確認';}
+      if(button.dataset.region==='kyushu') {var rate=offers.reduce(function(max,offer){return Math.max(max,campaignRate(offer,state.travelDate));},0);button.querySelector('.map-rate').textContent=rate ? '最大'+rate+'％' : offers.length ? '条件を確認' : '掲載なし';button.querySelector('.map-cap').textContent=state.availability==='upcoming' ? '開始予定・細則を確認' : '対象地域は詳細で確認';}
     });
   }
 
