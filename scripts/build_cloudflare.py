@@ -3,6 +3,7 @@ import shutil
 import argparse
 import json
 from check_public_benefits import validate
+from public_build_snapshot import snapshot_body
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "dist"
@@ -33,10 +34,7 @@ PUBLIC_FILES = [
 ]
 
 ap=argparse.ArgumentParser();ap.add_argument('--snapshot',type=Path);args=ap.parse_args()
-if args.snapshot:
-    validate(json.loads(args.snapshot.read_text()),require_live=True)
-else:
-    validate(json.loads((ROOT/'decision-data.json').read_text()))
+body = snapshot_body(ROOT, args.snapshot)
 
 if OUT.exists():
     shutil.rmtree(OUT)
@@ -47,7 +45,10 @@ if missing:
     raise SystemExit("missing public files: " + ", ".join(missing))
 
 for name in PUBLIC_FILES:
-    shutil.copy2(args.snapshot if name=="decision-data.json" and args.snapshot else ROOT / name, OUT / name)
+    if name == "decision-data.json":
+        (OUT / name).write_bytes(body)
+    else:
+        shutil.copy2(ROOT / name, OUT / name)
 
 unexpected = sorted(
     str(path.relative_to(OUT))

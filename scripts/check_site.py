@@ -115,7 +115,7 @@ else:
         errors.append(f"robots.txt missing sitemap reference: {sitemap_ref}")
 
 for path in ROOT.rglob("*"):
-    if not path.is_file() or ".git" in path.parts or path.resolve() in {SELF, ROOT / "scripts/check_public_benefits.py"}:
+    if not path.is_file() or any(part in {".git", "node_modules", "dist", "__pycache__", ".venv"} for part in path.relative_to(ROOT).parts) or path.resolve() in {SELF, ROOT / "scripts/check_public_benefits.py"}:
         continue
     try:
         text = path.read_text(encoding="utf-8")
