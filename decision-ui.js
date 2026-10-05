@@ -476,8 +476,8 @@
         var offer = bestOnDate(date), rate = offer ? campaignRate(offer,date) : 0;
         if (offer && rate > bestRate) { best=offer; bestRate=rate; }
       }
-      return '<button type="button" class="month-offer-row" data-month="' + month + '" aria-expanded="false"><span class="month-label"><small>' + Number(month.slice(0,4)) + '</small><strong>' + Number(month.slice(5)) + '<small>月</small></strong></span><span class="month-campaign"><span class="' + (best && best.sample ? 'sample-badge' : 'month-pick-label') + '">' + (best && best.sample ? 'サンプル' : '✦ 注目') + '</span><strong>' + escapeHtml(best ? best.name : '対象期間のデータなし') + '</strong><small>⌖ ' + escapeHtml(best ? best.scope : destinationName()) + '</small></span><span class="month-saving"><strong>' + escapeHtml(best ? rateLabel(best,bestRate) : '—') + '</strong><small>' + escapeHtml(best ? benefitCapLabel(best) : '別の条件でも探せます') + '</small></span><span class="month-open">施策・日付を見る <b aria-hidden="true">→</b></span></button>';
-    }).join('') + '<p class="month-list-note">宿泊対象期間が分かるキャンペーンを、月ごとの最大割引・還元率で紹介。定額クーポンは％に換算しません。</p>';
+      return '<button type="button" class="month-offer-row" data-month="' + month + '" aria-expanded="false"><span class="month-label"><small>' + Number(month.slice(0,4)) + '</small><strong>' + Number(month.slice(5)) + '<small>月</small></strong></span><span class="month-campaign"><span class="' + (best && best.sample ? 'sample-badge' : 'month-pick-label') + '">' + (best && best.sample ? 'サンプル' : '✦ 注目') + '</span><strong>' + escapeHtml(best ? best.name : campaignCandidates('',month,false).length ? campaignCandidates('',month,false).length+'件の掲載・条件を確認' : '対象期間のデータなし') + '</strong><small>⌖ ' + escapeHtml(best ? best.scope : destinationName()) + '</small></span><span class="month-saving"><strong>' + escapeHtml(best ? rateLabel(best,bestRate) : '—') + '</strong><small>' + escapeHtml(best ? benefitCapLabel(best) : '別の条件でも探せます') + '</small></span><span class="month-open">施策・日付を見る <b aria-hidden="true">→</b></span></button>';
+    }).join('') + '<p class="month-list-note">宿泊対象期間が分かるキャンペーンを、月ごとに紹介。未確認条件のある施策は最高率の選定に含めません。定額クーポン・ポイントは％割引に換算しません。</p>';
     if (focusedMonth && !calendarOpen) $('[data-month="' + focusedMonth + '"]').focus({preventScroll:true});
   }
   function campaignById(id) { return data.highlights.concat(data.offers).find(function (offer) { return offer.id === id; }); }
@@ -848,7 +848,7 @@
     if(document.body.dataset.defaultView==='provider' && !new URLSearchParams(location.search).has('view'))state.step=3;
     persistState();
     syncControls();
-    var loadingControls = $all("#trip-form input, #trip-form select, #trip-form button, .step-tab, .region-button, #to-calendar, #to-compare, #share-state");
+    var loadingControls = $all("#trip-form input, #trip-form select, #trip-form button, .benefit-controls input, .benefit-controls select, .step-tab, .region-button, #to-calendar, #to-compare, #share-state");
     loadingControls.forEach(function (control) { control.disabled = true; });
     $("#decision-main").setAttribute("aria-busy", "true");
     els.statusMessage.className = "data-loading";
@@ -887,14 +887,18 @@
   }
 
   // The exported DB facts and the loopback API use the same rule version.
+  var verdictCache=new Map(),renderMoment=Date.now();
   function benefitVerdict(offer,date,month) {
+    var cacheKey=offer.id+"|"+(date||"")+"|"+(month||state.month);
+    if(verdictCache.has(cacheKey))return verdictCache.get(cacheKey);
     if (!offer.eligibility_facts || !window.TravelBenefits) return {status:'unknown',reasons:['public_facts_missing']};
     var q={adults:state.adults,children:state.children,room_num:state.room_num,nights:state.nights,booking_amount:state.assumedPrice};
     if(state.product!=='all')q.product_type=state.product;
     if(date)q.travel_date=date;else q.travel_month=month||state.month;
-    var result=TravelBenefits.evaluate(offer.eligibility_facts,q);
+    var result=TravelBenefits.evaluate(offer.eligibility_facts,q,renderMoment);
     if((offer.match_requirements||[]).includes('region_scope_unknown') && result.status==='eligible') {result.status='unknown';result.reasons.push('region_scope_unknown');}
     if(data.expires_at && Date.now()>Date.parse(data.expires_at) && result.status==='eligible') {result.status='unknown';result.reasons.push('fresh_confirmation_required');}
+    verdictCache.set(cacheKey,result);
     return result;
   }
   function productMatches(offer) {
@@ -934,16 +938,17 @@
   };
   var sourceRegionOffers=offersForRegion;
   offersForRegion=function(date){return sourceRegionOffers(date).filter(productMatches);};
-  var sourceCandidates=campaignCandidates;
   campaignCandidates=function(date,month,knownOnly){
-    return sourceCandidates(date,month,false).filter(function(offer){
-      if(!productMatches(offer))return false;
-      if(!offer.eligibility_facts)return !knownOnly;
-      var result=benefitVerdict(offer,date,month);
-      if(knownOnly)return result.status==='eligible' && offer.benefit.kind==='coupon_rate' && !String(offer.benefit.display_label).startsWith('最大');
-      // Upcoming/ended offers remain inspectable, with their explicit status.
-      return !result.reasons.some(function(r){return /^(before_travel|after_travel|travel_month_|product_type_mismatch)/.test(r);});
-    });
+    return data.offers.filter(function(offer){
+      if(!offer.eligibility_facts||!productMatches(offer))return false;
+      var f=offer.eligibility_facts;
+      if(knownOnly && (offer.benefit.kind!=='coupon_rate'||f.availability_status!=='available'||f.members_only||f.minimum_spend!=null&&state.assumedPrice==null))return false;
+      if(!geoMatches(offer)||!availabilityMatches(offer)||state.provider&&offer.provider!==state.provider)return false;
+      var start=stayStart(offer),end=stayEnd(offer);
+      if(date && (start&&date<start||end&&date>end))return false;
+      if(month && (start&&start.slice(0,7)>month||end&&end.slice(0,7)<month))return false;
+      return knownOnly ? benefitVerdict(offer,date,month).status==='eligible'&&!String(offer.benefit.display_label).startsWith('最大') : true;
+    }).sort(function(a,b){return campaignRate(b,date,month)-campaignRate(a,date,month)||String(a.name).localeCompare(String(b.name),'ja');});
   };
   var sourceRate=campaignRate, sourceRateLabel=rateLabel;
   campaignRate=function(offer,date,month){
@@ -983,6 +988,7 @@
   };
   var sourceRenderAll=renderAll;
   renderAll=function(){
+    verdictCache.clear();renderMoment=Date.now();
     sourceRenderAll();
     if(!data)return;
     var status=$('#benefit-data-status');

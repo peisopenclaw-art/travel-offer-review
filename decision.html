@@ -101,6 +101,8 @@
     <label>旅行商品<select id="product-type"><option value="all">すべての商品</option><option value="stay">宿泊</option><option value="air_dp">航空券＋宿</option><option value="rail_dp">JR＋宿</option><option value="air_sale">航空券</option><option value="rail_discount">鉄道</option><option value="unknown">商品区分を確認</option></select></label>
     <label>部屋数<input id="room-num" type="number" min="1" max="10" value="1" inputmode="numeric"></label>
     <label>泊数<input id="nights" type="number" min="1" max="30" value="1" inputmode="numeric"></label>
+    <label class="benefit-amount">対象代金（任意）<input id="assumed-price" type="number" min="0" step="1000" inputmode="numeric" placeholder="例 25000" aria-describedby="benefit-amount-help"></label>
+    <small id="benefit-amount-help">予約先の対象代金を入力すると、最低利用額を判定できます。</small>
   </div>
   <div id="benefit-data-status" class="benefit-data-status" role="status"></div>
 
@@ -237,7 +239,7 @@
       <div class="assumed-price-content">
         <div>
           <label class="sr-only" for="assumed-price">対象宿泊料金</label>
-          <div class="price-input-wrap"><span>¥</span><input id="assumed-price" type="number" min="0" step="1000" inputmode="numeric" placeholder="例 50000"></div>
+          <div class="price-input-wrap"><span>¥</span><input id="assumed-price-unused" type="number" min="0" step="1000" inputmode="numeric" placeholder="例 50000"></div>
         </div>
         <p id="estimate-note">計算できるクーポンだけ推定します。ポイント型は現金割引に換算しません。</p>
       </div>

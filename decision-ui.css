@@ -588,3 +588,5 @@ body.decision-page{background:#f0faff}
 .more-offers{grid-column:1/-1;min-height:48px}.benefit-controls :focus-visible,.coverage-details summary:focus-visible{outline:3px solid #18684a;outline-offset:3px}
 @media(max-width:600px){.benefit-controls{gap:10px}.benefit-controls label:first-child{flex:1}.benefit-controls select{min-width:0;width:100%}.source-coverage{grid-template-columns:1fr 1fr;padding:12px;gap:16px 8px}}
 @media(max-width:350px){.source-coverage{grid-template-columns:1fr}.benefit-controls{gap:8px}.benefit-controls input{width:60px}}
+
+.benefit-controls .benefit-amount input{width:150px}.benefit-controls>small{font-size:12px;line-height:1.6;color:#486354;flex-basis:100%}
