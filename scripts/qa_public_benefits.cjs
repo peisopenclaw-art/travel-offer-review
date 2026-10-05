@@ -93,6 +93,15 @@ async function main(){
     assert.ok((await page.locator('#month-offers').innerText()).includes('データなし'));
     await page.locator('.coverage-details summary').click();assert.ok((await page.locator('#source-coverage').innerText()).includes('公式条件の確認待ち'));
     await context.unroute('**/decision-data.json');
+    const pendingPayload=JSON.parse(JSON.stringify(payload));
+    pendingPayload.offers.forEach(o=>{o.eligibility_facts.availability_status='unknown';});
+    await context.route('**/decision-data.json',route=>route.fulfill({json:pendingPayload}));
+    await load('?view=map&month='+month);
+    await page.locator('#search-conditions').click();
+    assert.ok((await page.locator('#best-search-result').innerText()).includes('適用条件を確定できる特典は未確認'));
+    assert.ok(await page.locator('.campaign-pick').count()>0);
+    assert.ok((await page.locator('.campaign-pick').first().innerText()).includes('追加条件を確認'));
+    await context.unroute('**/decision-data.json');
     await context.route('**/decision-data.json',route=>route.abort());await load().catch(()=>{});
     assert.ok(await page.locator('body.decision-data-error').count());
     assert.deepEqual(errors,[]);

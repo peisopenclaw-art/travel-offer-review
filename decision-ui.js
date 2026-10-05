@@ -429,7 +429,7 @@
     return '<button type="button" class="booking-hint" data-campaign="'+escapeHtml(offer.id)+'"><div class="booking-benefit-main"><span class="hint-rank">'+(index+1)+'</span><strong class="hint-rate">'+escapeHtml(rateLabel(offer,campaignRate(offer,date,month)))+'</strong></div><strong class="hint-name">'+escapeHtml(offer.name)+'</strong><span class="hint-cap">¥ '+escapeHtml(benefitCapLabel(offer))+'</span><span class="hint-scope">⌖ '+escapeHtml(offer.scope)+'</span><span class="hint-period">▦ '+escapeHtml(periodLabel(offer))+'</span><span class="hint-availability">'+escapeHtml(status)+'</span>'+otaLogos(offer)+(offer.sample ? '<span class="sample-badge">サンプル</span>' : '')+'</button>';
   }
   function renderBookingHints() {
-    $all('.hint-sort-note').forEach(function(note){note.textContent=data.data_origin==='postgresql-public-snapshot'?'掲載情報から探す · 利用条件は詳細で確認':'割引・還元率の高い順／定額は別枠';});
+    $all('.hint-sort-note').forEach(function(note){note.textContent=['postgresql-public-snapshot','postgresql'].includes(data.data_origin)?'掲載情報から探す · 利用条件は詳細で確認':'割引・還元率の高い順／定額は別枠';});
     var relevant=campaignCandidates(state.travelDate,state.month,false).slice(0,3);
     var html=relevant.length ? relevant.map(function(offer,index){return campaignSummary(offer,index,state.travelDate,state.month);}).join('') : '<p class="empty-state">この条件の特典はありません。</p>';
     els.bookingHints.innerHTML=html;
@@ -500,7 +500,7 @@
     bestResult = best ? {id:best.id,date:bestDate,automaticDate:!state.travelDate} : {empty:true};
     goToStep(4);
     if (best) openCampaign(best.id, !state.travelDate ? bestDate : null);
-    else announce('この条件で宿泊対象期間が分かるキャンペーンがありません');
+    else announce('適用条件を確定できる特典は未確認です。掲載特典の条件を確認できます');
   }
 
 
@@ -644,12 +644,12 @@
     $all(".campaign-slide").forEach(function (slide, index) { slide.href = "?view=provider&product=" + ["stay","air_dp","rail_dp"][index]; });
     var result = $('#best-search-result');
     result.hidden = !bestResult;
-    if (bestResult) result.textContent = bestResult.empty ? 'この条件で宿泊対象期間が分かるキャンペーンがありません。条件を変えて探せます。' : '✦ 掲載割引・還元率で選んだキャンペーン：' + campaignById(bestResult.id).name + (bestResult.automaticDate ? ' · ' + formatDate(bestResult.date) : '') + '（宿泊価格の最安順ではありません）';
-    var picks = data.data_origin==='postgresql-public-snapshot' ? campaignCandidates(state.travelDate,state.month,false).slice(0,8) : data.highlights.concat(data.offers.filter(function(offer) { return offer.sample && offer.image; }));
+    if (bestResult) result.textContent = bestResult.empty ? '適用条件を確定できる特典は未確認です。掲載特典の条件を確認できます。' : '✦ 確認した割引率で選んだ特典：' + campaignById(bestResult.id).name + (bestResult.automaticDate ? ' · ' + formatDate(bestResult.date) : '');
+    var picks = ['postgresql-public-snapshot','postgresql'].includes(data.data_origin) ? campaignCandidates(state.travelDate,state.month,false).slice(0,8) : data.highlights.concat(data.offers.filter(function(offer) { return offer.sample && offer.image; }));
     if (bestResult && bestResult.id && !picks.some(function(offer) { return offer.id === bestResult.id; })) picks.unshift(campaignById(bestResult.id));
     $('#campaign-picks').innerHTML = picks.map(function (offer) {
       var selected = bestResult && bestResult.id === offer.id;
-      return '<article class="campaign-pick' + (selected ? ' is-recommended' : '') + '" id="' + escapeHtml(offer.id) + '">' + (offer.image ? '<img src="' + escapeHtml(offer.image) + '" alt="' + escapeHtml(offer.name) + 'の旅行先イメージ" loading="lazy">' : '<div class="campaign-visual" aria-hidden="true">' + (offer.scope === '全国' ? '✦' : '⌖') + '</div>') + '<div>' + (offer.sample ? '<span class="sample-badge">サンプル</span>' : '') + '<h3>' + escapeHtml(offer.name) + '</h3><strong class="campaign-card-rate">' + escapeHtml(rateLabel(offer,campaignRate(offer,state.travelDate))) + '</strong><p class="hint-cap">' + escapeHtml(benefitCapLabel(offer)) + '</p><p>⌖ ' + escapeHtml(offer.scope) + '</p>' + otaLogos(offer) + '<button type="button" class="offer-detail-button" data-campaign="' + escapeHtml(offer.id) + '">キャンペーンを見る →</button>' + (offer.sample && offer.image ? '<a class="quiet-link" href="' + escapeHtml(sampleCampaignUrl(offer.id)) + '">特集ページを見る →</a>' : '') + '</div></article>';
+      return '<article class="campaign-pick' + (selected ? ' is-recommended' : '') + '" id="' + escapeHtml(offer.id) + '">' + (offer.image ? '<img src="' + escapeHtml(offer.image) + '" alt="' + escapeHtml(offer.name) + 'の旅行先イメージ" loading="lazy">' : '<div class="campaign-visual" aria-hidden="true">' + (offer.scope === '全国' ? '✦' : '⌖') + '</div>') + '<div>' + (offer.sample ? '<span class="sample-badge">サンプル</span>' : '') + '<h3>' + escapeHtml(offer.name) + '</h3><strong class="campaign-card-rate">' + escapeHtml(rateLabel(offer,campaignRate(offer,state.travelDate))) + '</strong><p class="hint-cap">' + escapeHtml(benefitCapLabel(offer)) + '</p><p>⌖ ' + escapeHtml(offer.scope) + '</p>' + otaLogos(offer) + (offer.eligibility_facts ? '<p class="card-condition">'+escapeHtml(offerStatus(offer).label)+' · '+escapeHtml(offerDecisionState(offer).label)+'</p>' : '') + '<button type="button" class="offer-detail-button" data-campaign="' + escapeHtml(offer.id) + '">キャンペーンを見る →</button>' + (offer.sample && offer.image ? '<a class="quiet-link" href="' + escapeHtml(sampleCampaignUrl(offer.id)) + '">特集ページを見る →</a>' : '') + '</div></article>';
     }).join('');
   }
 
