@@ -902,7 +902,7 @@
     return result;
   }
   function productMatches(offer) {
-    return state.product==='all' || (offer.applicable_product_types||[]).includes(state.product) || offer.product_type===state.product || offer.product_type==='unknown';
+    return state.product==='all' || (offer.applicable_product_types||[]).includes(state.product) || offer.product_type===state.product;
   }
   var sourceGeoMatches=geoMatches;
   geoMatches=function(offer,selected) {
@@ -998,10 +998,13 @@
     sourceRenderAll();
     if(!data)return;
     var status=$('#benefit-data-status');
-    status.textContent=data.data_origin==='postgresql-public-snapshot'?'特典情報 '+data.offer_count.toLocaleString('ja-JP')+'件 · 最終更新 '+formatDateTime(data.as_of)+' · 対象条件は公式ページで確認':'';
+    var dbOrigin=['postgresql-public-snapshot','postgresql'].includes(data.data_origin);
+    var offerCount=data.offer_count==null?new Set(data.offers.map(function(o){return o.id.split('-')[1];})).size:data.offer_count;
+    status.textContent=dbOrigin?'特典情報 '+offerCount.toLocaleString('ja-JP')+'件 · 最終更新 '+formatDateTime(data.as_of)+' · 対象条件は公式ページで確認':'';
     status.classList.toggle('is-stale',!!data.expires_at&&Date.now()>Date.parse(data.expires_at));
     if(status.classList.contains('is-stale'))status.textContent+=' · 更新確認待ち';
     var coverage=$('#source-coverage');
+    $('.coverage-details').hidden=!data.coverage;
     coverage.innerHTML=(data.coverage||[]).map(function(c){return '<div><strong>'+escapeHtml(c.provider)+'</strong><span>'+escapeHtml(c.state)+(c.offer_count?'（'+c.offer_count+'件）':'')+'</span></div>';}).join('');
     $all('.calendar-day').forEach(function(button){
       if(button.querySelector('.day-count').textContent==='0件'){
