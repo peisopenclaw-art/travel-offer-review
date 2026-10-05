@@ -425,10 +425,11 @@
 
   function campaignSummary(offer,index,date,month) {
     var start=offer.sample ? offer.sample_booking_start : offer.booking_start;
-    var status=availabilityOf(offer)==='upcoming' ? '開始予定 '+ (start ? start.slice(0,10).replace(/-/g,'/') : '') : '開催中';
+    var status=offer.eligibility_facts ? offerStatus(offer).label : availabilityOf(offer)==='upcoming' ? '開始予定 '+ (start ? start.slice(0,10).replace(/-/g,'/') : '') : '開催中';
     return '<button type="button" class="booking-hint" data-campaign="'+escapeHtml(offer.id)+'"><div class="booking-benefit-main"><span class="hint-rank">'+(index+1)+'</span><strong class="hint-rate">'+escapeHtml(rateLabel(offer,campaignRate(offer,date,month)))+'</strong></div><strong class="hint-name">'+escapeHtml(offer.name)+'</strong><span class="hint-cap">¥ '+escapeHtml(benefitCapLabel(offer))+'</span><span class="hint-scope">⌖ '+escapeHtml(offer.scope)+'</span><span class="hint-period">▦ '+escapeHtml(periodLabel(offer))+'</span><span class="hint-availability">'+escapeHtml(status)+'</span>'+otaLogos(offer)+(offer.sample ? '<span class="sample-badge">サンプル</span>' : '')+'</button>';
   }
   function renderBookingHints() {
+    $all('.hint-sort-note').forEach(function(note){note.textContent=data.data_origin==='postgresql-public-snapshot'?'掲載情報から探す · 利用条件は詳細で確認':'割引・還元率の高い順／定額は別枠';});
     var relevant=campaignCandidates(state.travelDate,state.month,false).slice(0,3);
     var html=relevant.length ? relevant.map(function(offer,index){return campaignSummary(offer,index,state.travelDate,state.month);}).join('') : '<p class="empty-state">この条件の特典はありません。</p>';
     els.bookingHints.innerHTML=html;
@@ -955,6 +956,12 @@
     return offer.benefit.kind==='coupon_rate' && benefitVerdict(offer,date,month).status==='eligible'?offer.benefit.rate_percent||0:0;
   };
   rateLabel=function(offer,rate){return offer.eligibility_facts?benefitLabel(offer):sourceRateLabel(offer,rate);};
+  var sourceBenefitLabel=benefitLabel;
+  benefitLabel=function(offer){
+    var b=offer.benefit;
+    if(offer.eligibility_facts && b.display_label==='最大特典条件を確認' && b.max_discount_amount!=null)return '最大'+formatYen(b.max_discount_amount);
+    return sourceBenefitLabel(offer);
+  };
   var sourceEstimate=estimateDiscount;
   estimateDiscount=function(offer){
     if(!offer.eligibility_facts)return sourceEstimate(offer);

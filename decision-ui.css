@@ -9,7 +9,7 @@ body.decision-page{--font-body:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-s
 .decision-page a{color:inherit}
 .decision-page img{display:block;max-width:100%}
 .decision-page [hidden]{display:none!important}
-.decision-page h1,.decision-page h2,.decision-page h3{word-break:normal;line-break:strict;text-wrap:pretty}
+.decision-page h1,.decision-page h2,.decision-page h3{word-break:auto-phrase;line-break:strict;text-wrap:pretty}
 .decision-page :is(button,a,input,select,summary):focus-visible{outline:3px solid #087aa4;outline-offset:4px;box-shadow:0 0 0 2px white}
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 .skip-link{position:absolute;z-index:100;top:-100px;left:16px;padding:12px;background:var(--decision-navy);color:white!important}
@@ -588,5 +588,6 @@ body.decision-page{background:#f0faff}
 .more-offers{grid-column:1/-1;min-height:48px}.benefit-controls :focus-visible,.coverage-details summary:focus-visible{outline:3px solid #18684a;outline-offset:3px}
 @media(max-width:600px){.benefit-controls{gap:10px}.benefit-controls label:first-child{flex:1}.benefit-controls select{min-width:0;width:100%}.source-coverage{grid-template-columns:1fr 1fr;padding:12px;gap:16px 8px}}
 @media(max-width:350px){.source-coverage{grid-template-columns:1fr}.benefit-controls{gap:8px}.benefit-controls input{width:60px}}
+@media(max-width:600px){.benefit-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.benefit-controls label{min-width:0}.benefit-controls select,.benefit-controls input,.benefit-controls .benefit-amount input{width:100%;box-sizing:border-box}.benefit-controls>small{grid-column:1/-1}}
 
 .benefit-controls .benefit-amount input{width:150px}.benefit-controls>small{font-size:12px;line-height:1.6;color:#486354;flex-basis:100%}
