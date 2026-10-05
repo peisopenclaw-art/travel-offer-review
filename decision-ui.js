@@ -5,6 +5,7 @@
   var STORAGE_KEY = "tokuerabi-flexible-search-v2";
   var state = {
     destination: "",
+    availability: "active",
     month: "2026-10",
     adults: 2,
     children: 0,
@@ -13,7 +14,7 @@
     assumedPrice: null,
     step: 1
   };
-  var data = null;
+  var data = null, geography = [];
   var calendarOpen = false, bestResult = null;
   var slideIndex = 0, slideTimer = null, carouselPaused = false;
 
@@ -39,6 +40,7 @@
     try {
       var saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "{}");
       if (typeof saved.destination === "string") state.destination = saved.destination;
+      if (["active","upcoming","all"].indexOf(saved.availability) >= 0) state.availability = saved.availability;
       if (MONTHS.indexOf(saved.month) >= 0) state.month = saved.month;
       if (Number.isInteger(saved.adults) && saved.adults >= 1 && saved.adults <= 9) state.adults = saved.adults;
       if (validDate(saved.travelDate)) state.travelDate = saved.travelDate;
@@ -62,10 +64,11 @@
     var params = new URLSearchParams(window.location.search);
     if (!params.size) return;
     // A shared URL fully describes conditions; do not inherit another session's filters.
-    state.destination = ""; state.travelDate = ""; state.provider = "";
+    state.destination = ""; state.travelDate = ""; state.provider = ""; state.availability = "active";
     state.adults = 2; state.children = 0; state.assumedPrice = null; state.month = "2026-10"; state.step = 1;
     var destination = params.get("destination"), month = params.get("month"), date = params.get("date");
-    if (["hokkaido","tohoku","kanto","chubu","kinki","chugoku","shikoku","kyushu"].indexOf(destination) >= 0) state.destination = destination;
+    if (/^[a-z][a-z-]{0,30}$/.test(destination || "")) state.destination = destination;
+    if (["active","upcoming","all"].indexOf(params.get("availability")) >= 0) state.availability=params.get("availability");
     if (MONTHS.indexOf(month) >= 0) state.month = month;
     if (validDate(date)) { state.travelDate = date; state.month = date.slice(0, 7); }
     var adults = Number(params.get("adults")), children = Number(params.get("children"));
@@ -83,6 +86,7 @@
   function buildStateUrl() {
     var url = new URL(window.location.href);
     url.search = "";
+    if (state.availability !== "active") url.searchParams.set("availability",state.availability);
     if (state.destination) url.searchParams.set("destination", state.destination);
     url.searchParams.set("month", state.month);
     url.searchParams.set("view", ["", "map", "date", "provider", "campaign"][state.step]);
@@ -109,9 +113,57 @@
     return data.regions.find(function (region) { return region.id === id; }) || null;
   }
 
-  function destinationName() {
-    var region = regionById(state.destination);
-    return region ? region.name : "全国";
+  function geoNode(id) { return geography.find(function(node) { return node.id===id; }); }
+  function geoAncestors(id) { var ids=[],node=geoNode(id); while(node) { ids.push(node.id);node=geoNode(node.parent); } return ids; }
+  function geoMatches(offer,selected) {
+    var destination=selected===undefined ? state.destination : selected;
+    if (!destination || offer.scope === '全国') return true;
+    return (offer.geo_ids || offer.regions || []).some(function(id) { return geoAncestors(id).indexOf(destination)>=0 || geoAncestors(destination).indexOf(id)>=0; });
+  }
+  function destinationName() { var node=geoNode(state.destination);return node ? node.name : '全国'; }
+  function availabilityOf(offer) {
+    var today=new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'});
+    var start=offer.sample ? offer.sample_booking_start : offer.booking_start;
+    if (start && (offer.sample ? today<start : Date.now()<Date.parse(start))) return 'upcoming';
+    if (!offer.sample && offerStatus(offer).key==='ended') return 'ended';
+    return 'active';
+  }
+  function availabilityMatches(offer) { var status=availabilityOf(offer);return status!=='ended' && (state.availability==='all' || status===state.availability); }
+  function periodLabel(offer) { return stayStart(offer) ? stayStart(offer).replace(/-/g,'/') + '〜' + stayEnd(offer).replace(/-/g,'/') + (offer.sample ? '（例）' : '宿泊分') : '宿泊対象期間：未掲載'; }
+  function otaLogos(offer) {
+    var images={'楽天トラベル':'https://trvimg.r10s.jp/share/common/images/travel-logo-pc.png','じゃらん':'https://www.jalan.net/assets/img/pages/smart/header/header_logo_sp.svg','Yahoo!トラベル':'yahoo-travel-logo.svg','一休.com':'ikyu-logo.svg','JTB':'jtb-logo.svg'};
+    var names=offer.otas || [offer.provider];
+    return '<span class="ota-logos" aria-label="取扱OTA">' + names.map(function(name) { return images[name] ? '<span class="ota-logo"><img src="'+images[name]+'" alt="'+escapeHtml(name)+'" loading="lazy"></span>' : '<span class="ota-logo ota-wordmark" data-brand="'+escapeHtml(name)+'">'+escapeHtml(name)+'</span>'; }).join('') + '</span>';
+  }
+  function renderGeography() {
+    var selected=geoNode(state.destination), root=selected ? geoAncestors(selected.id).slice(-1)[0] : '';
+    var options='<option value="">一番お得な場所</option>';
+    geography.filter(function(n){return n.level==='region';}).forEach(function(region) {
+      options+='<optgroup label="'+escapeHtml(region.name)+'"><option value="'+region.id+'">'+escapeHtml(region.name)+'全体</option>';
+      geography.filter(function(n){return n.parent===region.id;}).forEach(function(pref) {
+        options+='<option value="'+pref.id+'">'+escapeHtml(pref.name)+'</option>';
+        geography.filter(function(n){return n.parent===pref.id;}).forEach(function(city){options+='<option value="'+city.id+'">'+escapeHtml(pref.name)+' / '+escapeHtml(city.name)+'</option>';});
+      }); options+='</optgroup>';
+    });
+    els.destination.innerHTML=options;els.destination.value=state.destination;
+    $('#geo-detail').hidden=!selected;
+    $('#region-map').classList.toggle('is-zoomed',!!selected);
+    $('#region-map').dataset.zoomRegion=root;
+    $('#region-map').dataset.zoomLevel=selected ? selected.level : '';
+    if (selected) {
+      var children=geography.filter(function(n){return n.parent===selected.id;});
+      var breadcrumbs=geoAncestors(selected.id).reverse().map(function(id){var n=geoNode(id);return '<button type="button" data-geo="'+id+'">'+escapeHtml(n.name)+'</button>';}).join('<span aria-hidden="true">›</span>');
+      $('#geo-detail').innerHTML='<div class="geo-breadcrumb"><button type="button" data-geo="">全国</button><span aria-hidden="true">›</span>'+breadcrumbs+'</div><div class="geo-detail-heading"><strong>'+escapeHtml(selected.name)+'を拡大中</strong><button type="button" data-geo="'+escapeHtml(selected.parent)+'">'+(selected.parent ? 'ひとつ戻る' : '全国地図へ')+'</button></div><p class="geo-current">'+escapeHtml(selected.name)+'全体で検索中</p><div class="geo-options">'+children.map(function(node){return '<button type="button" data-geo="'+node.id+'"><strong>'+escapeHtml(node.name)+'</strong><small>'+(node.level==='prefecture'?'県全体でも検索できます':'この市町のクーポン')+'</small></button>';}).join('')+'</div>';
+    }
+    $all('[data-availability]').forEach(function(button){button.setAttribute('aria-pressed',String(button.dataset.availability===state.availability));});
+    $('#regional-readiness').textContent=state.availability==='all' ? '開催中・開始予定を表示' : state.availability==='upcoming' ? '予約開始前の割引を表示' : '予約受付が始まった割引を表示';
+    $all('.region-button').forEach(function(button){
+      button.setAttribute('aria-selected',String(button.dataset.region===root));
+      var offers=data.highlights.concat(data.offers).filter(function(offer){return geoMatches(offer,button.dataset.region) && availabilityMatches(offer);});
+      var caption=button.querySelector('span:not(.hot-badge):not(.map-rate):not(.map-cap)');
+      if(caption)caption.textContent=offers.length+'件の特典';
+      if(button.dataset.region==='kyushu') {var rate=offers.reduce(function(max,offer){return Math.max(max,campaignRate(offer,state.travelDate));},0);button.querySelector('.map-rate').textContent=rate ? '最大'+rate+'％' : '特典なし';button.querySelector('.map-cap').textContent=state.availability==='upcoming' ? '開始予定・サンプルを含む' : '対象地域は詳細で確認';}
+    });
   }
 
   function formatMonth(month) {
@@ -230,11 +282,11 @@
     if (!data) return [];
     var stayDate = typeof date === "string" ? date : state.travelDate;
     return data.offers.filter(function (offer) {
-      var regionMatch = !state.destination || offer.scope === "全国" || offer.scope === destinationName() || (offer.regions || []).indexOf(state.destination) >= 0;
+      var regionMatch = geoMatches(offer);
       var providerMatch = !state.provider || offer.provider === state.provider;
       // Confirmed plan-based offers remain candidates; booking dates are never stay dates.
       var dateMatch = !offer.sample || (stayDate ? stayDate >= offer.sample_stay_start && stayDate <= offer.sample_stay_end : offer.sample_stay_start.slice(0, 7) <= state.month && offer.sample_stay_end.slice(0, 7) >= state.month);
-      return regionMatch && providerMatch && dateMatch;
+      return regionMatch && providerMatch && dateMatch && availabilityMatches(offer);
     });
   }
 
@@ -355,14 +407,21 @@
     }
   }
 
+  function campaignSummary(offer,index,date,month) {
+    var start=offer.sample ? offer.sample_booking_start : offer.booking_start;
+    var status=availabilityOf(offer)==='upcoming' ? '開始予定 '+ (start ? start.slice(0,10).replace(/-/g,'/') : '') : '開催中';
+    return '<button type="button" class="booking-hint" data-campaign="'+escapeHtml(offer.id)+'"><div class="booking-benefit-main"><span class="hint-rank">'+(index+1)+'</span><strong class="hint-rate">'+escapeHtml(rateLabel(offer,campaignRate(offer,date,month)))+'</strong></div><strong class="hint-name">'+escapeHtml(offer.name)+'</strong><span class="hint-cap">¥ '+escapeHtml(benefitCapLabel(offer))+'</span><span class="hint-scope">⌖ '+escapeHtml(offer.scope)+'</span><span class="hint-period">▦ '+escapeHtml(periodLabel(offer))+'</span><span class="hint-availability">'+escapeHtml(status)+'</span>'+otaLogos(offer)+(offer.sample ? '<span class="sample-badge">サンプル</span>' : '')+'</button>';
+  }
   function renderBookingHints() {
-    var relevant = campaignCandidates(state.travelDate, state.month, false).slice(0, 3);
-    var html = relevant.length ? relevant.map(function (offer, index) {
-      var rate = campaignRate(offer, state.travelDate, state.month);
-      return '<button type="button" class="booking-hint" data-campaign="' + escapeHtml(offer.id) + '"><div class="booking-benefit-main"><span class="hint-rank">' + (index + 1) + '</span><strong class="hint-rate">' + escapeHtml(rateLabel(offer, rate)) + '</strong></div><strong class="hint-name">' + escapeHtml(offer.name) + '</strong><span class="hint-cap">¥ ' + escapeHtml(benefitCapLabel(offer)) + '</span><span class="hint-scope">⌖ ' + escapeHtml(offer.scope === "全国" ? "全国の対象宿・プラン" : offer.scope) + '</span><small>' + escapeHtml(offer.provider) + (stayStart(offer) ? '' : ' · 宿泊対象期間は未掲載') + '</small><span class="' + (offer.sample ? 'sample-badge' : 'verified-badge') + '">' + (offer.sample ? 'サンプル' : '公式掲載') + '</span></button>';
-    }).join("") : '<p class="empty-state">この条件の特典はありません。</p>';
-    els.bookingHints.innerHTML = html;
-    $('#map-booking-hints').innerHTML = html;
+    var relevant=campaignCandidates(state.travelDate,state.month,false).slice(0,3);
+    var html=relevant.length ? relevant.map(function(offer,index){return campaignSummary(offer,index,state.travelDate,state.month);}).join('') : '<p class="empty-state">この条件の特典はありません。</p>';
+    els.bookingHints.innerHTML=html;
+    var mapOffers=campaignCandidates(state.travelDate,null,false).slice(0,3);
+    $('#map-booking-hints').innerHTML=mapOffers.length ? mapOffers.map(function(offer,index){return campaignSummary(offer,index,state.travelDate,null);}).join('') : '<p class="empty-state">この条件の特典はありません。</p>';
+    var monthly=campaignCandidates('',state.month,false);
+    $('#month-campaigns').hidden=!calendarOpen;
+    $('#month-campaigns-title').textContent=formatMonth(state.month)+'のキャンペーン · '+monthly.length+'件';
+    $('#month-campaign-list').innerHTML=monthly.length ? monthly.map(function(offer,index){return campaignSummary(offer,index,'',state.month);}).join('') : '<p class="empty-state">この月の対象キャンペーンはありません。</p>';
   }
 
   function stayStart(offer) { return offer.stay_start || offer.sample_stay_start || ""; }
@@ -379,9 +438,9 @@
   }
   function campaignCandidates(date, month, knownOnly) {
     return data.highlights.concat(data.offers).filter(function (offer) {
-      if (state.destination && offer.scope !== "全国" && (offer.regions || []).indexOf(state.destination) < 0) return false;
-      // The curated prefectural program does not assert availability at a particular provider.
-      if (state.provider && offer.provider !== state.provider) return false;
+      if (!geoMatches(offer) || !availabilityMatches(offer)) return false;
+      // Participating OTA membership is a candidate, not an eligibility verdict.
+      if (state.provider && offer.provider !== state.provider && (offer.otas || []).indexOf(state.provider)<0) return false;
       if (!offer.sample && !offer.highlight && offerStatus(offer).key === 'ended') return false;
       var start = stayStart(offer), end = stayEnd(offer);
       if (!start) return !knownOnly;
@@ -401,7 +460,7 @@
         var offer = bestOnDate(date), rate = offer ? campaignRate(offer,date) : 0;
         if (offer && rate > bestRate) { best=offer; bestRate=rate; }
       }
-      return '<button type="button" class="month-offer-row" data-month="' + month + '" aria-expanded="false"><span class="month-label"><small>' + Number(month.slice(0,4)) + '</small><strong>' + Number(month.slice(5)) + '<small>月</small></strong></span><span class="month-campaign"><span class="' + (best && best.sample ? 'sample-badge' : 'month-pick-label') + '">' + (best && best.sample ? 'サンプル' : '✦ 注目') + '</span><strong>' + escapeHtml(best ? best.name : '対象期間のデータなし') + '</strong><small>⌖ ' + escapeHtml(best ? best.scope : destinationName()) + '</small></span><span class="month-saving"><strong>' + escapeHtml(best ? rateLabel(best,bestRate) : '—') + '</strong><small>' + escapeHtml(best ? benefitCapLabel(best) : '別の条件でも探せます') + '</small></span><span class="month-open">日付を見る <b aria-hidden="true">→</b></span></button>';
+      return '<button type="button" class="month-offer-row" data-month="' + month + '" aria-expanded="false"><span class="month-label"><small>' + Number(month.slice(0,4)) + '</small><strong>' + Number(month.slice(5)) + '<small>月</small></strong></span><span class="month-campaign"><span class="' + (best && best.sample ? 'sample-badge' : 'month-pick-label') + '">' + (best && best.sample ? 'サンプル' : '✦ 注目') + '</span><strong>' + escapeHtml(best ? best.name : '対象期間のデータなし') + '</strong><small>⌖ ' + escapeHtml(best ? best.scope : destinationName()) + '</small></span><span class="month-saving"><strong>' + escapeHtml(best ? rateLabel(best,bestRate) : '—') + '</strong><small>' + escapeHtml(best ? benefitCapLabel(best) : '別の条件でも探せます') + '</small></span><span class="month-open">施策・日付を見る <b aria-hidden="true">→</b></span></button>';
     }).join('') + '<p class="month-list-note">宿泊対象期間が分かるキャンペーンを、月ごとの最大割引・還元率で紹介。定額クーポンは％に換算しません。</p>';
     if (focusedMonth && !calendarOpen) $('[data-month="' + focusedMonth + '"]').focus({preventScroll:true});
   }
@@ -409,10 +468,10 @@
   function openCampaign(id, chosenDate) {
     var offer = campaignById(id);
     if (!offer) return;
-    els.dialogProvider.textContent = offer.sample ? 'デザインサンプル · 予約不可' : (offer.highlight ? '注目のキャンペーン · 公式掲載' : offer.provider);
+    els.dialogProvider.textContent = offer.sample ? 'デザインサンプル · 予約不可' : (offer.highlight ? '注目のキャンペーン' : offer.provider);
     els.dialogTitle.textContent = offer.name;
     var date = chosenDate || state.travelDate;
-    els.dialogContent.innerHTML = '<div class="campaign-pop-benefit">' + escapeHtml(rateLabel(offer,campaignRate(offer,date))) + '</div><p class="hint-cap">¥ ' + escapeHtml(benefitCapLabel(offer)) + '</p><p>' + escapeHtml(offer.summary) + '</p><div class="dialog-fact"><span>⌖ 対象地域</span><strong>' + escapeHtml(offer.scope) + '</strong></div><div class="dialog-fact"><span>▦ ' + (chosenDate ? 'おすすめ宿泊日' : '宿泊対象期間') + '</span><strong>' + escapeHtml(chosenDate ? formatDate(chosenDate) + '（掲載割引率で選定）' : stayStart(offer) ? stayStart(offer) + ' 〜 ' + stayEnd(offer) : '宿泊対象期間は未掲載') + '</strong></div><p class="' + (offer.sample ? 'sample-detail-note' : 'campaign-condition') + '">' + escapeHtml(offer.condition_note) + '</p>' + (offer.highlight ? '<a class="dialog-source" href="' + escapeHtml(offer.source_url) + '" target="_blank" rel="noopener noreferrer">キャンペーンの詳細を見る ↗</a>' : offer.sample ? '<a class="primary-action" href="' + escapeHtml(sampleCampaignUrl(offer.id, chosenDate)) + '">サンプルの詳細を見る →</a>' : '<button class="primary-action" type="button" data-offer="' + escapeHtml(offer.id) + '">詳しい条件を見る →</button>');
+    els.dialogContent.innerHTML = '<div class="campaign-pop-benefit">' + escapeHtml(rateLabel(offer,campaignRate(offer,date))) + '</div><p class="hint-cap">¥ ' + escapeHtml(benefitCapLabel(offer)) + '</p><p>' + escapeHtml(offer.summary) + '</p><div class="dialog-fact"><span>⌖ 対象地域</span><strong>' + escapeHtml(offer.scope) + '</strong></div><div class="dialog-fact"><span>▦ ' + (chosenDate ? 'おすすめ宿泊日' : '宿泊対象期間') + '</span><strong>' + escapeHtml(chosenDate ? formatDate(chosenDate) + '（掲載割引率で選定）' : stayStart(offer) ? stayStart(offer) + ' 〜 ' + stayEnd(offer) : '宿泊対象期間は未掲載') + '</strong></div><div class="dialog-otas"><strong>取扱OTA</strong>' + otaLogos(offer) + '</div><p class="' + (offer.sample ? 'sample-detail-note' : 'campaign-condition') + '">' + escapeHtml(offer.condition_note) + '</p>' + (offer.highlight ? '<a class="dialog-source" href="' + escapeHtml(offer.source_url) + '" target="_blank" rel="noopener noreferrer">キャンペーンの詳細を見る ↗</a>' : offer.sample ? '<a class="primary-action" href="' + escapeHtml(sampleCampaignUrl(offer.id, chosenDate)) + '">サンプルの詳細を見る →</a>' : '<button class="primary-action" type="button" data-offer="' + escapeHtml(offer.id) + '">詳しい条件を見る →</button>');
     if (!els.dialog.open) els.dialog.showModal();
   }
   function searchBestCampaign() {
@@ -430,7 +489,7 @@
 
   function offerCard(offer) {
     var estimate = estimateDiscount(offer);
-    return '<article class="offer-card"><div class="offer-card-top"><span class="provider-wordmark" data-provider="' + escapeHtml(offer.provider) + '">' + escapeHtml(offer.provider) + '</span><span class="' + (offer.sample ? 'sample-badge' : 'verified-badge') + '">' + (offer.sample ? 'サンプル' : '掲載データ') + '</span></div><h3>' + escapeHtml(offer.name) + '</h3><p class="offer-benefit">' + escapeHtml(rateLabel(offer,campaignRate(offer,state.travelDate))) + '<small>' + (offer.sample && offer.benefit.kind === 'coupon_fixed' ? 'クーポン' : 'お得') + '</small></p><p class="offer-cap">' + escapeHtml(benefitCapLabel(offer)) + '</p><div class="offer-meta"><span>⌖ ' + escapeHtml(offer.scope) + '</span><span>▦ ' + escapeHtml(offer.sample ? offer.sample_stay_start.slice(5).replace('-', '/') + '〜' + offer.sample_stay_end.slice(5).replace('-', '/') : '宿泊期間は条件を確認') + '</span></div><span class="status-line">' + escapeHtml(offerStatus(offer).label) + '</span><p class="offer-description">' + escapeHtml(offer.summary) + '</p>' + (!offer.sample ? '<p class="card-condition">' + escapeHtml(offerDecisionState(offer).label) + '</p>' : '') + (state.assumedPrice ? '<p class="card-estimate">' + (offer.sample ? 'サンプル試算：' : '推定割引：') + escapeHtml(estimate.label) + '</p>' : '') + '<button class="offer-detail-button" type="button" data-offer="' + escapeHtml(offer.id) + '">' + (offer.sample ? 'サンプルの詳細を見る' : '条件を見る') + ' <span aria-hidden="true">→</span></button></article>';
+    return '<article class="offer-card"><div class="offer-card-top"><span class="provider-wordmark" data-provider="' + escapeHtml(offer.provider) + '">' + escapeHtml(offer.provider) + '</span><span class="' + (offer.sample ? 'sample-badge' : 'verified-badge') + '">' + (offer.sample ? 'サンプル' : '掲載データ') + '</span></div><h3>' + escapeHtml(offer.name) + '</h3><p class="offer-benefit">' + escapeHtml(rateLabel(offer,campaignRate(offer,state.travelDate))) + '<small>' + (offer.sample && offer.benefit.kind === 'coupon_fixed' ? 'クーポン' : 'お得') + '</small></p><p class="offer-cap">' + escapeHtml(benefitCapLabel(offer)) + '</p><div class="offer-meta"><span>⌖ ' + escapeHtml(offer.scope) + '</span><span>▦ ' + escapeHtml(offer.sample ? offer.sample_stay_start.slice(5).replace('-', '/') + '〜' + offer.sample_stay_end.slice(5).replace('-', '/') : '宿泊期間は条件を確認') + '</span></div><span class="status-line">' + escapeHtml(offerStatus(offer).label) + '</span><p class="offer-description">' + escapeHtml(offer.summary) + '</p>' + (!offer.sample ? '<p class="card-condition">' + escapeHtml(offerDecisionState(offer).label) + '</p>' : '') + (state.assumedPrice ? '<p class="card-estimate">' + (offer.sample ? 'サンプル試算：' : '推定割引：') + escapeHtml(estimate.label) + '</p>' : '') + otaLogos(offer) + '<button class="offer-detail-button" type="button" data-offer="' + escapeHtml(offer.id) + '">' + (offer.sample ? 'サンプルの詳細を見る' : '条件を見る') + ' <span aria-hidden="true">→</span></button></article>';
   }
 
   function renderComparison() {
@@ -475,6 +534,7 @@
       els.dialogProvider.textContent = offer.provider + " / デザインサンプル";
       els.dialogTitle.textContent = offer.name;
       els.dialogContent.innerHTML = '<p class="sample-detail-note">このキャンペーンは架空のサンプルです。予約には使えません。</p><p>' + escapeHtml(offer.summary) + '</p><div class="dialog-fact"><span>特典の表示例</span><strong>' + escapeHtml(rateLabel(offer,campaignRate(offer,state.travelDate))) + '</strong></div><div class="dialog-fact"><span>対象地域</span><strong>' + escapeHtml(offer.scope) + '</strong></div><div class="dialog-fact"><span>宿泊期間の表示例</span><strong>' + escapeHtml(stayWindowLabel(offer)) + '</strong></div><p>最低宿泊料金20,000円の表示例です。子供料金・年齢区分は予約先ごとに異なります。</p><button type="button" class="primary-action" data-apply-sample="' + escapeHtml(offer.id) + '">この地域・旅行会社で探す →</button>';
+      els.dialogContent.innerHTML += '<div class="dialog-otas"><strong>取扱OTA</strong>' + otaLogos(offer) + '</div>';
       els.dialog.showModal();
       return;
     }
@@ -499,6 +559,7 @@
         '<a class="dialog-source" href="' + escapeHtml(offer.source.official_url) + '" target="_blank" rel="noopener noreferrer">公式条件を見る ↗</a>' +
         '<a class="dialog-source" href="' + escapeHtml(offer.booking.provider_url) + '" target="_blank" rel="noopener noreferrer">正式予約先を開く ↗</a>' +
       '</div>';
+    els.dialogContent.innerHTML += '<div class="dialog-otas"><strong>取扱OTA</strong>' + otaLogos(offer) + '</div>';
     if (typeof els.dialog.showModal === "function") {
       els.dialog.showModal();
     } else {
@@ -515,6 +576,7 @@
   }
 
   function renderAll() {
+    renderGeography();
     syncControls();
     renderStage();
     renderRegionSummary();
@@ -529,14 +591,15 @@
   }
 
   function renderFilters() {
-    var filtered = !!(state.destination || state.travelDate || state.provider);
+    var filtered = !!(state.destination || state.travelDate || state.provider || state.availability!=="active");
     $(".filter-console").classList.toggle("is-filtered",filtered);
     var filters = ['<strong class="filters-label">' + (filtered ? "絞り込み中" : "検索条件") + '</strong>'];
     if (state.destination) filters.push('<button type="button" data-clear="destination">⌖ ' + escapeHtml(destinationName()) + ' ×<span class="sr-only">地域の条件を解除</span></button>');
     if (state.travelDate) filters.push('<button type="button" data-clear="travelDate">▦ ' + escapeHtml(formatDate(state.travelDate)) + ' ×<span class="sr-only">日付の条件を解除</span></button>');
     if (state.provider) filters.push('<button type="button" data-clear="provider">' + escapeHtml(state.provider) + ' ×<span class="sr-only">旅行会社の条件を解除</span></button>');
+    if (state.availability!=="active") filters.push('<button type="button" data-reset-availability>' + (state.availability==="all" ? "開催中・開始予定" : "開始予定") + ' ×</button>');
     filters.push('<span class="party-summary">大人' + state.adults + '人・子供' + state.children + '人</span>');
-    if (state.destination || state.travelDate || state.provider) filters.push('<button type="button" class="clear-all" data-clear-all>絞り込みをクリア</button>');
+    if (filtered) filters.push('<button type="button" class="clear-all" data-clear-all>絞り込みをクリア</button>');
     $("#active-filters").innerHTML = filters.join("");
   }
 
@@ -566,7 +629,7 @@
     if (bestResult && bestResult.id && !picks.some(function(offer) { return offer.id === bestResult.id; })) picks.unshift(campaignById(bestResult.id));
     $('#campaign-picks').innerHTML = picks.map(function (offer) {
       var selected = bestResult && bestResult.id === offer.id;
-      return '<article class="campaign-pick' + (selected ? ' is-recommended' : '') + '" id="' + escapeHtml(offer.id) + '">' + (offer.image ? '<img src="' + escapeHtml(offer.image) + '" alt="' + escapeHtml(offer.name) + 'の旅行先イメージ" loading="lazy">' : '<div class="campaign-visual" aria-hidden="true">' + (offer.scope === '全国' ? '✦' : '⌖') + '</div>') + '<div><span class="' + (offer.sample ? 'sample-badge' : 'verified-badge') + '">' + (offer.sample ? 'サンプル' : '公式掲載') + '</span><h3>' + escapeHtml(offer.name) + '</h3><strong class="campaign-card-rate">' + escapeHtml(rateLabel(offer,campaignRate(offer,state.travelDate))) + '</strong><p class="hint-cap">' + escapeHtml(benefitCapLabel(offer)) + '</p><p>⌖ ' + escapeHtml(offer.scope) + '</p><button type="button" class="offer-detail-button" data-campaign="' + escapeHtml(offer.id) + '">キャンペーンを見る →</button>' + (offer.sample && offer.image ? '<a class="quiet-link" href="' + escapeHtml(sampleCampaignUrl(offer.id)) + '">特集ページを見る →</a>' : '') + '</div></article>';
+      return '<article class="campaign-pick' + (selected ? ' is-recommended' : '') + '" id="' + escapeHtml(offer.id) + '">' + (offer.image ? '<img src="' + escapeHtml(offer.image) + '" alt="' + escapeHtml(offer.name) + 'の旅行先イメージ" loading="lazy">' : '<div class="campaign-visual" aria-hidden="true">' + (offer.scope === '全国' ? '✦' : '⌖') + '</div>') + '<div>' + (offer.sample ? '<span class="sample-badge">サンプル</span>' : '') + '<h3>' + escapeHtml(offer.name) + '</h3><strong class="campaign-card-rate">' + escapeHtml(rateLabel(offer,campaignRate(offer,state.travelDate))) + '</strong><p class="hint-cap">' + escapeHtml(benefitCapLabel(offer)) + '</p><p>⌖ ' + escapeHtml(offer.scope) + '</p>' + otaLogos(offer) + '<button type="button" class="offer-detail-button" data-campaign="' + escapeHtml(offer.id) + '">キャンペーンを見る →</button>' + (offer.sample && offer.image ? '<a class="quiet-link" href="' + escapeHtml(sampleCampaignUrl(offer.id)) + '">特集ページを見る →</a>' : '') + '</div></article>';
     }).join('');
   }
 
@@ -617,6 +680,8 @@
         announce(formatMonth(state.month) + "に変更しました");
       });
     });
+    $("#date-picker").addEventListener("click",function(){try {els.travelDate.showPicker();}catch(error){els.travelDate.focus();}});
+    $("#jump-calendar").addEventListener("click",function(){$("#calendar-workspace").scrollIntoView({behavior:"smooth",block:"start"});$("#months-back").focus({preventScroll:true});});
     els.destination.addEventListener("change", function () {
       bestResult = null;
       state.destination = this.value;
@@ -671,7 +736,7 @@
       els.searchConditions.addEventListener("click", function () { if (!state.destination || !state.travelDate) searchBestCampaign(); else { bestResult=null; goToStep(3); } $("#search-tabs").scrollIntoView({ behavior: "smooth", block: "start" }); });
     }
     els.toCalendar.addEventListener("click", function () { calendarOpen=true; goToStep(2); $("#calendar-workspace").scrollIntoView({behavior:"smooth",block:"start"}); $("#months-back").focus({preventScroll:true}); });
-    els.calendarRegion.addEventListener("click", function() { goToStep(1); $("#search-tabs").scrollIntoView({behavior:"smooth",block:"start"}); var button=state.destination ? $('.region-button[data-region="'+state.destination+'"]') : $("#tab-map"); button.focus({preventScroll:true}); });
+    els.calendarRegion.addEventListener("click", function() { goToStep(1); $("#search-tabs").scrollIntoView({behavior:"smooth",block:"start"}); var button=$("#tab-map"); button.focus({preventScroll:true}); });
     els.toCompare.addEventListener("click", function () { goToStep(3); });
     els.assumedPrice.addEventListener("input", function () {
       var value = this.value === "" ? null : Number(this.value);
@@ -696,21 +761,24 @@
       goToStep(Number(tabs[next].dataset.step)); tabs[next].focus();
     });
     document.addEventListener("click", function (event) {
-      var button = event.target.closest("[data-provider], [data-clear], [data-clear-all], [data-offer], [data-apply-sample], [data-campaign]");
+      var button = event.target.closest("[data-provider], [data-clear], [data-clear-all], [data-offer], [data-apply-sample], [data-campaign], [data-availability], [data-geo], [data-reset-availability]");
       if (!button) return;
-      if (button.hasAttribute("data-campaign")) openCampaign(button.dataset.campaign);
+      if (button.hasAttribute("data-availability")) {state.availability=button.dataset.availability;bestResult=null;persistState();renderAll();var updated=$('[data-availability-view="'+(state.step===1?"map":"date")+'"] [data-availability="'+state.availability+'"]');if(updated)updated.focus({preventScroll:true});}
+      else if (button.hasAttribute("data-reset-availability")) {state.availability="active";persistState();renderAll();$(".step-tab.is-active").focus({preventScroll:true});}
+      else if (button.hasAttribute("data-geo")) {state.destination=button.dataset.geo;bestResult=null;persistState();renderAll();var back=$("#geo-detail .geo-detail-heading button");if(back && state.destination)back.focus({preventScroll:true});else $("#tab-map").focus({preventScroll:true});}
+      else if (button.hasAttribute("data-campaign")) openCampaign(button.dataset.campaign);
       else if (button.hasAttribute("data-offer")) { if (els.dialog.open) els.dialog.close(); openOffer(button.dataset.offer); }
       else if (button.hasAttribute("data-apply-sample")) {
         var sample = data.offers.find(function (offer) { return offer.id === button.dataset.applySample; });
-        state.destination = sample.regions[0] || ""; state.provider = sample.provider;
+        state.destination = (sample.geo_ids || sample.regions)[0] || ""; state.provider = sample.provider;
         els.dialog.close(); goToStep(3);
       }
-      else if (button.hasAttribute("data-clear-all")) { bestResult=null; state.destination = ""; state.travelDate = ""; state.provider = ""; persistState(); renderAll(); $(".step-tab.is-active").focus({ preventScroll: true }); }
+      else if (button.hasAttribute("data-clear-all")) { bestResult=null; state.destination = ""; state.travelDate = ""; state.provider = ""; state.availability="active"; persistState(); renderAll(); $(".step-tab.is-active").focus({ preventScroll: true }); }
       else if (button.hasAttribute("data-clear")) { bestResult=null; state[button.dataset.clear] = ""; persistState(); renderAll(); $(".step-tab.is-active").focus({ preventScroll: true }); }
       else if (button.tagName === "BUTTON" && button.hasAttribute("data-provider")) { bestResult=null; state.provider = button.dataset.provider; persistState(); renderAll(); }
     });
-    $('#months-back').addEventListener('click', function() { calendarOpen=false; persistState(); renderMonths(); $('[data-month="'+state.month+'"]').focus(); });
-    $('#month-offers').addEventListener('click', function(event) { var row=event.target.closest('[data-month]'); if(!row) return; state.month=row.dataset.month; if(state.travelDate && state.travelDate.slice(0,7)!==state.month) state.travelDate=''; calendarOpen=true; persistState();renderAll();$('#months-back').focus({preventScroll:true}); });
+    $('#months-back').addEventListener('click', function() { calendarOpen=false; persistState(); renderAll(); $('[data-month="'+state.month+'"]').focus(); });
+    $('#month-offers').addEventListener('click', function(event) { var row=event.target.closest('[data-month]'); if(!row) return; state.month=row.dataset.month; if(state.travelDate && state.travelDate.slice(0,7)!==state.month) state.travelDate=''; calendarOpen=true; persistState();renderAll();$('#month-campaigns').scrollIntoView({behavior:'smooth',block:'start'});$('#jump-calendar').focus({preventScroll:true}); });
     initCarousel();
 
     els.dialogClose.addEventListener("click", function () {
@@ -766,7 +834,7 @@
     var controller = new AbortController();
     var timeout = window.setTimeout(function () { controller.abort(); }, 10000);
     try {
-      var responses = await Promise.all([fetch("decision-data.json", { cache: "no-store", signal: controller.signal }), fetch("design-samples.json", { signal: controller.signal }), fetch("campaign-highlights.json", { signal: controller.signal })]);
+      var responses = await Promise.all([fetch("decision-data.json", { cache: "no-store", signal: controller.signal }), fetch("design-samples.json", { signal: controller.signal }), fetch("campaign-highlights.json", { signal: controller.signal }), fetch("search-geography.json", { signal: controller.signal })]);
       var response = responses[0];
       if (!response.ok) throw new Error("decision data http " + response.status);
       data = await response.json();
@@ -776,6 +844,10 @@
       data.offers = data.offers.concat(sampleData.offers);
       if (!responses[2].ok) throw new Error("campaign data unavailable");
       data.highlights = (await responses[2].json()).campaigns;
+      if (!responses[3].ok) throw new Error("geography unavailable");
+      geography=(await responses[3].json()).nodes;
+      if (state.destination && !geoNode(state.destination)) state.destination="";
+      persistState();
     } catch (error) {
       document.body.classList.add("decision-data-error");
       $("#status-message").className = "load-error";

@@ -63,7 +63,8 @@
           "end": "2027-03-31",
           "rate_percent": 35
         }
-      ]
+      ],
+      "sample_booking_start": "2026-09-01"
     },
     {
       "id": "sample-autumn",
@@ -95,7 +96,8 @@
       },
       "summary": "山の景色と楽しむ、秋のひと休み。",
       "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
-      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/The%20five%20mountains%20of%20Aso.jpg"
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/The%20five%20mountains%20of%20Aso.jpg",
+      "sample_booking_start": "2026-09-01"
     },
     {
       "id": "sample-winter",
@@ -127,7 +129,8 @@
       },
       "summary": "眺めのよいホテルで、少し贅沢な滞在を。",
       "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
-      "image": "https://upload.wikimedia.org/wikipedia/commons/e/e3/FujiLakeShore.jpg"
+      "image": "https://upload.wikimedia.org/wikipedia/commons/e/e3/FujiLakeShore.jpg",
+      "sample_booking_start": "2026-09-01"
     },
     {
       "id": "sample-family",
@@ -157,7 +160,8 @@
       },
       "summary": "子供と一緒に楽しむ、次のお出かけ。",
       "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
-      "image": null
+      "image": null,
+      "sample_booking_start": "2026-09-01"
     },
     {
       "id": "sample-hokkaido",
@@ -189,7 +193,8 @@
       },
       "summary": "北海道の宿泊特典の表示例です。",
       "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
-      "image": null
+      "image": null,
+      "sample_booking_start": "2026-09-01"
     },
     {
       "id": "sample-tohoku",
@@ -221,7 +226,8 @@
       },
       "summary": "東北の宿泊特典の表示例です。",
       "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
-      "image": null
+      "image": null,
+      "sample_booking_start": "2026-09-01"
     },
     {
       "id": "sample-kinki",
@@ -253,7 +259,8 @@
       },
       "summary": "近畿の宿泊特典の表示例です。",
       "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
-      "image": null
+      "image": null,
+      "sample_booking_start": "2026-09-01"
     },
     {
       "id": "sample-chugoku",
@@ -286,6 +293,115 @@
       },
       "summary": "中国・四国の宿泊特典の表示例です。",
       "condition_note": "架空の特典です。名称・金額・期間はデザイン確認用で、実際の予約には使えません。子供料金・年齢区分は予約先ごとに異なります。",
+      "image": null,
+      "sample_booking_start": "2026-09-01"
+    },
+    {
+      "id": "sample-miyagi",
+      "sample": true,
+      "provider": "楽天トラベル",
+      "product": "宿泊",
+      "name": "宮城県の温泉旅クーポン",
+      "scope": "宮城県",
+      "regions": [
+        "tohoku"
+      ],
+      "geo_ids": [
+        "miyagi"
+      ],
+      "booking_start": null,
+      "booking_end": null,
+      "sample_booking_start": "2026-09-01",
+      "sample_stay_start": "2026-10-01",
+      "sample_stay_end": "2027-03-31",
+      "stay_window": {
+        "label": "2026-10-01 〜 2027-03-31（サンプル）"
+      },
+      "benefit": {
+        "kind": "coupon_rate",
+        "display_label": "25％",
+        "cap_label": "上限5,000円",
+        "currency": "JPY",
+        "calculation_base": "eligible_stay_amount",
+        "minimum_spend": 20000,
+        "rounding": "floor",
+        "max_discount_amount": 5000,
+        "rate_percent": 25
+      },
+      "summary": "宮城県の宿泊クーポン表示例。",
+      "condition_note": "架空のサンプルです。名称・金額・地域・期間はデザイン確認用で、予約には使えません。",
+      "image": null
+    },
+    {
+      "id": "sample-sendai",
+      "sample": true,
+      "provider": "楽天トラベル",
+      "product": "宿泊",
+      "name": "仙台市の街歩きステイ",
+      "scope": "仙台市",
+      "regions": [
+        "tohoku"
+      ],
+      "geo_ids": [
+        "sendai"
+      ],
+      "booking_start": null,
+      "booking_end": null,
+      "sample_booking_start": "2026-10-20",
+      "sample_stay_start": "2026-11-01",
+      "sample_stay_end": "2027-03-31",
+      "stay_window": {
+        "label": "2026-11-01 〜 2027-03-31（サンプル）"
+      },
+      "benefit": {
+        "kind": "coupon_rate",
+        "display_label": "30％",
+        "cap_label": "上限5,000円",
+        "currency": "JPY",
+        "calculation_base": "eligible_stay_amount",
+        "minimum_spend": 20000,
+        "rounding": "floor",
+        "max_discount_amount": 5000,
+        "rate_percent": 30
+      },
+      "summary": "仙台市の宿泊クーポン表示例。",
+      "condition_note": "架空のサンプルです。名称・金額・地域・期間はデザイン確認用で、予約には使えません。",
+      "image": null
+    },
+    {
+      "id": "sample-okinawa-next",
+      "sample": true,
+      "provider": "楽天トラベル",
+      "product": "宿泊",
+      "name": "沖縄の冬リゾート先取り",
+      "scope": "沖縄県",
+      "regions": [
+        "kyushu"
+      ],
+      "geo_ids": [
+        "okinawa"
+      ],
+      "booking_start": null,
+      "booking_end": null,
+      "sample_booking_start": "2026-10-15",
+      "sample_stay_start": "2026-11-01",
+      "sample_stay_end": "2027-03-31",
+      "stay_window": {
+        "label": "2026-11-01 〜 2027-03-31（サンプル）"
+      },
+      "benefit": {
+        "kind": "coupon_rate",
+        "display_label": "35％",
+        "cap_label": "上限5,000円",
+        "currency": "JPY",
+        "calculation_base": "eligible_stay_amount",
+        "minimum_spend": 20000,
+        "rounding": "floor",
+        "max_discount_amount": 5000,
+        "rate_percent": 35
+      },
+      "summary": "沖縄県の宿泊クーポン表示例。",
+      "condition_note": "架空のサンプルです。名称・金額・地域・期間はデザイン確認用で、予約には使えません。",
       "image": null
     }
   ]

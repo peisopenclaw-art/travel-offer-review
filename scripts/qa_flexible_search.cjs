@@ -14,6 +14,8 @@ async function main() {
   try {
     const context = await browser.newContext({viewport:{width:1440,height:900},locale:'ja-JP',timezoneId:'Asia/Tokyo'});
     const page = await context.newPage();
+    // Fixture booking phases use October 5; real UI still follows the current time.
+    await page.clock.setFixedTime(new Date('2026-10-05T10:00:00+09:00'));
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     async function load(query='?month=2026-10&view=map') {
@@ -60,7 +62,7 @@ async function main() {
       assert.ok(controls.ordered && controls.centerGap<2 && !controls.clipped,JSON.stringify(controls));
       assert.ok((await page.locator('[data-date="2026-12-25"]').getAttribute('class')).includes('heat-high'));
       assert.ok((await page.locator('[data-date="2026-12-26"]').getAttribute('class')).includes('heat-medium'));
-      assert.ok((await page.locator('[data-date="2026-12-26"]').innerText()).includes('20％例'));
+      assert.ok((await page.locator('[data-date="2026-12-26"]').innerText()).includes('25％例'));
       const hints = await page.locator('#booking-hints .hint-rate').allTextContents(); assert.deepEqual(hints,['最大60％','40％（例）','30％以上']);
       assert.ok((await page.locator('#booking-hints .booking-hint').first().innerText()).includes('20,000円／人'));
       assert.ok((await page.locator('#booking-hints .booking-hint').first().innerText()).includes('熊本県'));
@@ -84,8 +86,8 @@ async function main() {
     assert.ok((await page.locator('#dialog-content').innerText()).includes('おすすめ宿泊日'));
     await page.locator('#dialog-close').click(); results.push({check:'specific-place-best-day',passed:true});
     await load('?view=map&date=2026-12-30'); await page.locator('#search-conditions').click();
-    assert.equal(await page.locator('#dialog-title').innerText(),'海辺のリゾート特集');
-    assert.equal(await page.locator('.campaign-pop-benefit').innerText(),'20％（例）');
+    assert.equal(await page.locator('#dialog-title').innerText(),'宮城県の温泉旅クーポン');
+    assert.equal(await page.locator('.campaign-pop-benefit').innerText(),'25％（例）');
     assert.equal(await page.locator('#travel-date').inputValue(),'2026-12-30');
     await page.locator('#dialog-close').click(); results.push({check:'specific-day-best-place-outside-kyushu-window',passed:true});
     await load('?view=map&date=2026-12-11&destination=kyushu'); await page.locator('#search-conditions').click();
@@ -139,6 +141,58 @@ async function main() {
     await page.reload(); await page.locator('#decision-main[aria-busy="false"]').waitFor();assert.equal(await page.locator('#calendar-month-label').innerText(),'2027年3月');
     await load('?view=date&date=2027-02-29');assert.equal(await page.locator('#travel-date').inputValue(),'');
     results.push({check:'six-month-year-boundary-and-valid-dates',passed:true});
+    // Status filters use booking starts; geography stops at any hierarchy level.
+    await load('?view=map');
+    assert.ok((await page.locator('#map-booking-hints').innerText()).includes('2026/10/01〜2026/12/25'));
+    assert.equal(await page.locator('#map-booking-hints .verified-badge').count(),0);
+    assert.equal(await page.locator('#map-booking-hints [data-campaign="kyushu-recovery"] .ota-logo img').count(),2);
+    await page.locator('[data-availability-view="map"] [data-availability="upcoming"]').click();
+    assert.ok((await page.locator('#map-booking-hints').innerText()).includes('開始予定'));
+    assert.equal(await page.locator('#map-booking-hints [data-campaign="kyushu-recovery"]').count(),0);
+    assert.ok((await page.locator('#map-booking-hints').innerText()).includes('2026/10/15'));
+    await tab('date');await page.locator('[data-availability-view="date"] [data-availability="all"]').click();
+    await page.locator('[data-month="2026-11"]').click();
+    assert.ok(await page.locator('#month-campaign-list .booking-hint').count()>3);
+    assert.ok((await page.locator('#month-campaign-list').innerText()).includes('仙台市の街歩きステイ'));
+    assert.ok((await page.locator('#month-campaign-list').innerText()).includes('九州ふっこう応援割'));
+    await page.locator('#month-campaign-list .ota-logos').last().scrollIntoViewIfNeeded();
+    await page.waitForFunction(()=>[...document.querySelectorAll('#month-campaign-list .ota-logo img')].every(img=>img.complete&&img.naturalWidth>0),null,{timeout:15000});
+    assert.equal(await page.locator('#month-campaign-list .ota-wordmark').count(),0);
+    await page.locator('#month-campaign-list [data-campaign="kyushu-recovery"]').click();
+    assert.equal(await page.locator('#dialog-content .ota-logo img').count(),2);await page.locator('#dialog-close').click();
+    await page.reload();await page.locator('#decision-main[aria-busy="false"]').waitFor();assert.equal(await page.locator('[data-availability-view="date"] [data-availability="all"]').getAttribute('aria-pressed'),'true');
+    results.push({check:'booking-status-month-drilldown-periods-and-ota-logos',passed:true});
+    for(const width of [1440,390,320]) {
+      await page.setViewportSize({width,height:900});await load('?view=map&provider=楽天トラベル');
+      await page.locator('.region-button[data-region="tohoku"]').click();
+      assert.equal(await page.locator('#destination').inputValue(),'tohoku');
+      assert.equal(await page.locator('#region-map.is-zoomed').count(),1);
+      await page.locator('#geo-detail [data-geo="miyagi"]').click();
+      assert.equal(await page.locator('#destination').inputValue(),'miyagi');
+      assert.ok((await page.locator('#map-booking-hints').innerText()).includes('宮城県の温泉旅クーポン'));
+      assert.equal(await page.locator('#map-booking-hints [data-campaign="kyushu-recovery"]').count(),0);
+      await page.locator('#search-conditions').click();assert.equal(await page.locator('#dialog-title').innerText(),'宮城県の温泉旅クーポン');await page.locator('#dialog-close').click();
+      await tab('map');await page.locator('#geo-detail [data-geo="sendai"]').click();
+      assert.equal(await page.locator('#destination').inputValue(),'sendai');
+      assert.equal(await page.locator('#region-map').getAttribute('data-zoom-level'),'city');
+      await page.locator('[data-availability-view="map"] [data-availability="upcoming"]').click();
+      assert.ok((await page.locator('#map-booking-hints').innerText()).includes('仙台市の街歩きステイ'));
+      await page.locator('#to-calendar').click();assert.equal(await page.locator('#calendar-region-label').innerText(),'仙台市');
+      await page.locator('#month-next').click();await page.locator('[data-date="2026-11-12"]').click();
+      assert.equal(await page.locator('#destination').inputValue(),'sendai');
+      await page.reload();await page.locator('#decision-main[aria-busy="false"]').waitFor();assert.equal(await page.locator('#destination').inputValue(),'sendai');
+      await page.locator('#calendar-region-label').click();await metrics(width,'city-zoom');
+      if(width!==320) await page.screenshot({path:path.join(output,'city-zoom-'+width+'.png'),fullPage:true});
+      await page.locator('#geo-detail .geo-breadcrumb [data-geo="miyagi"]').click();assert.equal(await page.locator('#destination').inputValue(),'miyagi');
+      results.push({check:'region-prefecture-city-stops-and-reload',width,passed:true});
+    }
+    await page.setViewportSize({width:1440,height:900});
+    await load('?view=date&destination=miyagi&availability=all&month=2026-11');await page.locator('[data-month="2026-11"]').click();
+    await page.screenshot({path:path.join(output,'month-drilldown-1440.png'),fullPage:true});
+    assert.ok((await page.locator('#month-campaign-list').innerText()).includes('宮城県の温泉旅クーポン'));assert.ok((await page.locator('#month-campaign-list').innerText()).includes('仙台市の街歩きステイ'));
+    await page.locator('#destination').selectOption('aomori');assert.equal(await page.locator('#month-campaign-list [data-campaign="sample-miyagi"]').count(),0);
+    await load('?view=map&destination=not-a-place');assert.equal(await page.locator('#destination').inputValue(),'');
+    results.push({check:'hierarchical-scope-no-sibling-leak-and-invalid-id',passed:true});
     for(const order of orders) {
       await load('?month=2026-12&view=map');
       for(const view of order) {

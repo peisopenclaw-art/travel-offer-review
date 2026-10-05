@@ -11,7 +11,7 @@ The three independent discovery tabs remain map, date, and provider. Featured ca
 
 ## Date discovery
 
-A vertical October 2026–March 2027 overview shows the leading campaign, target area, maximum advertised rate, and that campaign's associated cap. Clicking a month opens its calendar. The month overview remains the initial date-tab display on a fresh load; “月一覧” returns from the calendar.
+A vertical October 2026–March 2027 overview shows the leading campaign, target area, maximum advertised rate, and that campaign's associated cap. Clicking a month opens all applicable campaigns for that month, followed by its calendar. The month overview remains the initial date-tab display on a fresh load; “月一覧” returns from the drilldown and calendar.
 
 Calendar intensity uses only records with a known stay period: 50% or more, 20–49%, and below 20%. Fixed coupons are displayed in yen and do not enter this percentage scale. Rates from separate campaigns are never added.
 
@@ -50,3 +50,15 @@ Map and calendar sidebars share the same ranked summaries. “日付を選ぶ”
 The six-month list crosses into 2027. January–March offers use explicitly marked fictional sample periods; the real Kumamoto campaign still ends December 25. Confirmed provider data was not extended into unknown stay periods. The official campaign pop now contains one detail link directly to the official information instead of a duplicate internal-guide action.
 
 Acceptance: 52 automated checks passed, including six-month/year-boundary dates, compact form geometry, equal desktop panel heights, region handoff/return, calendar reload state, and the single official destination.
+
+## Availability and geographic drilldown — review round 4
+
+The map header now switches between discounts whose booking has started and those whose booking start is still ahead. Date discovery provides active, upcoming, and both controls beside the percentage/cap legend on the left. These controls share one URL-backed filter. Booking status and the explicitly displayed stay period are separate facts; neither establishes remaining budget or actual availability. A missing stay period remains “未掲載”. The map's redundant heading, standalone Kyushu link, and “公式掲載” badges are removed.
+
+`search-geography.json` supplies eight regions, 47 prefectures, and four prototype municipality nodes: Sendai, Matsushima, Kumamoto, and Naha. The destination menu and map breadcrumbs allow stopping at any level. Prefecture selection includes its city campaigns, and city selection includes applicable parent-area and nationwide campaigns; sibling places are excluded. Geography persists through date/provider handoffs, details, and reloads. The existing prefectural Japan illustration scales further at region, prefecture, and city levels. Municipality boundaries are not a new geographic dataset. More municipalities can be added when campaign data provides their scope. Miyagi, Sendai, and upcoming Okinawa records are clearly labeled fictional samples.
+
+The monthly drilldown lists every matching campaign, including alternatives to the maximum-rate campaign. Each summary shows its scope, cap, stay period, booking phase, and participating OTA marks. A direct calendar jump remains available beneath the monthly summary view. Search fields share a consistent baseline; the duplicate right calendar decoration is removed, and the single left calendar button opens the native date picker.
+
+The [official Kumamoto OTA list](https://kumamoto-ouenwari.com/ota-list.html) was inspected on October 5: Rakuten Travel and Jalan were listed with September 15 booking starts. The curated program now names these two OTA participants and its Kumamoto geographic scope; confirmed provider eligibility records remain separate and unchanged. Official header marks are used for [Rakuten Travel](https://travel.rakuten.co.jp/), [Jalan](https://www.jalan.net/), [Yahoo! Travel](https://travel.yahoo.co.jp/), [Ikyu](https://www.ikyu.com/), and [JTB](https://www.jtb.co.jp/). The latter three header SVGs are preserved as script-free local assets; an unknown future provider falls back to its name rather than an invented mark.
+
+Acceptance is recorded in the execution map and `artifacts/flexible-search/qa.json`. The acceptance browser fixes its clock to October 5 for reproducible booking-phase fixtures; production UI uses the real current time. The additional coverage checks booking phases, monthly alternatives, period/OTA rendering and image loading, prefecture-level searches, city-level handoffs and reloads, sibling exclusion, invalid destinations, and three widths for geographic drilldown.

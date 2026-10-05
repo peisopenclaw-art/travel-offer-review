@@ -24,7 +24,17 @@
       "source_url": "https://fightkyushu.welcomekyushu.jp/",
       "checked_at": "2026-10-05",
       "detail_url": "kyushu-recovery-discount.html",
-      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/The%20five%20mountains%20of%20Aso.jpg"
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/The%20five%20mountains%20of%20Aso.jpg",
+      "geo_ids": [
+        "kumamoto"
+      ],
+      "booking_start": "2026-09-15T00:00:00+09:00",
+      "otas": [
+        "楽天トラベル",
+        "じゃらん"
+      ],
+      "ota_source": "https://kumamoto-ouenwari.com/ota-list.html",
+      "ota_checked_at": "2026-10-05"
     }
   ]
 }

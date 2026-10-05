@@ -1,16 +1,17 @@
 PROJECT: travel-offer-review
-CURRENT: 3 — local implementation verified
+CURRENT: 4 — local review round 4 verified
 
 [STEPS]
 1. Independent search axes and sunny campaign design — done
 2. Review round 3: compact form, six months, regional summaries and handoffs — done
-3. Responsive rendering, interactions, date boundaries and static build — done
+3. Review round 4: phase filters, monthly alternatives, geography and OTA marks — done
+4. Responsive rendering, interactions, date boundaries and static build — done
 
 [CURRENT DETAIL]
-Goal: Apply all 15 review comments; preserve the independent map/date/provider axes and the automatic campaign search.
-Facts: The search bar uses icon/value rows and horizontally aligned adults/children. Preview banner and map/date headings are removed; percentage/cap icons remain. Six months cover October 2026–March 2027, with labeled samples providing January–March data. Selected filters have a highlighted border. Map and date summaries use the same ranked campaign cards. The selected region survives the map-to-calendar and calendar-to-map handoffs. Calendar month arrows flank the month label; desktop panels share height; cells include cap and known-period campaign count. A source-backed campaign pop has one official detail link. The old share label is now an explicit URL-copy action in the desktop filter bar, avoiding another row.
-Evidence: scripts/qa_flexible_search.cjs — 52 checks PASS, including all six axis orders, 1440/768/390/375/320 widths, compact desktop form geometry, equal calendar/summary heights, region handoff and return, six-month year boundary and calendar URL/reload, single official detail destination, and existing loading/retry/carousel/automatic-search checks. IAB desktop and 390px rendering inspected; artifacts/flexible-search screenshots and qa.json retained. Site/offer-contract/freshness/build checks and JS syntax PASS.
-Plan difference: Calendar view state is now included in copied URLs. January–March remain sample-only; the real recovery campaign's December 25 end date and provider eligibility data were preserved.
+Goal: Apply all 11 round-4 browser comments; preserve earlier compact form, six-month overview, and independent search axes.
+Facts: Map booking-phase tabs replace the map heading. Date discovery has active/upcoming/both controls and a left-aligned benefit legend. Stay periods are explicit in campaign summaries. Month rows drill into every matching campaign plus the calendar. Search controls align; the single left date icon opens the native picker. The Kyushu standalone link and official-listing badges are removed. OTA logos appear in summaries and pops; Kumamoto's two participants were checked against its official OTA list. Other provider marks use official header assets. Eight regions, 47 prefectures and four prototype municipalities support hierarchical selection and searches at any level. Geography survives handoffs/reload and rejects sibling scopes. The Japan illustration scales further at finer levels; this is not a new municipality-boundary map.
+Evidence: scripts/qa_flexible_search.cjs — 60 checks PASS. Covers all six axis orders, five general widths, three geographic widths, phase filters, all monthly alternatives, actual OTA image loading, prefecture stops, city/date handoff and reload, no sibling leakage, unknown IDs, and existing loading/retry/carousel/automatic-search checks. IAB desktop popup/logo loading and 390px geography visually inspected; artifacts/flexible-search screenshots and qa.json retained. Site/offer-contract/freshness/build, JS syntax, and diff checks PASS.
+Plan difference: Added clearly labeled Miyagi/Sendai/Okinawa samples to exercise city scope and upcoming booking phases. Real provider eligibility data, affiliate destinations and tracking are unchanged. Municipality options are extensible data, currently four prototype examples.
 Next: User reviews the updated local preview. Publication and production release still require authorization and the project's release gates.
 Human input: none for local implementation. No push, PR update, merge, external publication or production deployment performed.
 Design/data notes: docs/sunny-travel-design.md.
@@ -23,5 +24,5 @@ Address: http://127.0.0.1:8776/
 Server: Python http.server, bound only to 127.0.0.1, dist directory; exec session 42326, PID 15495 at verification.
 Browser: Task-created IAB tab 7 marked as deliverable; pre-existing browser tabs preserved.
 Cleanup condition: After review or when the preview is no longer needed. Close only tab 7 and send Ctrl-C to session 42326; verify port 8776 no longer has the owned listener. Recheck process identity before any PID-based stop.
-Other resources: Isolated acceptance-test browser and contexts closed in finally; test processes exited. Screenshots and source checkout are deliverables/evidence, retained.
+Other resources: Isolated acceptance-test and screenshot browsers closed in finally; test processes exited. Official-source tab 9 closed; two owned /tmp edit helpers removed. Screenshots and source checkout are deliverables/evidence, retained.
 [END RETAINED RESOURCE]

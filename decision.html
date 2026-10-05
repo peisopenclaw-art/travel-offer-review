@@ -15,8 +15,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&family=Noto+Serif+JP:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261005-compact-search-v4">
-  <link rel="stylesheet" href="decision-ui.css?v=20261005-compact-search-v4">
+  <link rel="stylesheet" href="styles.css?v=20261005-geography-search-v5">
+  <link rel="stylesheet" href="decision-ui.css?v=20261005-geography-search-v5">
 </head>
 <body class="decision-page" data-design="flexible-search-v2">
 <a class="skip-link" href="#decision-main">本文へ移動</a>
@@ -70,7 +70,7 @@
       </label>
 
       <label class="field date-field">
-        <span class="field-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 11h16"/></svg></span><span class="sr-only">宿泊日</span>
+        <button id="date-picker" class="field-icon date-picker" type="button" aria-label="宿泊日を選ぶ"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 11h16"/></svg></button><span class="sr-only">宿泊日</span>
         <div class="date-input-wrap">
           <input id="travel-date" name="travel-date" type="date" min="2026-10-01" max="2027-03-31">
           <span class="date-placeholder" aria-hidden="true">一番お得な日</span>
@@ -120,8 +120,7 @@
       <div class="map-board">
         <div class="map-board-head">
           <div>
-            <strong>日本地図</strong>
-            <span>気になる地域をタップ</span>
+            <div class="availability-tabs" data-availability-view="map" role="group" aria-label="割引の開催状況"><button type="button" data-availability="active" aria-pressed="true">開催中の割引</button><button type="button" data-availability="upcoming" aria-pressed="false">これから始まる割引</button></div>
           </div>
           <p id="regional-readiness">地域を選ぶと特典を絞り込めます</p>
         </div>
@@ -158,10 +157,10 @@
           </button>
         </div>
 
+        <div id="geo-detail" class="geo-detail" hidden></div>
         <div class="map-legend" aria-label="地図の見方">
           <span><i class="legend-swatch hot"></i>地域限定の大型施策</span>
-          <span><i class="legend-swatch national"></i>全国向け施策のみ確認</span>
-          <a href="kyushu-recovery-discount.html">九州の条件を見る →</a>
+          <span><i class="legend-swatch national"></i>全国向けの特典も含む</span>
         </div>
       </div>
 
@@ -177,14 +176,16 @@
   </section>
 
   <section class="decision-stage" id="panel-date" role="tabpanel" data-panel="2" aria-labelledby="tab-date" hidden>
-    <div class="stage-heading metric-heading">
+    <div class="stage-heading metric-heading availability-heading">
       <div class="metric-key">
         <span><b class="metric-symbol rate">%</b> 割引・還元率</span>
         <span><b class="metric-symbol cap">¥</b> 上限額</span>
       </div>
+<div class="availability-tabs" data-availability-view="date" role="group" aria-label="クーポンの開催状況"><button type="button" data-availability="active" aria-pressed="true">今出てるクーポン</button><button type="button" data-availability="upcoming" aria-pressed="false">これから出るクーポン</button><button type="button" data-availability="all" aria-pressed="false">両方</button></div>
     </div>
 
     <div id="month-offers" class="month-offers" aria-label="月別のお得一覧"></div>
+    <section id="month-campaigns" class="month-campaigns" aria-label="選択月のキャンペーン一覧" hidden><div class="month-drill-heading"><h3 id="month-campaigns-title"></h3><button id="jump-calendar" type="button" class="secondary-action">日付カレンダーを見る ↓</button></div><div id="month-campaign-list" class="month-campaign-list"></div></section>
     <div id="calendar-workspace" class="calendar-workspace" hidden>
       <div class="calendar-panel">
         <div class="calendar-toolbar">
@@ -268,6 +269,6 @@
   <small>サンプル表示を含みます。実際の特典は公式条件をご確認ください。</small>
 </footer>
 
-<script src="decision-ui.js?v=20261005-compact-search-v4" defer></script>
+<script src="decision-ui.js?v=20261005-geography-search-v5" defer></script>
 </body>
 </html>
