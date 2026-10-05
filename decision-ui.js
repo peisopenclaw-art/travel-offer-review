@@ -763,8 +763,7 @@
       var value = this.value === "" ? null : Number(this.value);
       state.assumedPrice = Number.isFinite(value) && value >= 0 ? Math.round(value) : null;
       persistState();
-      renderComparison();
-      renderEstimateNote();
+      renderAll();
     });
     els.shareState.addEventListener("click", shareState);
     ["minus", "plus"].forEach(function (direction) {
