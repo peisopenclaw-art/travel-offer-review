@@ -1,0 +1,67 @@
+name: decision-ui-visual-qa
+# temporary pre-human proof for decision UI prototype
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "offers.html"
+      - "decision.html"
+      - "decision-ui.css"
+      - "decision-ui.js"
+      - "benefit-rules.js"
+      - "scripts/check_public_benefits.py"
+      - "decision-data.json"
+      - "design-samples.json"
+      - "campaign-highlights.json"
+      - "search-geography.json"
+      - "yahoo-travel-logo.svg"
+      - "ikyu-logo.svg"
+      - "jtb-logo.svg"
+      - "sample-campaign.html"
+      - "campaign-detail.js"
+      - "scripts/qa_public_benefits.cjs"
+      - "docs/public-offer-contract-v1.md"
+      - "scripts/check_public_offer_contract.py"
+      - "scripts/check_site.py"
+      - "scripts/check_offer_freshness.py"
+      - "scripts/build_cloudflare.py"
+      - "sitemap.xml"
+      - ".github/workflows/decision-ui-visual-qa.yml"
+  workflow_dispatch:
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: python3 scripts/check_site.py
+      - run: python3 scripts/check_public_offer_contract.py
+      - run: python3 scripts/build_cloudflare.py
+      - run: npm install --no-save --package-lock=false playwright
+      - run: npx playwright install --with-deps chromium
+      - name: Independent search acceptance and screenshots
+        env:
+          QA_URL: http://127.0.0.1:4173/
+          QA_OUTPUT: artifacts/decision-ui
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory dist > /tmp/decision-ui-http.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid"; wait "$preview_pid" || true' EXIT
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi
+            sleep 1
+          done
+          node scripts/qa_public_benefits.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: decision-ui-visual-qa
+          path: artifacts/decision-ui/
+          if-no-files-found: error

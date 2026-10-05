@@ -1,12 +1,5 @@
 {
-  "schema_version": "public-offer-v2",
-  "data_origin": "postgresql-public-snapshot",
-  "rule_version": "benefit-rules-v2.1",
-  "as_of": null,
-  "expires_at": null,
-  "offer_count": 0,
-  "record_count": 0,
-  "regions": [
+  "nodes": [
     {
       "id": "hokkaido",
       "name": "北海道",
@@ -361,8 +354,5 @@
       "parent": "okinawa",
       "level": "city"
     }
-  ],
-  "offers": [],
-  "highlights": [],
-  "coverage": []
+  ]
 }

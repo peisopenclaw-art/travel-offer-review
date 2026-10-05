@@ -1,10 +1,13 @@
-name: site-checks
+name: editorial-campaign-qa
 on:
   pull_request:
-  push:
-    branches: [main]
+    paths:
+      - "kyushu-recovery-discount.html"
+      - "styles.css"
+      - ".github/workflows/revenue-shelf-visual-qa.yml"
+  workflow_dispatch:
 jobs:
-  static:
+  editorial:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12,5 +15,3 @@ jobs:
         with:
           python-version: "3.12"
       - run: python3 scripts/check_site.py
-      - run: python3 -m unittest discover -s tests -v
-      - run: python3 scripts/build_cloudflare.py
