@@ -20,7 +20,7 @@ DBの正式情報 → 公開許可項目だけのJSON → 地図 / 宿泊日 / �
 8. `match_requirements` が1件でも未確認ならUIは「追加条件確認」とし、「使える」と断定しない。
 9. 実価格・在庫が無いLevel 1では実質支払額の順位、最安、通常価格差を表示しない。
 10. 出典URL・出典更新日・確認時点を必須にする。不明値を0/falseで埋めない。
-11. 根拠URLと予約先URLを分離する。現プロトタイプの予約先は公式Yahoo!トラベルURLで、アフィリエイト接続済みとは扱わない。
+11. 根拠URLと予約先URLを分離する。`booking.provider_url` は公式予約先のfallback、`booking.tracking_url` は任意の成果計測URLとする。`tracking_url` はDBの有効な `affiliate_links` から、提携条件確認済み・リンク確認済み・有効期間内の場合だけ公開し、推測生成しない。`booking.monetization=affiliate` の時だけUIが `tracking_url` を優先し、リンクには `rel="sponsored noopener noreferrer"` を付ける。未登録時は従来どおり公式予約先へ送る。
 12. Level 2の推定割引額は `coupon_rate` / `coupon_fixed` のように単独クーポンとして計算条件が構造化されたものだけ。最低利用額、JPY通貨単位、計算基準（eligible_stay_amount）、率型は丸め規則と上限有無まで確認済みでなければ計算しない。PayPayポイント等の `paypay_total_rate` を「割引額」に機械換算しない。
 13. 共有URLは destination / month / date / adults / children / provider / view / price の旅行条件だけを持ち、認証情報・DB・ログ・内部IDを入れない。
 
