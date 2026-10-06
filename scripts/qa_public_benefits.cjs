@@ -18,7 +18,7 @@ function fixture(geography) {
       scope:'全国',geo_ids:[],excluded_geo_ids:[],booking_start:facts.booking_start_at,booking_end:facts.booking_end_at,
       stay_start:facts.travel_start_date,stay_end:facts.travel_end_date,eligibility_facts:facts,
       conditions:facts.conditions,match_requirements:[],benefit:{kind:'coupon_rate',display_label:'20％',rate_percent:20,max_discount_amount:5000,minimum_spend:facts.minimum_spend,currency:'JPY',calculation_base:'eligible_stay_amount',calculation_unit:'per_booking',rounding:'floor',includes_offer_ids:[]},
-      stay_window:{label:'旅行対象期間'},property_scope:{mode:'unknown'},stacking:{note:'合算しません'},summary:'自動テスト専用の特典',condition_note:'自動テスト専用',source:{official_url:'https://travel.rakuten.co.jp/',checked_at:now},booking:{provider_url:'https://travel.rakuten.co.jp/'}};
+      stay_window:{label:'旅行対象期間'},property_scope:{mode:'unknown'},stacking:{note:'合算しません'},summary:'自動テスト専用の特典',condition_note:'自動テスト専用',source:{official_url:'https://travel.rakuten.co.jp/',checked_at:now},booking:{provider_url:'https://travel.rakuten.co.jp/',tracking_url:'https://affiliate.example.test/click?fixture=1',monetization:'affiliate'}};
   }
   return {schema_version:'public-offer-v2',rule_version:'benefit-rules-v2.1',data_origin:'postgresql-public-snapshot',as_of:now,expires_at:'2030-01-01T00:00:00Z',offer_count:5,record_count:5,regions:geography.nodes,highlights:[],coverage:[{provider:'JAL',offer_count:0,state:'公式条件の確認待ち'}],offers:[
     offer('test-minimum',{minimum_spend:25000}),
@@ -85,6 +85,9 @@ async function main(){
       assert.ok(new URL(page.url()).searchParams.get('product')==='rail_dp');
       await page.locator('[data-offer]').first().click();assert.ok(await page.locator('.structured-terms').isVisible());
       assert.ok((await page.locator('.structured-terms').innerText()).includes('全細則は確認できていません'));
+      const bookingLink=page.locator('#dialog-content a',{hasText:'正式予約先を開く'});
+      assert.equal(await bookingLink.getAttribute('href'),'https://affiliate.example.test/click?fixture=1');
+      assert.ok((await bookingLink.getAttribute('rel')).split(/\s+/).includes('sponsored'));
       await page.locator('#dialog-close').click();
       if(!live&&[1440,390,375].includes(width))await page.screenshot({path:path.join(output,'test-only-provider-'+width+'.png'),fullPage:true});
       results.push({check:'minimum-child-product-unknown-and-dialog',width,passed:true});
