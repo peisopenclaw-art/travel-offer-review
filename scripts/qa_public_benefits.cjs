@@ -88,6 +88,7 @@ async function main(){
       const bookingLink=page.locator('#dialog-content a',{hasText:'正式予約先を開く'});
       assert.equal(await bookingLink.getAttribute('href'),'https://affiliate.example.test/click?fixture=1');
       assert.ok((await bookingLink.getAttribute('rel')).split(/\s+/).includes('sponsored'));
+      if([1440,390,375].includes(width))await page.screenshot({path:path.join(output,'test-only-affiliate-dialog-'+width+'.png'),fullPage:true});
       await page.locator('#dialog-close').click();
       if(!live&&[1440,390,375].includes(width))await page.screenshot({path:path.join(output,'test-only-provider-'+width+'.png'),fullPage:true});
       results.push({check:'minimum-child-product-unknown-and-dialog',width,passed:true});
