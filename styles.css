@@ -74,6 +74,8 @@ button,a{touch-action:manipulation}
 .header-cta{display:inline-flex;align-items:center;gap:10px;background:var(--green);color:#fff;text-decoration:none;font-size:13px;font-weight:800;padding:12px 17px;border-radius:5px;transition:background .18s ease,transform .18s ease}
 .header-cta:hover{background:var(--green-dark);transform:translateY(-1px)}
 .header-cta:active{transform:translateY(0)}
+.affiliate-disclosure{margin:0;padding:7px max(16px,calc((100vw - var(--max))/2));border-bottom:1px solid #e8eff2;background:#fff;color:#5b707c;font-size:11px;line-height:1.55;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.affiliate-disclosure strong{color:var(--ink);font-weight:900;white-space:nowrap}
 
 .hero{position:relative;min-height:470px;overflow:hidden;background:#183c35}
 .hero-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%}
