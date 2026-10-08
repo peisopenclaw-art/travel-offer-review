@@ -971,8 +971,9 @@
   estimateDiscount=function(offer){
     if(!offer.eligibility_facts)return sourceEstimate(offer);
     var b=offer.benefit;
-    if(benefitVerdict(offer,state.travelDate,state.month).status!=='eligible' || !Number.isFinite(state.assumedPrice) || b.currency!=='JPY' || b.calculation_unit!=='per_booking' || !['booking_total','eligible_stay_amount'].includes(b.calculation_base))return {key:'not-calculable',label:'未算出（条件を確認）'};
-    if(b.kind==='coupon_rate' && (b.rounding!=='floor'||b.max_discount_amount==null))return {key:'not-calculable',label:'未算出（上限・計算条件を確認）'};
+    if(benefitVerdict(offer,state.travelDate,state.month).status!=='eligible' || !Number.isFinite(state.assumedPrice) || b.currency!=='JPY' || !['coupon_rate','coupon_fixed'].includes(b.kind))return {key:'not-calculable',label:'未算出（条件を確認）'};
+    if(b.calculation_unit!=='per_booking' || !['booking_total','eligible_stay_amount'].includes(b.calculation_base))return {key:'not-calculable',label:'実際の割引額は予約先で確認'};
+    if(b.kind==='coupon_rate' && (b.rounding!=='floor'||b.max_discount_amount==null))return {key:'not-calculable',label:'実際の割引額は予約先で確認'};
     return estimateDiscountForBenefit(b,state.assumedPrice);
   };
   var sourceCapLabel=benefitCapLabel;
