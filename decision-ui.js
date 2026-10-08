@@ -873,6 +873,17 @@
       data.highlights = data.data_origin === 'postgresql-public-snapshot' ? [] : (await responses[2].json()).campaigns;
       if (!responses[3].ok) throw new Error("geography unavailable");
       geography=(await responses[3].json()).nodes;
+      if (['postgresql','postgresql-public-snapshot'].includes(data.data_origin)) {
+        // Real DB mode must never send a visitor into a demonstration campaign.
+        $all('.campaign-slide').forEach(function(slide) {
+          slide.setAttribute('href','#search-tabs');
+          slide.setAttribute('aria-label','地図から実際の旅行特典を探す');
+          var tag=slide.querySelector('.banner-tag');
+          if (tag) tag.textContent='旅のヒント · 写真はイメージ';
+          var cta=slide.querySelector('.banner-cta');
+          if (cta) cta.textContent='地図で探す →';
+        });
+      }
       if (state.destination && !geoNode(state.destination)) state.destination="";
       persistState();
     } catch (error) {
