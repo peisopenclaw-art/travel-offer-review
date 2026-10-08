@@ -46,6 +46,23 @@ jobs:
 
           # The selected Tohoku / 2026-10 / map URL must serve the same
           # current homepage as the accepted static code, not a legacy site.
+          print("HTML route fingerprint diagnostics:", flush=True)
+          for route in [
+              "/",
+              "/index.html",
+              "/?destination=tohoku&month=2026-10&view=map",
+              "/?destination=tohoku&month=2026-10&view=date&calendar=1",
+              "/index.html?release_proof=7672c3da",
+              "/?release_proof=7672c3da",
+          ]:
+              try:
+                  request = Request(origin + route, headers={"Cache-Control":"no-cache","User-Agent":"TokuErabiQA/1.0"})
+                  with urlopen(request, timeout=20) as response:
+                      body=response.read(limit+1)
+                      print(f"route={route} bytes={len(body)} sha256={hashlib.sha256(body).hexdigest()[:12]} cache={response.headers.get('CF-Cache-Status')} etag={response.headers.get('ETag')} age={response.headers.get('Age')}",flush=True)
+              except Exception as exc:
+                  print(f"route={route} ERROR={type(exc).__name__}: {exc}",flush=True)
+
           failures = []
           for path, local in [
               ("/?destination=tohoku&month=2026-10&view=map", "index.html"),
