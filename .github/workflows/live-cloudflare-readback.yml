@@ -1,0 +1,69 @@
+name: live-cloudflare-readback
+# Production-only QA: no credentials, deploys, DB writes, or affiliate clicks.
+on:
+  pull_request:
+    paths: [".github/workflows/live-cloudflare-readback.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm current 8776-equivalent map files and live sanitized DB feed
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          import sys
+          from urllib.request import Request, urlopen
+
+          sys.path.insert(0, "scripts")
+          from check_public_benefits import validate
+
+          origin = "https://travel.tokuerabi.com"
+          limit = 8 * 1024 * 1024
+
+          def get(path):
+              request = Request(origin + path, headers={
+                  "Cache-Control": "no-cache",
+                  "User-Agent": "TokuErabiProductionReadback/1.0",
+              })
+              with urlopen(request, timeout=20) as response:
+                  if not response.geturl().startswith(origin + "/"):
+                      raise RuntimeError("unexpected public redirect")
+                  body = response.read(limit + 1)
+                  if len(body) > limit:
+                      raise RuntimeError("public asset exceeds size limit")
+                  if response.status != 200:
+                      raise RuntimeError(f"public HTTP {response.status} for {path}")
+                  return body
+
+          # The selected Tohoku / 2026-10 / map URL must serve the same
+          # current homepage as the accepted static code, not a legacy site.
+          for path, local in [
+              ("/?destination=tohoku&month=2026-10&view=map", "index.html"),
+              ("/decision-ui.js", "decision-ui.js"),
+              ("/decision-ui.css", "decision-ui.css"),
+              ("/styles.css", "styles.css"),
+              ("/benefit-rules.js", "benefit-rules.js"),
+              ("/search-geography.json", "search-geography.json"),
+          ]:
+              remote = get(path)
+              expected = Path(local).read_bytes()
+              digest = hashlib.sha256(remote).hexdigest()[:12]
+              if remote != expected:
+                  raise RuntimeError(f"STALE PUBLIC ASSET: {local} hash {digest} differs from accepted main")
+              print(f"PASS {local} sha256={digest}")
+
+          # Never mistake an empty GitHub source seed, local preview,
+          # private Postgres dump, or stale DB export for a live release.
+          data = json.loads(get("/decision-data.json"))
+          rows = validate(data, require_live=True)
+          print(f"PASS live sanitized PostgreSQL snapshot: {rows} records, as_of={data['as_of']}")
+          PY
