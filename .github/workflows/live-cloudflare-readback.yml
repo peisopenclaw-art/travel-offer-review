@@ -46,6 +46,7 @@ jobs:
 
           # The selected Tohoku / 2026-10 / map URL must serve the same
           # current homepage as the accepted static code, not a legacy site.
+          failures = []
           for path, local in [
               ("/?destination=tohoku&month=2026-10&view=map", "index.html"),
               ("/decision-ui.js", "decision-ui.js"),
@@ -54,16 +55,28 @@ jobs:
               ("/benefit-rules.js", "benefit-rules.js"),
               ("/search-geography.json", "search-geography.json"),
           ]:
-              remote = get(path)
-              expected = Path(local).read_bytes()
-              digest = hashlib.sha256(remote).hexdigest()[:12]
-              if remote != expected:
-                  raise RuntimeError(f"STALE PUBLIC ASSET: {local} hash {digest} differs from accepted main")
-              print(f"PASS {local} sha256={digest}")
+              try:
+                  remote = get(path)
+                  local_hash = hashlib.sha256(Path(local).read_bytes()).hexdigest()[:12]
+                  remote_hash = hashlib.sha256(remote).hexdigest()[:12]
+                  ok = remote_hash == local_hash
+                  print(f"{'PASS' if ok else 'STALE'} {local}: live={remote_hash} main={local_hash}", flush=True)
+                  if not ok:
+                      failures.append(f"stale asset: {local}")
+              except Exception as exc:
+                  print(f"FAIL {local}: {type(exc).__name__}: {exc}", flush=True)
+                  failures.append(f"unreachable asset: {local}")
 
-          # Never mistake an empty GitHub source seed, local preview,
-          # private Postgres dump, or stale DB export for a live release.
-          data = json.loads(get("/decision-data.json"))
-          rows = validate(data, require_live=True)
-          print(f"PASS live sanitized PostgreSQL snapshot: {rows} records, as_of={data['as_of']}")
+          # Do not stop after a stale UI asset: inspect freshness independently.
+          try:
+              data = json.loads(get("/decision-data.json"))
+              print(f"PUBLIC FEED: schema={data.get('schema_version')} origin={data.get('data_origin')} as_of={data.get('as_of')} rows={data.get('record_count', len(data.get('offers', [])))}", flush=True)
+              rows = validate(data, require_live=True)
+              print(f"PASS sanitized PostgreSQL snapshot: {rows} records", flush=True)
+          except Exception as exc:
+              print(f"FAIL public DB freshness/contract: {type(exc).__name__}: {exc}", flush=True)
+              failures.append("public DB contract/freshness")
+
+          if failures:
+              raise SystemExit(f"Production release gate failed: {', '.join(failures)}")
           PY
