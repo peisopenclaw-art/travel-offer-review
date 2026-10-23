@@ -564,6 +564,10 @@
     var decision = offerDecisionState(offer);
     var included = includesBenefitNote(offer);
     var estimate = estimateDiscount(offer);
+    var booking = offer.booking || {};
+    var affiliateBooking = booking.monetization === "affiliate" && /^https:\/\//.test(booking.tracking_url || "");
+    var bookingUrl = affiliateBooking ? booking.tracking_url : booking.provider_url;
+    var bookingRel = affiliateBooking ? "sponsored noopener noreferrer" : "noopener noreferrer";
     els.dialogProvider.textContent = offer.provider + " / " + offer.product;
     els.dialogTitle.textContent = offer.name;
     els.dialogContent.innerHTML =
@@ -579,7 +583,7 @@
       '<div class="dialog-fact"><span>注意</span><strong>' + escapeHtml(offer.condition_note) + '</strong></div>' +
       '<div class="dialog-links">' +
         '<a class="dialog-source" href="' + escapeHtml(offer.source.official_url) + '" target="_blank" rel="noopener noreferrer">公式条件を見る ↗</a>' +
-        '<a class="dialog-source" href="' + escapeHtml(offer.booking.provider_url) + '" target="_blank" rel="noopener noreferrer">正式予約先を開く ↗</a>' +
+        (bookingUrl ? '<a class="dialog-source" href="' + escapeHtml(bookingUrl) + '" target="_blank" rel="' + bookingRel + '">正式予約先を開く ↗</a>' : '') +
       '</div>';
     els.dialogContent.innerHTML += '<div class="dialog-otas"><strong>取扱OTA</strong>' + otaLogos(offer) + '</div>';
     if (typeof els.dialog.showModal === "function") {

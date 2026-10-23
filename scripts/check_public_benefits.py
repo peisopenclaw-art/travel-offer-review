@@ -22,9 +22,16 @@ def validate(data, *, require_live=False):
             assert set(c)<={'condition_group_id','condition_type','operator','value_json','note'}
         for group in offer['eligibility_facts']['condition_groups']:
             assert set(group)<={'id','match_mode'}
-        for link in (offer['source']['official_url'],offer['booking']['provider_url']):
+        booking=offer['booking']
+        assert booking.get('monetization') in {'official_non_affiliate','affiliate'}
+        tracking=booking.get('tracking_url','')
+        for link in (offer['source']['official_url'],booking.get('provider_url',''),tracking):
             if link:
                 u=urlparse(link);assert u.scheme=='https' and u.hostname and not u.username and not u.password
+        if booking.get('monetization')=='affiliate':
+            assert tracking, 'affiliate monetization requires a verified tracking URL'
+        else:
+            assert not tracking, 'non-affiliate booking must not expose a tracking URL'
         if offer['benefit']['kind'] in {'points','cashback'}:
             assert offer['benefit']['rate_percent'] is None
             assert offer['benefit']['discount_amount'] is None

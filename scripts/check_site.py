@@ -80,6 +80,12 @@ else:
         if sitemap.count(f"<loc>{url}</loc>") != 1:
             errors.append(f"sitemap.xml must contain exactly one URL: {url}")
 
+affiliate_disclosure = '#アフィリエイト広告'
+for public_page in ["index.html", "offers.html", "kyushu-recovery-discount.html"]:
+    public_text = (ROOT / public_page).read_text(encoding="utf-8")
+    if public_text.count(affiliate_disclosure) != 1:
+        errors.append(f"{public_page} must contain one top affiliate disclosure")
+
 kyushu = (ROOT / "kyushu-recovery-discount.html").read_text(encoding="utf-8")
 for required in [
     "九州ふっこう応援割",
@@ -88,7 +94,6 @@ for required in [
     "https://travel.yahoo.co.jp/feature/kyushuouen/",
     "https://www.jtb.co.jp/kokunai/kyushu-ouen/",
     "https://www.jalan.net/kyushu-shien/",
-    "一部リンクは広告です",
 ]:
     if required not in kyushu:
         errors.append(f"kyushu-recovery-discount.html missing required text: {required}")
